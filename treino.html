@@ -540,7 +540,11 @@ function renderSilhouette(){
       const fill=slugColor[p.s]||'#1a1a1a';
       const app=slugApp[p.s];
       const tip=app?'<title>'+MUSCLES[app]+' — '+counts[app]+' exercício(s)</title>':'';
-      return p.d.map(d=>'<path d="'+d+'" fill="'+fill+'" stroke="#0d0d0d" stroke-width="0.6">'+tip+'</path>').join('');
+      const isOutline=(p.s==='head'||p.s==='hair');
+      const stroke=isOutline?'#505050':'#0d0d0d';
+      const sw=isOutline?'2':'0.6';
+      const ve=isOutline?' vector-effect="non-scaling-stroke"':'';
+      return p.d.map(d=>'<path d="'+d+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"'+ve+'>'+tip+'</path>').join('');
     }).join('');
   }
   const svg='<svg viewBox="0 0 1448 1500" class="body-svg" xmlns="http://www.w3.org/2000/svg">'
