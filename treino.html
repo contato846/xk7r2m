@@ -119,6 +119,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .stat-val{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--accent);line-height:1;margin-bottom:4px;}
 .stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
 .muscle-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:4px;}
+.body-chart{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;}
+.body-svg{width:100%;max-width:380px;height:auto;display:block;margin:0 auto;}
+.body-svg .body-fill{fill:#161616;stroke:#3a3a3a;stroke-width:1;}
+.body-svg .m{stroke:#0d0d0d;stroke-width:0.6;transition:fill .3s;}
+.body-svg text{font-family:'DM Sans',sans-serif;font-size:9px;fill:var(--muted2);}
+.body-legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:12px;font-size:11px;color:var(--muted2);}
+.body-legend span{display:flex;align-items:center;gap:6px;}
+.body-legend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
 .muscle-row{display:flex;align-items:center;gap:10px;padding:5px 0;}
 .muscle-name{font-size:12px;font-weight:500;min-width:105px;}
 .muscle-bar-track{flex:1;background:var(--border);border-radius:3px;height:7px;overflow:hidden;}
@@ -230,6 +238,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <div class="page" id="page-dashboard">
   <div class="section-title">Resumo geral</div>
   <div class="stat-grid" id="statsGrid"></div>
+  <div class="section-title">Cobertura muscular</div>
+  <div class="body-chart" id="muscleSilhouette"></div>
   <div class="section-title">Grupos musculares</div>
   <div class="muscle-block" id="muscleStatus"></div>
   <div class="section-title">Aderência ao planejamento</div>
@@ -262,27 +272,27 @@ const AB=[
 const WORKOUTS=[
   {id:'A',name:'Treino A',sub:'Força Superior',day:'Segunda',dayIdx:1,exercises:[
     {name:"Supino reto com barra",series:5,reps:"3–5 reps",obs:"85–90% 1RM. Escápulas retraídas, arco lombar controlado.",rest:210,muscles:['peito','triceps','ombros']},
-    {name:"Remada curvada com barra",series:5,reps:"3–5 reps",obs:"85–90% 1RM. Tronco a ~45°, puxar até o abdômen.",rest:210,muscles:['costas','biceps']},
-    {name:"Press militar com barra",series:4,reps:"4–6 reps",obs:"80–85% 1RM. Core contraído durante todo o movimento.",rest:180,muscles:['ombros','triceps']},
-    {name:"Pull-up com carga",series:4,reps:"4–6 reps",obs:"Carga no cinto. Extensão completa na descida.",rest:180,muscles:['costas','biceps']},
+    {name:"Remada curvada com barra",series:5,reps:"3–5 reps",obs:"85–90% 1RM. Tronco a ~45°, puxar até o abdômen.",rest:210,muscles:['costas','biceps','ombros','core']},
+    {name:"Press militar com barra",series:4,reps:"4–6 reps",obs:"80–85% 1RM. Core contraído durante todo o movimento.",rest:180,muscles:['ombros','triceps','core']},
+    {name:"Pull-up com carga",series:4,reps:"4–6 reps",obs:"Carga no cinto. Extensão completa na descida.",rest:180,muscles:['costas','biceps','ombros','core']},
     {name:"Rosca direta barra",series:3,reps:"6–8 reps",obs:"Excêntrica controlada (3 seg descendo).",rest:120,muscles:['biceps']},
-    {name:"Tríceps mergulho com carga",series:3,reps:"6–8 reps",obs:"Carga no cinto. Desça até 90° no cotovelo.",rest:120,muscles:['triceps','peito']},
+    {name:"Tríceps mergulho com carga",series:3,reps:"6–8 reps",obs:"Carga no cinto. Desça até 90° no cotovelo.",rest:120,muscles:['triceps','peito','ombros']},
     ...AB
   ]},
   {id:'B',name:'Treino B',sub:'Força Inferior',day:'Quarta',dayIdx:3,exercises:[
-    {name:"Agachamento livre",series:5,reps:"3–5 reps",obs:"85–90% 1RM. Profundidade: coxa paralela ou abaixo.",rest:270,muscles:['quadriceps','gluteos','core']},
-    {name:"Levantamento terra",series:4,reps:"3–5 reps",obs:"85–90% 1RM. Barra rente à perna, coluna neutra.",rest:270,muscles:['posteriores','gluteos','costas']},
-    {name:"Agachamento búlgaro",series:3,reps:"6–8 reps",obs:"Pé traseiro elevado. Execute cada lado antes de trocar.",rest:150,muscles:['quadriceps','gluteos']},
+    {name:"Agachamento livre",series:5,reps:"3–5 reps",obs:"85–90% 1RM. Profundidade: coxa paralela ou abaixo.",rest:270,muscles:['quadriceps','gluteos','core','posteriores']},
+    {name:"Levantamento terra",series:4,reps:"3–5 reps",obs:"85–90% 1RM. Barra rente à perna, coluna neutra.",rest:270,muscles:['posteriores','gluteos','costas','core','quadriceps']},
+    {name:"Agachamento búlgaro",series:3,reps:"6–8 reps",obs:"Pé traseiro elevado. Execute cada lado antes de trocar.",rest:150,muscles:['quadriceps','gluteos','core','posteriores']},
     {name:"Leg curl (mesa flexora)",series:3,reps:"6–8 reps",obs:"Excêntrica lenta (3 seg) para máximo recrutamento.",rest:120,muscles:['posteriores']},
     {name:"Panturrilha em pé com carga",series:4,reps:"8–10 reps",obs:"Pausa de 1 seg no topo. Amplitude máxima.",rest:90,muscles:['panturrilha']},
     ...AB
   ]},
   {id:'C',name:'Treino C',sub:'Potência / Full Body',day:'Sexta',dayIdx:5,exercises:[
-    {name:"Leg press explosivo",series:5,reps:"5 reps",obs:"70% da carga máxima. Concêntrica em velocidade máxima.",rest:210,muscles:['quadriceps','gluteos']},
+    {name:"Leg press explosivo",series:5,reps:"5 reps",obs:"70% da carga máxima. Concêntrica em velocidade máxima.",rest:210,muscles:['quadriceps','gluteos','posteriores']},
     {name:"Supino com barra — velocidade",series:4,reps:"3 reps",obs:"60–65% 1RM. Intenção máxima de velocidade na subida.",rest:180,muscles:['peito','triceps','ombros']},
     {name:"Agachamento com salto lastrado",series:4,reps:"5 reps",obs:"20–30 kg. Descida controlada, subida explosiva.",rest:180,muscles:['quadriceps','gluteos','posteriores']},
-    {name:"Kettlebell swing",series:4,reps:"10 reps",obs:"Hip hinge explosivo. Força vem do quadril, não dos braços.",rest:120,muscles:['gluteos','posteriores','core']},
-    {name:"Burpee com salto explosivo",series:3,reps:"10 reps",obs:"Cadeia cinética completa. Salto máximo a cada rep.",rest:90,muscles:['quadriceps','peito','ombros','core']},
+    {name:"Kettlebell swing",series:4,reps:"10 reps",obs:"Hip hinge explosivo. Força vem do quadril, não dos braços.",rest:120,muscles:['gluteos','posteriores','core','costas','ombros']},
+    {name:"Burpee com salto explosivo",series:3,reps:"10 reps",obs:"Cadeia cinética completa. Salto máximo a cada rep.",rest:90,muscles:['quadriceps','peito','ombros','core','triceps','gluteos']},
     ...AB
   ]}
 ];
@@ -506,6 +516,69 @@ function renderHistory(){
   }).join('');
 }
 
+// SILHUETA MUSCULAR
+const MUSCLE_SHAPES={
+  peito:[['ellipse',68,80,12,10],['ellipse',92,80,12,10]],
+  ombros:[['ellipse',52,64,9,8],['ellipse',108,64,9,8],['ellipse',222,64,9,8],['ellipse',278,64,9,8]],
+  biceps:[['ellipse',38,108,6,15],['ellipse',122,108,6,15]],
+  core:[['rect',66,98,28,62,5]],
+  quadriceps:[['ellipse',62,218,11,32],['ellipse',98,218,11,32]],
+  costas:[['path','M222,72 Q250,66 278,72 L274,148 L226,148 Z']],
+  triceps:[['ellipse',208,108,6,15],['ellipse',292,108,6,15]],
+  gluteos:[['ellipse',240,188,11,13],['ellipse',260,188,11,13]],
+  posteriores:[['ellipse',232,238,10,28],['ellipse',268,238,10,28]],
+  panturrilha:[['ellipse',232,298,7,16],['ellipse',268,298,7,16]],
+};
+function muscleColor(c){if(c===0)return '#3a3a3a';if(c===1)return '#72b800';if(c===2)return '#ffaa00';return '#ff4545';}
+function renderSilhouette(){
+  const seen={},counts={};
+  Object.keys(MUSCLES).forEach(m=>counts[m]=0);
+  WORKOUTS.forEach(w=>w.exercises.forEach(e=>{
+    if(seen[e.name])return;
+    seen[e.name]=true;
+    e.muscles.forEach(m=>{if(counts[m]!==undefined)counts[m]++;});
+  }));
+  let muscles='';
+  Object.entries(MUSCLE_SHAPES).forEach(([m,shapes])=>{
+    const color=muscleColor(counts[m]);
+    shapes.forEach(s=>{
+      if(s[0]==='ellipse')muscles+=`<ellipse class="m" cx="${s[1]}" cy="${s[2]}" rx="${s[3]}" ry="${s[4]}" fill="${color}"><title>${MUSCLES[m]} — ${counts[m]} exercício(s)</title></ellipse>`;
+      else if(s[0]==='rect')muscles+=`<rect class="m" x="${s[1]}" y="${s[2]}" width="${s[3]}" height="${s[4]}" rx="${s[5]||0}" fill="${color}"><title>${MUSCLES[m]} — ${counts[m]} exercício(s)</title></rect>`;
+      else if(s[0]==='path')muscles+=`<path class="m" d="${s[1]}" fill="${color}"><title>${MUSCLES[m]} — ${counts[m]} exercício(s)</title></path>`;
+    });
+  });
+  const svg=`<svg viewBox="0 0 330 360" class="body-svg" xmlns="http://www.w3.org/2000/svg">
+    <g class="body-fill">
+      <ellipse cx="80" cy="28" rx="16" ry="19"/>
+      <rect x="74" y="46" width="12" height="8"/>
+      <path d="M55,55 L105,55 L108,180 L52,180 Z"/>
+      <path d="M55,55 L48,62 L36,100 L32,150 L40,156 L48,150 L52,100 L57,62 Z"/>
+      <path d="M105,55 L112,62 L124,100 L128,150 L120,156 L112,150 L108,100 L103,62 Z"/>
+      <path d="M52,180 L52,250 L54,322 L68,324 L70,250 L74,180 Z"/>
+      <path d="M108,180 L108,250 L106,322 L92,324 L90,250 L86,180 Z"/>
+      <ellipse cx="250" cy="28" rx="16" ry="19"/>
+      <rect x="244" y="46" width="12" height="8"/>
+      <path d="M225,55 L275,55 L278,180 L222,180 Z"/>
+      <path d="M225,55 L218,62 L206,100 L202,150 L210,156 L218,150 L222,100 L227,62 Z"/>
+      <path d="M275,55 L282,62 L294,100 L298,150 L290,156 L282,150 L278,100 L273,62 Z"/>
+      <path d="M222,180 L222,250 L224,322 L238,324 L240,250 L244,180 Z"/>
+      <path d="M278,180 L278,250 L276,322 L262,324 L260,250 L256,180 Z"/>
+    </g>
+    <g>${muscles}</g>
+    <g text-anchor="middle">
+      <text x="80" y="350">FRENTE</text>
+      <text x="250" y="350">COSTAS</text>
+    </g>
+  </svg>`;
+  const legend=`<div class="body-legend">
+    <span><i style="background:#3a3a3a"></i>Não trabalhado</span>
+    <span><i style="background:#72b800"></i>1 exercício</span>
+    <span><i style="background:#ffaa00"></i>2 exercícios</span>
+    <span><i style="background:#ff4545"></i>3+ exercícios</span>
+  </div>`;
+  document.getElementById('muscleSilhouette').innerHTML=svg+legend;
+}
+
 // DASHBOARD
 function getCompData(){
   if(!state.programStart||!state.history.length)return{planned:0,n:0,missed:0,adh:100,weeks:0};
@@ -515,6 +588,7 @@ function getCompData(){
   return{planned,n,missed,adh,weeks};
 }
 function renderDashboard(){
+  renderSilhouette();
   const n=state.history.length;
   const totalMin=state.history.reduce((a,s)=>a+s.durationMin,0);
   const totalSets=state.history.reduce((a,s)=>a+s.doneSets,0);
