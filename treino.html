@@ -80,6 +80,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .ex-meta{font-size:11px;color:var(--muted);margin-top:2px;}
 .ex-card.completed .ex-meta{color:var(--done-border);opacity:.8;}
 .ex-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .2s;}
+.ex-load{display:flex;align-items:center;gap:3px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 8px;flex-shrink:0;}
+.ex-load input{background:transparent;border:none;outline:none;color:var(--accent);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;width:38px;text-align:right;padding:0;}
+.ex-load input::placeholder{color:var(--muted);font-weight:400;}
+.ex-load span{font-size:10px;color:var(--muted2);font-weight:500;}
 .ex-card.completed .ex-check{background:var(--done-border);border-color:var(--done-border);color:#000;}
 .chevron{color:var(--muted);font-size:13px;transition:transform .3s;flex-shrink:0;margin-left:2px;}
 .ex-card.open .chevron{transform:rotate(180deg);}
@@ -305,6 +309,8 @@ function save(){localStorage.setItem('fpv5',JSON.stringify(state));}
 function initSets(wi){return WORKOUTS[wi].exercises.map(e=>Array(e.series).fill(false));}
 let state=load()||{currentWorkout:0,sessionSets:null,sessionStart:null,history:[],programStart:null,switchDismissed:false};
 if(!state.history)state.history=[];
+if(!state.weights)state.weights={};
+function setWeight(name,v){state.weights[name]=v.trim();save();}
 if(!state.sessionStart){const dow=new Date().getDay();if(DAY_TO_WORKOUT[dow]!==undefined)state.currentWorkout=DAY_TO_WORKOUT[dow];}
 if(!state.sessionSets||state.sessionSets.length!==WORKOUTS[state.currentWorkout].exercises.length)state.sessionSets=initSets(state.currentWorkout);
 save();
@@ -364,11 +370,11 @@ function finishSession(){
   const doneS=sets.reduce((a,arr)=>a+(arr?arr.filter(Boolean).length:0),0);
   if(doneS===0){showToast('⚠ Nenhuma série registrada',false);return;}
   const now=new Date(),start=new Date(state.sessionStart),durMin=Math.round((now-start)/60000);
-  const muscles=new Set(),exercisesDone=[];
-  w.exercises.forEach((ex,ei)=>{if(sets[ei]&&sets[ei].some(Boolean)){ex.muscles.forEach(m=>muscles.add(m));exercisesDone.push(ex.name);}});
+  const muscles=new Set(),exercisesDone=[],weights={};
+  w.exercises.forEach((ex,ei)=>{if(sets[ei]&&sets[ei].some(Boolean)){ex.muscles.forEach(m=>muscles.add(m));exercisesDone.push(ex.name);if(state.weights[ex.name])weights[ex.name]=state.weights[ex.name];}});
   state.history.unshift({id:Date.now(),workoutId:w.id,workoutName:w.name,workoutSub:w.sub,
     startISO:state.sessionStart,endISO:now.toISOString(),durationMin:durMin,
-    totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,completion:Math.round(doneS/totalS*100)});
+    totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,weights,completion:Math.round(doneS/totalS*100)});
   state.currentWorkout=(wi+1)%WORKOUTS.length;
   state.sessionSets=initSets(state.currentWorkout);state.sessionStart=null;
   TD={};Object.values(TI).forEach(clearInterval);TI={};clearInterval(clockInt);
@@ -433,6 +439,10 @@ function renderTreino(){
         <div class="ex-info">
           <div class="ex-name">${ex.name}</div>
           <div class="ex-meta">${ex.series}× ${ex.reps}</div>
+        </div>
+        <div class="ex-load" onclick="event.stopPropagation()">
+          <input type="text" inputmode="decimal" value="${(state.weights&&state.weights[ex.name])||''}" placeholder="—" onchange="setWeight(this.dataset.n,this.value)" data-n="${ex.name.replace(/"/g,'&quot;')}">
+          <span>kg</span>
         </div>
         <div class="ex-check">${allDone?'✓':''}</div>
         <div class="chevron">⌄</div>
