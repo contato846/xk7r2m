@@ -364,11 +364,11 @@ function finishSession(){
   const doneS=sets.reduce((a,arr)=>a+(arr?arr.filter(Boolean).length:0),0);
   if(doneS===0){showToast('⚠ Nenhuma série registrada',false);return;}
   const now=new Date(),start=new Date(state.sessionStart),durMin=Math.round((now-start)/60000);
-  const muscles=new Set();
-  w.exercises.forEach((ex,ei)=>{if(sets[ei]&&sets[ei].some(Boolean))ex.muscles.forEach(m=>muscles.add(m));});
+  const muscles=new Set(),exercisesDone=[];
+  w.exercises.forEach((ex,ei)=>{if(sets[ei]&&sets[ei].some(Boolean)){ex.muscles.forEach(m=>muscles.add(m));exercisesDone.push(ex.name);}});
   state.history.unshift({id:Date.now(),workoutId:w.id,workoutName:w.name,workoutSub:w.sub,
     startISO:state.sessionStart,endISO:now.toISOString(),durationMin:durMin,
-    totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),completion:Math.round(doneS/totalS*100)});
+    totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,completion:Math.round(doneS/totalS*100)});
   state.currentWorkout=(wi+1)%WORKOUTS.length;
   state.sessionSets=initSets(state.currentWorkout);state.sessionStart=null;
   TD={};Object.values(TI).forEach(clearInterval);TI={};clearInterval(clockInt);
@@ -531,12 +531,16 @@ const MUSCLE_SHAPES={
 };
 function muscleColor(c){if(c===0)return '#3a3a3a';if(c===1)return '#72b800';if(c===2)return '#ffaa00';return '#ff4545';}
 function renderSilhouette(){
-  const seen={},counts={};
+  const counts={},seenEx=new Set();
   Object.keys(MUSCLES).forEach(m=>counts[m]=0);
-  WORKOUTS.forEach(w=>w.exercises.forEach(e=>{
-    if(seen[e.name])return;
-    seen[e.name]=true;
-    e.muscles.forEach(m=>{if(counts[m]!==undefined)counts[m]++;});
+  // Índice nome→músculos a partir do programa
+  const exMap={};
+  WORKOUTS.forEach(w=>w.exercises.forEach(e=>{exMap[e.name]=e.muscles;}));
+  // Conta exercícios distintos realizados no histórico
+  state.history.forEach(s=>(s.exercisesDone||[]).forEach(name=>{
+    if(seenEx.has(name))return;
+    seenEx.add(name);
+    (exMap[name]||[]).forEach(m=>{if(counts[m]!==undefined)counts[m]++;});
   }));
   let muscles='';
   Object.entries(MUSCLE_SHAPES).forEach(([m,shapes])=>{
