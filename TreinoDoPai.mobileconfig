@@ -13,7 +13,7 @@
       <key>PayloadDisplayName</key><string>TREINO DO PAI</string>
       <key>PayloadIdentifier</key><string>com.treinodopai.webclip</string>
       <key>PayloadType</key><string>com.apple.webClip.managed</string>
-      <key>PayloadUUID</key><string>9af2be1a-501f-4548-a05e-ac1caaa5e261</string>
+      <key>PayloadUUID</key><string>ad8d6467-087e-41bd-86f7-0ee8336c7463</string>
       <key>PayloadVersion</key><integer>1</integer>
       <key>Precomposed</key><true/>
       <key>URL</key><string>https://contato846.github.io/xk7r2m/treino.html</string>
@@ -25,7 +25,7 @@
   <key>PayloadOrganization</key><string>TREINO DO PAI</string>
   <key>PayloadRemovalDisallowed</key><false/>
   <key>PayloadType</key><string>Configuration</string>
-  <key>PayloadUUID</key><string>a3f1e3c8-0cb4-4449-a444-b4b6d5daf08b</string>
+  <key>PayloadUUID</key><string>259b0d61-2e3d-462d-81c9-2c14df75bd11</string>
   <key>PayloadVersion</key><integer>1</integer>
 </dict>
 </plist>
