@@ -224,6 +224,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .sub-modal-inner{background:var(--surface);border-top:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:480px;margin:0 auto;max-height:72vh;overflow-y:auto;padding:18px 18px 28px;}
 .sub-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .sub-modal-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:var(--accent);}
+.sub-section-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 4px 6px;padding-top:10px;border-top:1px solid var(--border);}
+.sub-section-title:first-of-type{border-top:none;padding-top:4px;margin-top:8px;}
 .sub-modal-close{background:transparent;border:0;color:var(--text);font-size:24px;cursor:pointer;line-height:1;}
 .sub-item{padding:12px 10px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
 .sub-item:last-child{border-bottom:none;}
@@ -514,6 +516,62 @@ function resetSessionPlan(){
   save();renderTreino();
   showToast('↺ Plano restaurado',true);
 }
+// Variações alternativas com nome técnico + nome popular entre parênteses
+const EXTRA_POOL=[
+  // Peito
+  {name:'Supino inclinado com halteres (peito superior)',series:4,reps:'8–10 reps',obs:'Inclinação 30–45°. Foco na porção clavicular do peitoral.',rest:120,muscles:['peito','triceps','ombros']},
+  {name:'Crucifixo na máquina (peck deck)',series:3,reps:'10–12 reps',obs:'Contração máxima no centro. Braços levemente flexionados.',rest:90,muscles:['peito']},
+  {name:'Crossover no cabo (cruzamento de polias)',series:3,reps:'12–15 reps',obs:'Foco na adução. Não trave os cotovelos.',rest:75,muscles:['peito','ombros']},
+  {name:'Flexão de braço (push-up)',series:3,reps:'10–20 reps',obs:'Corpo alinhado, desça até quase tocar o peito no chão.',rest:60,muscles:['peito','triceps','ombros','core']},
+  // Costas
+  {name:'Puxada alta na polia (pulley frente)',series:4,reps:'8–10 reps',obs:'Pegada aberta. Puxe até o peito, escápulas retraídas.',rest:120,muscles:['costas','biceps']},
+  {name:'Remada sentada na máquina (pulley baixo)',series:4,reps:'8–10 reps',obs:'Tronco fixo, puxe cotovelos rente ao corpo.',rest:120,muscles:['costas','biceps']},
+  {name:'Remada unilateral com halter (serrote)',series:3,reps:'8–10 reps cada',obs:'Apoiado no banco, puxe o halter até a cintura.',rest:90,muscles:['costas','biceps','core']},
+  {name:'Remada cavalinho (T-bar row)',series:4,reps:'8–10 reps',obs:'Tronco a 45°, puxe até tocar o peito.',rest:120,muscles:['costas','biceps','ombros']},
+  {name:'Barra fixa assistida (gravitron)',series:3,reps:'8–12 reps',obs:'Alternativa ao pull-up livre. Ajuste contrapeso conforme dificuldade.',rest:120,muscles:['costas','biceps']},
+  // Ombros
+  {name:'Desenvolvimento com halteres (ombro máquina)',series:4,reps:'8–10 reps',obs:'Não trave os cotovelos no topo. Core firme.',rest:120,muscles:['ombros','triceps']},
+  {name:'Elevação lateral com halteres (deltoide médio)',series:4,reps:'12–15 reps',obs:'Cotovelos levemente flexionados. Sem balanço.',rest:60,muscles:['ombros']},
+  {name:'Elevação frontal com halteres (deltoide anterior)',series:3,reps:'10–12 reps',obs:'Braços estendidos até a altura dos olhos.',rest:60,muscles:['ombros']},
+  {name:'Crucifixo invertido na máquina (posterior de ombro)',series:3,reps:'12–15 reps',obs:'Foco na retração escapular. Cotovelos a 90°.',rest:60,muscles:['ombros','costas']},
+  {name:'Encolhimento com halteres (trapézio)',series:4,reps:'10–12 reps',obs:'Eleve os ombros em direção às orelhas. Sem rotação.',rest:60,muscles:['costas','ombros']},
+  // Braços
+  {name:'Rosca alternada com halteres',series:3,reps:'8–10 reps cada',obs:'Alterne os braços. Supine o antebraço na subida.',rest:75,muscles:['biceps']},
+  {name:'Rosca martelo com halteres',series:3,reps:'8–10 reps',obs:'Pegada neutra. Foco no braquial e braquiorradial.',rest:75,muscles:['biceps']},
+  {name:'Rosca scott (banco inclinado 45°)',series:3,reps:'10–12 reps',obs:'Isola o bíceps removendo impulso.',rest:75,muscles:['biceps']},
+  {name:'Tríceps na polia (corda)',series:3,reps:'10–12 reps',obs:'Cotovelos colados ao corpo. Abra as pontas da corda no final.',rest:60,muscles:['triceps']},
+  {name:'Tríceps testa com barra (francês)',series:3,reps:'8–10 reps',obs:'Cotovelos fixos apontando para cima. Desça até a testa.',rest:90,muscles:['triceps']},
+  {name:'Tríceps coice com halter (kick back)',series:3,reps:'10–12 reps',obs:'Apoiado no banco. Braço paralelo ao tronco.',rest:60,muscles:['triceps']},
+  // Quadríceps / pernas
+  {name:'Leg press 45° (leg press inclinado)',series:4,reps:'8–12 reps',obs:'Pés na largura dos ombros. Não trave os joelhos.',rest:150,muscles:['quadriceps','gluteos','posteriores']},
+  {name:'Hack squat na máquina',series:4,reps:'8–10 reps',obs:'Costas apoiadas. Desça até 90° no joelho.',rest:150,muscles:['quadriceps','gluteos']},
+  {name:'Cadeira extensora (leg extension)',series:3,reps:'10–12 reps',obs:'Contração máxima no topo. Movimento controlado.',rest:75,muscles:['quadriceps']},
+  {name:'Afundo com halteres (passada)',series:3,reps:'10 cada perna',obs:'Passo longo. Joelho da frente a 90°.',rest:90,muscles:['quadriceps','gluteos','posteriores']},
+  {name:'Agachamento no smith',series:4,reps:'8–10 reps',obs:'Pés ligeiramente à frente. Descida controlada.',rest:150,muscles:['quadriceps','gluteos','posteriores']},
+  // Posterior / glúteo
+  {name:'Cadeira flexora (leg curl sentado)',series:3,reps:'10–12 reps',obs:'Variação do leg curl deitado. Igualmente eficaz.',rest:75,muscles:['posteriores']},
+  {name:'Stiff com barra (levantamento romeno)',series:4,reps:'8–10 reps',obs:'Joelhos semi-flexionados. Quadril para trás.',rest:120,muscles:['posteriores','gluteos','costas']},
+  {name:'Stiff com halteres',series:3,reps:'10–12 reps',obs:'Opção com halteres. Mesmo padrão do stiff com barra.',rest:90,muscles:['posteriores','gluteos']},
+  {name:'Elevação pélvica com barra (hip thrust)',series:4,reps:'8–10 reps',obs:'Ombros no banco, barra sobre a pelve. Contraia o glúteo no topo.',rest:120,muscles:['gluteos','posteriores','core']},
+  {name:'Glúteo na máquina (glute kickback)',series:3,reps:'12–15 reps cada',obs:'Foco no glúteo máximo. Sem arquear a lombar.',rest:60,muscles:['gluteos']},
+  {name:'Abdução na máquina (glúteo médio)',series:3,reps:'12–15 reps',obs:'Foco no glúteo médio. Tronco levemente inclinado.',rest:60,muscles:['gluteos']},
+  // Panturrilha
+  {name:'Panturrilha sentado na máquina',series:4,reps:'10–12 reps',obs:'Trabalha o sóleo. Amplitude total.',rest:60,muscles:['panturrilha']},
+  {name:'Panturrilha no leg press',series:4,reps:'10–12 reps',obs:'Só a ponta dos pés apoiada. Empurre e desça controlado.',rest:60,muscles:['panturrilha']},
+  // Core
+  {name:'Abdominal crunch na máquina',series:3,reps:'12–15 reps',obs:'Flexão de tronco controlada. Não puxe o pescoço.',rest:60,muscles:['core']},
+  {name:'Rotação de tronco (oblíquos)',series:3,reps:'12–15 cada lado',obs:'Máquina rotatória ou com cabo. Movimento lento.',rest:60,muscles:['core']},
+  {name:'Prancha lateral',series:3,reps:'30–45 seg cada lado',obs:'Corpo alinhado, quadril elevado.',rest:45,muscles:['core']},
+  {name:'Elevação de pernas deitado',series:3,reps:'12–15 reps',obs:'Lombar colada no chão. Desça sem encostar os pés.',rest:60,muscles:['core']}
+];
+const CARDIO_POOL=[
+  {name:'🏃 Bicicleta ergométrica',series:1,reps:'20–30 min',obs:'Ritmo moderado. Ajuste resistência conforme objetivo.',rest:0,muscles:['quadriceps','panturrilha'],cardio:true},
+  {name:'🏃 Caminhada na esteira',series:1,reps:'20–30 min',obs:'Velocidade 5–6 km/h. Boa para recuperação ativa.',rest:0,muscles:['quadriceps','panturrilha'],cardio:true},
+  {name:'🏃 Corrida na esteira',series:1,reps:'20–30 min',obs:'Ritmo Z2 ou intervalado conforme planejamento.',rest:0,muscles:['quadriceps','panturrilha','posteriores','core'],cardio:true},
+  {name:'🏃 Esteira curva',series:1,reps:'15–20 min',obs:'Autopropulsada. Gasto calórico ~30% maior que esteira comum.',rest:0,muscles:['quadriceps','panturrilha','posteriores','gluteos'],cardio:true},
+  {name:'🏃 Simulador de escada (stair climber)',series:1,reps:'15–20 min',obs:'Excelente para glúteos e posteriores. Não se apoie no corrimão.',rest:0,muscles:['gluteos','quadriceps','panturrilha','posteriores'],cardio:true},
+  {name:'🏃 Máquina de remo (remo ergômetro)',series:1,reps:'15–20 min',obs:'Corpo inteiro. Foco na sequência pernas → tronco → braços.',rest:0,muscles:['costas','quadriceps','gluteos','core','biceps'],cardio:true}
+];
 let _POOL_CACHE=null;
 function getSubstitutionPool(){
   if(_POOL_CACHE)return _POOL_CACHE;
@@ -521,25 +579,50 @@ function getSubstitutionPool(){
   WORKOUTS.forEach(w=>w.exercises.forEach(ex=>{
     if(!seen.has(ex.name)){seen.add(ex.name);pool.push(ex);}
   }));
-  pool.push({name:'🏃 Corrida (30 min)',series:1,reps:'30 min',obs:'Corrida contínua em ritmo moderado. Substitui o treino de força do dia.',rest:0,muscles:['quadriceps','panturrilha','posteriores','core']});
-  pool.push({name:'🏃 Corrida leve (20 min)',series:1,reps:'20 min',obs:'Corrida em ritmo leve para recuperação ativa.',rest:0,muscles:['quadriceps','panturrilha']});
+  EXTRA_POOL.forEach(ex=>{if(!seen.has(ex.name)){seen.add(ex.name);pool.push(ex);}});
   _POOL_CACHE=pool;return pool;
+}
+function relevanceScore(ex,todayMuscles){
+  if(!todayMuscles||!todayMuscles.size)return 0;
+  let score=0;
+  ex.muscles.forEach(m=>{if(todayMuscles.has(m))score++;});
+  return score;
 }
 function openSubstituteModal(ei){
   const el=document.getElementById('subModal');
-  const pool=getSubstitutionPool();
+  const strengthPool=getSubstitutionPool().slice();
   const isAdd=ei===-1;
-  const items=pool.map((ex,i)=>{
-    const cb=isAdd?`addExercise(${i})`:`substituteExercise(${ei},${i})`;
+  // Calcula músculos do treino do dia para priorizar alternativas
+  const wi=state.currentWorkout;
+  const todayEx=getCurrentExercises(wi);
+  const todayMuscles=new Set();
+  todayEx.forEach(ex=>ex.muscles.forEach(m=>todayMuscles.add(m)));
+  // Ordena musculação por relevância (maior match primeiro), mantendo ordem estável
+  const indexed=strengthPool.map((ex,i)=>({ex,i,score:relevanceScore(ex,todayMuscles)}));
+  indexed.sort((a,b)=>b.score-a.score||a.i-b.i);
+  const orderedStrength=indexed.map(x=>x.ex);
+  const combined=orderedStrength.concat(CARDIO_POOL);
+  const itemHTML=(ex,realIdx)=>{
+    const cb=isAdd?`addExercise(${realIdx})`:`substituteExercise(${ei},${realIdx})`;
     const meta=ex.rest===0?ex.reps:`${ex.series}× ${ex.reps}`;
     return `<div class="sub-item" onclick="${cb}"><span class="si-name">${ex.name}</span><span class="si-meta">${meta}</span></div>`;
-  }).join('');
+  };
+  // Precisamos alinhar o índice real que addExercise/substituteExercise espera
+  // getSubstitutionPool retorna pool base; vamos expandir o pool para incluir CARDIO_POOL
+  const fullPool=orderedStrength.concat(CARDIO_POOL);
+  _POOL_CACHE=null; // invalida cache base
+  _POOL_CACHE=fullPool; // substitui pelo pool ordenado (musculação relevante → restante → cardio)
+  const strengthHTML=orderedStrength.map((ex,i)=>itemHTML(ex,i)).join('');
+  const cardioHTML=CARDIO_POOL.map((ex,j)=>itemHTML(ex,orderedStrength.length+j)).join('');
   el.innerHTML=`<div class="sub-modal-inner">
     <div class="sub-modal-head">
       <div class="sub-modal-title">${isAdd?'+ Adicionar exercício':'⇄ Substituir exercício'}</div>
       <button class="sub-modal-close" onclick="closeSubstituteModal()" aria-label="Fechar">×</button>
     </div>
-    ${items}
+    <div class="sub-section-title">💪 Musculação ${todayMuscles.size?'— alternativas próximas do treino de hoje':''}</div>
+    ${strengthHTML}
+    <div class="sub-section-title">🫀 Aeróbicos / cardio</div>
+    ${cardioHTML}
   </div>`;
   el.style.display='flex';
 }
