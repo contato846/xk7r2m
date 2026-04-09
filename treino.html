@@ -103,6 +103,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .ex-card.open .ex-panel{display:block;}
 .ex-panel-body{padding:12px 15px 14px;}
 .ex-obs{font-size:12px;color:var(--muted2);font-style:italic;margin-bottom:12px;line-height:1.55;}
+.ex-note-wrap{margin-bottom:12px;}
+.ex-note-wrap label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.ex-note{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:13px;font-family:inherit;resize:vertical;min-height:42px;}
+.ex-note:focus{border-color:var(--accent);outline:none;}
 .muscle-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;}
 .mtag{font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted2);background:var(--surface);}
 .series-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;}
@@ -549,6 +553,7 @@ function renderQuickModeBar(locked){
     <div class="qm-hint">${hint}${locked?' · bloqueado durante sessão ativa':''}</div>`;
 }
 function setWeight(name,v){state.weights[name]=v.trim();save();}
+function setNote(name,v){if(!state.notes)state.notes={};state.notes[name]=v;save();}
 function renderPerfil(){
   const p=state.profile;
   document.getElementById('pf-name').value=p.name||'';
@@ -695,15 +700,15 @@ function finishSession(){
   const doneS=sets.reduce((a,arr)=>a+(arr?arr.filter(Boolean).length:0),0);
   if(doneS===0){showToast('⚠ Nenhuma série registrada',false);return;}
   const now=new Date(),start=new Date(state.sessionStart),durMin=Math.round((now-start)/60000);
-  const muscles=new Set(),exercisesDone=[],weights={};
-  planEx.forEach((ex,ei)=>{if(sets[ei]&&sets[ei].some(Boolean)){ex.muscles.forEach(m=>muscles.add(m));exercisesDone.push(ex.name);if(state.weights[ex.name])weights[ex.name]=state.weights[ex.name];}});
+  const muscles=new Set(),exercisesDone=[],weights={},notes={};
+  planEx.forEach((ex,ei)=>{if(sets[ei]&&sets[ei].some(Boolean)){ex.muscles.forEach(m=>muscles.add(m));exercisesDone.push(ex.name);if(state.weights[ex.name])weights[ex.name]=state.weights[ex.name];if(state.notes&&state.notes[ex.name])notes[ex.name]=state.notes[ex.name];}});
   const fullTotal=origW.exercises.reduce((a,e)=>a+e.series,0);
   const completion=totalS>0?Math.round(doneS/totalS*100):0;
   const fullCompletion=fullTotal>0?Math.min(100,Math.round(doneS/fullTotal*100)):0;
   const planSnapshot=planEx.map(e=>({name:e.name,series:e.series,muscles:[...e.muscles]}));
   state.history.unshift({id:Date.now(),workoutId:origW.id,workoutName:origW.name,workoutSub:origW.sub,
     startISO:state.sessionStart,endISO:now.toISOString(),durationMin:durMin,
-    totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,weights,completion,
+    totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,weights,notes,completion,
     fullCompletion,quickMode:state.quickMode||'off',plan:planSnapshot});
   // Avança apenas para o próximo treino do CICLO
   state.currentWorkout=(wi+1)%WORKOUTS.length;
@@ -842,6 +847,10 @@ function renderTreino(){
       <div class="ex-panel">
         <div class="ex-panel-body">
           <div class="ex-obs">${ex.obs}</div>
+          <div class="ex-note-wrap">
+            <label>Minhas anotações</label>
+            <textarea class="ex-note" rows="2" placeholder="Ex.: máquina 7, pegada aberta, PR pessoal…" onchange="setNote(this.dataset.n,this.value)" data-n="${ex.name.replace(/"/g,'&quot;')}">${(state.notes&&state.notes[ex.name])||''}</textarea>
+          </div>
           <div class="muscle-tags">${mtags}</div>
           <div class="series-label">Marcar séries</div>
           <div class="series-grid">${serBtns}</div>
@@ -942,6 +951,7 @@ function saveHistEdit(hi){
   const muscles=new Set();
   let doneSets=0,totalSets=0;
   if(!state.weights)state.weights={};
+  if(!state.notes)state.notes={};
   exs.forEach((ex,i)=>{
     totalSets+=ex.series;
     const chk=root.querySelector(`input[data-eh="done"][data-i="${i}"]`);
