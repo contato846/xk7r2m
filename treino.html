@@ -755,7 +755,13 @@ function runLoggedToday(){
     return d.getTime()===today.getTime();
   });
 }
-function toggleForceStrength(){state.forceStrengthToday=!state.forceStrengthToday;save();renderTreino();}
+function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function isForcingStrengthToday(){return state.forceStrengthDate===todayKey();}
+function toggleForceStrength(){
+  if(isForcingStrengthToday()){state.forceStrengthDate=null;}
+  else{state.forceStrengthDate=todayKey();}
+  save();renderTreino();
+}
 function saveRunLog(){
   const km=parseFloat((document.getElementById('rl-km').value||'').replace(',','.'));
   const min=parseInt(document.getElementById('rl-min').value||'0',10);
@@ -797,7 +803,7 @@ function renderTreino(){
   // hero
   let heroBody;
   const runDoneToday=runLoggedToday();
-  if(runToday&&!state.forceStrengthToday){
+  if(runToday&&!isForcingStrengthToday()){
     heroBody=`<div class="hero-inner">
         <div class="label" style="margin-bottom:6px">Hoje no plano</div>
         <div class="hero-workout-name">🏃 Dia de corrida</div>
@@ -825,11 +831,11 @@ function renderTreino(){
   document.getElementById('wnav-day').textContent=w.day;
   const active=!!state.sessionStart;
   // Em dia de corrida ou com treino já concluído, escondemos botão de iniciar e a lista
-  const blockToday=((runToday&&!state.forceStrengthToday)||doneToday)&&!active;
+  const blockToday=((runToday&&!isForcingStrengthToday())||doneToday)&&!active;
   // Em dia de corrida, renderiza card de registro de corrida
   const runCard=document.getElementById('runLogCard');
   if(runCard){runCard.remove();}
-  if(runToday&&!state.forceStrengthToday&&!active){
+  if(runToday&&!isForcingStrengthToday()&&!active){
     const card=document.createElement('div');
     card.id='runLogCard';
     card.className='run-log-card';
@@ -854,7 +860,15 @@ function renderTreino(){
     `;
     document.getElementById('heroCard').after(card);
   }
-  if(state.forceStrengthToday&&!active&&!runToday){state.forceStrengthToday=false;}
+  // Se está em modo "musculação hoje" num dia de corrida, mostra botão de voltar
+  if(runToday&&isForcingStrengthToday()&&!active){
+    const back=document.createElement('button');
+    back.className='btn btn-outline btn-full';
+    back.style.marginBottom='12px';
+    back.textContent='← Voltar para corrida';
+    back.onclick=toggleForceStrength;
+    document.getElementById('heroCard').after(back);
+  }
   document.getElementById('startBtn').classList.toggle('hidden',active||blockToday);
   document.getElementById('progBlock').style.display=active?'':'none';
   document.getElementById('finishRow').style.display=active?'':'none';
