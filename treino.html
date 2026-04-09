@@ -159,6 +159,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .hist-loads{margin-top:10px;border-top:1px solid var(--border);padding-top:8px;display:flex;flex-direction:column;gap:4px;}
 .hist-actions{margin-top:10px;display:flex;justify-content:flex-end;}
 .btn-small{padding:8px 14px;font-size:12px;}
+.hist-actions{gap:8px;}
+.hist-item.editing{border-color:var(--accent);}
+.he-field{margin-top:10px;display:flex;flex-direction:column;gap:4px;}
+.he-field label{font-size:11px;color:var(--muted);text-transform:uppercase;}
+.he-field input{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:14px;}
+.he-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--border);padding-top:10px;}
+.he-row{display:flex;align-items:center;gap:8px;justify-content:space-between;}
+.he-check{display:flex;align-items:center;gap:8px;flex:1;font-size:13px;cursor:pointer;}
+.he-kg{display:flex;align-items:center;gap:4px;}
+.he-kg input{width:60px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:13px;text-align:right;}
+.he-kg span{font-size:11px;color:var(--muted);}
 .hist-load-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
 .hist-load-row .hl-name{color:var(--muted2);flex:1;padding-right:8px;}
 .hist-load-row .hl-kg{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums;}
@@ -594,10 +605,74 @@ function renderSwitchNotice(){
 function dismissSwitch(){state.switchDismissed=true;save();document.getElementById('switchNotice').innerHTML='';}
 
 // HISTORY
+let editingHist=null;
+function renderHistEdit(s,hi){
+  const w=WORKOUTS.find(x=>x.id===s.workoutId)||WORKOUTS[0];
+  const exs=w.exercises;
+  const exDone=new Set(s.exercisesDone||[]);
+  const start=new Date(s.startISO);
+  const dateStr=start.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
+  const rows=exs.map((ex,i)=>{
+    const wt=(s.weights&&s.weights[ex.name])||'';
+    const checked=exDone.has(ex.name)?'checked':'';
+    return `<div class="he-row">
+      <label class="he-check"><input type="checkbox" data-eh="done" data-i="${i}" ${checked}><span>${ex.name}</span></label>
+      <div class="he-kg"><input type="text" inputmode="decimal" data-eh="kg" data-i="${i}" value="${wt}" placeholder="—"><span>kg</span></div>
+    </div>`;
+  }).join('');
+  return `<div class="hist-item editing" id="he-${hi}">
+    <div class="hist-top"><div><div class="hist-title">✎ Editando: ${s.workoutName}</div><div class="hist-sub">${dateStr}</div></div></div>
+    <div class="he-field"><label>Duração (min)</label><input type="number" min="1" id="he-dur-${hi}" value="${s.durationMin}"></div>
+    <div class="he-list">${rows}</div>
+    <div class="hist-actions">
+      <button class="btn btn-secondary btn-small" onclick="cancelHistEdit()">Cancelar</button>
+      <button class="btn btn-primary btn-small" onclick="saveHistEdit(${hi})">✓ Salvar</button>
+    </div>
+  </div>`;
+}
+function editHistory(hi){editingHist=hi;renderHistory();}
+function cancelHistEdit(){editingHist=null;renderHistory();}
+function saveHistEdit(hi){
+  const s=state.history[hi];if(!s)return;
+  const w=WORKOUTS.find(x=>x.id===s.workoutId)||WORKOUTS[0];
+  const root=document.getElementById('he-'+hi);if(!root)return;
+  const exDone=[];
+  const muscles=new Set();
+  let doneSets=0,totalSets=0;
+  if(!state.weights)state.weights={};
+  w.exercises.forEach((ex,i)=>{
+    totalSets+=ex.series;
+    const chk=root.querySelector(`input[data-eh="done"][data-i="${i}"]`);
+    const kg=root.querySelector(`input[data-eh="kg"][data-i="${i}"]`);
+    if(kg)state.weights[ex.name]=kg.value.trim();
+    if(chk&&chk.checked){
+      exDone.push(ex.name);doneSets+=ex.series;
+      ex.muscles.forEach(m=>muscles.add(m));
+    }
+  });
+  const dur=parseInt(document.getElementById('he-dur-'+hi).value,10);
+  if(dur>0)s.durationMin=dur;
+  s.exercisesDone=exDone;
+  s.doneSets=doneSets;
+  s.totalSets=totalSets;
+  s.muscles=Array.from(muscles);
+  s.completion=totalSets>0?Math.round(doneSets/totalSets*100):0;
+  s.weights=Object.fromEntries(exDone.map(n=>[n,state.weights[n]||'']));
+  save();editingHist=null;
+  renderHistory();renderDashboard();
+  showToast('✓ Treino atualizado',true);
+}
+function deleteHistory(hi){
+  if(!confirm('Apagar este treino do histórico? Esta ação não pode ser desfeita.'))return;
+  state.history.splice(hi,1);save();
+  renderHistory();renderDashboard();
+  showToast('🗑 Treino removido',true);
+}
 function renderHistory(){
   const el=document.getElementById('historyList');
   if(!state.history.length){el.innerHTML='<div class="empty"><span class="emoji">📋</span><p>Nenhum treino registrado ainda.<br>Finalize sua primeira sessão para ver o histórico.</p></div>';return;}
   el.innerHTML=state.history.map((s,hi)=>{
+    if(editingHist===hi)return renderHistEdit(s,hi);
     const start=new Date(s.startISO),end=new Date(s.endISO);
     const dateStr=start.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
     const startStr=start.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
@@ -616,7 +691,11 @@ function renderHistory(){
       </div>
       <div class="hist-muscles">💪 ${muscles||'—'}</div>
       ${s.exercisesDone&&s.exercisesDone.length?`<div class="hist-loads">${s.exercisesDone.map(n=>`<div class="hist-load-row"><span class="hl-name">${n}</span><span class="hl-kg">${(s.weights&&s.weights[n])?s.weights[n]+' kg':'—'}</span></div>`).join('')}</div>`:''}
-      <div class="hist-actions"><button class="btn btn-secondary btn-small" onclick="exportFit(${hi})">⬇ Exportar .fit</button></div>
+      <div class="hist-actions">
+        <button class="btn btn-secondary btn-small" onclick="editHistory(${hi})">✎ Editar</button>
+        <button class="btn btn-secondary btn-small" onclick="exportFit(${hi})">⬇ .fit</button>
+        <button class="btn btn-danger btn-small" onclick="deleteHistory(${hi})">🗑</button>
+      </div>
     </div>`;
   }).join('');
 }
