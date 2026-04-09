@@ -551,7 +551,7 @@ function renderQuickModeBar(locked){
              m==='preguica'?'Só os 3 principais, máx. 2 séries cada':
              'Plano completo — volume normal';
   el.innerHTML=`
-    <div class="qm-label">Modo rápido</div>
+    <div class="qm-label">Modo de execução</div>
     <div class="qm-seg${locked?' locked':''}">
       <button class="qm-btn${m==='off'?' active':''}" onclick="setQuickMode('off')" ${locked?'disabled':''}>Completo</button>
       <button class="qm-btn${m==='pressa'?' active':''}" onclick="setQuickMode('pressa')" ${locked?'disabled':''}>⚡ Pressa</button>
