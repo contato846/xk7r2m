@@ -328,7 +328,34 @@ if(!state.sessionSets||state.sessionSets.length!==WORKOUTS[state.currentWorkout]
 save();
 
 // TIMER
-let TD={},TI={};
+let TD={},TI={},CU={},CI={};
+function parseSecTarget(reps){const m=String(reps).match(/(\d+)(?:\D+(\d+))?\s*seg/i);if(!m)return 0;return parseInt(m[2]||m[1],10);}
+function startCountUp(key,target){
+  if(!CU[key])CU[key]={elapsed:0,running:false};
+  const c=CU[key],disp=document.getElementById('cu-'+key),btn=document.getElementById('cb-'+key);
+  if(!disp)return;
+  if(c.running){
+    clearInterval(CI[key]);c.running=false;
+    c.elapsed=Math.floor((Date.now()-c.startedAt)/1000)+(c.base||0);
+    if(btn)btn.textContent='▶ Continuar';disp.classList.remove('running');return;
+  }
+  c.running=true;c.base=c.elapsed||0;c.startedAt=Date.now();
+  disp.classList.add('running');if(btn)btn.textContent='⏸ Pausar';
+  const tick=()=>{
+    const sec=Math.floor((Date.now()-c.startedAt)/1000)+c.base;
+    if(disp)disp.textContent=fmt(sec);
+    if(target&&sec>=target&&!c.alerted){c.alerted=true;disp.classList.add('finished');
+      showToast('⏱ Meta atingida!',true);if(navigator.vibrate)navigator.vibrate([200,100,200]);}
+  };
+  tick();
+  CI[key]=setInterval(tick,250);
+}
+function resetCountUp(key){
+  clearInterval(CI[key]);CU[key]={elapsed:0,running:false,alerted:false};
+  const disp=document.getElementById('cu-'+key),btn=document.getElementById('cb-'+key);
+  if(disp){disp.textContent='00:00';disp.classList.remove('running','finished');}
+  if(btn)btn.textContent='▶ Iniciar';
+}
 function fmt(s){if(s<0)s=0;return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function fmtSec(s){if(s<0)s=0;if(s<3600)return fmt(s);const h=Math.floor(s/3600),r=s%3600;return h+':'+String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0');}
 function fmtMin(m){if(m<60)return m+' min';const h=Math.floor(m/60),r=m%60;return h+'h'+(r?' '+r+'min':'');}
@@ -509,6 +536,14 @@ function renderTreino(){
           <div class="muscle-tags">${mtags}</div>
           <div class="series-label">Marcar séries</div>
           <div class="series-grid">${serBtns}</div>
+          ${parseSecTarget(ex.reps)?`<div class="timer-area">
+            <div class="timer-label">Cronômetro do exercício — meta ${parseSecTarget(ex.reps)}s</div>
+            <div class="timer-disp" id="cu-${key}">00:00</div>
+            <div class="timer-btns">
+              <button class="tbtn primary" id="cb-${key}" onclick="startCountUp('${key}',${parseSecTarget(ex.reps)})">▶ Iniciar</button>
+              <button class="tbtn" onclick="resetCountUp('${key}')">↺ Reset</button>
+            </div>
+          </div>`:''}
           <div class="timer-area">
             <div class="timer-label">Descanso — ${ex.rest>=60?Math.floor(ex.rest/60)+'min':ex.rest+'s'}</div>
             <div class="timer-disp" id="td-${key}">${fmt(TD[key].sec)}</div>
