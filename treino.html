@@ -114,6 +114,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .btn-primary{background:var(--accent);color:#000;}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted2);}
 .btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger);}
+.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text);}
+.btn-secondary:hover{border-color:var(--accent);}
+.backup-block{display:flex;flex-direction:column;gap:10px;}
 .btn:active{transform:scale(.97);}
 .btn-full{width:100%;}
 
@@ -263,7 +266,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   <div id="adjustedPlan"></div>
   <div class="section-title">Progressão e troca de programa</div>
   <div class="prog-advice" id="progressionAdvice"></div>
-  <div style="margin-top:20px">
+  <div class="section-title">Backup e dados</div>
+  <div class="backup-block">
+    <button class="btn btn-secondary btn-full" onclick="exportBackup()">⬇ Exportar backup (.json)</button>
+    <button class="btn btn-secondary btn-full" onclick="document.getElementById('restoreInput').click()">⬆ Restaurar backup</button>
+    <input type="file" id="restoreInput" accept=".json,application/json" style="display:none" onchange="importBackup(this.files[0])">
+    <button class="btn btn-secondary btn-full" onclick="restartProgram()">🔄 Reiniciar plano (manter histórico)</button>
     <button class="btn btn-danger btn-full" onclick="clearAllData()">🗑 Apagar todos os dados</button>
   </div>
 </div>
@@ -322,23 +330,33 @@ save();
 // TIMER
 let TD={},TI={};
 function fmt(s){if(s<0)s=0;return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function fmtSec(s){if(s<0)s=0;if(s<3600)return fmt(s);const h=Math.floor(s/3600),r=s%3600;return h+':'+String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0');}
+function fmtMin(m){if(m<60)return m+' min';const h=Math.floor(m/60),r=m%60;return h+'h'+(r?' '+r+'min':'');}
 function startTimer(key,def){
-  if(!TD[key])TD[key]={sec:def,running:false};
+  if(!TD[key])TD[key]={remain:def,running:false};
   const d=TD[key],disp=document.getElementById('td-'+key),btn=document.getElementById('tb-'+key);
   if(!disp)return;
-  if(d.running){clearInterval(TI[key]);d.running=false;if(btn)btn.textContent='▶ Continuar';disp.classList.remove('running');return;}
-  d.running=true;disp.classList.add('running');disp.classList.remove('finished');if(btn)btn.textContent='⏸ Pausar';
-  TI[key]=setInterval(()=>{
-    d.sec--;if(disp)disp.textContent=fmt(d.sec);
-    if(d.sec<=0){clearInterval(TI[key]);d.running=false;
+  if(d.running){
+    clearInterval(TI[key]);d.running=false;
+    d.remain=Math.max(0,Math.ceil((d.endsAt-Date.now())/1000));
+    if(btn)btn.textContent='▶ Continuar';disp.classList.remove('running');return;
+  }
+  d.running=true;d.endsAt=Date.now()+d.remain*1000;
+  disp.classList.add('running');disp.classList.remove('finished');if(btn)btn.textContent='⏸ Pausar';
+  const tick=()=>{
+    const sec=Math.max(0,Math.ceil((d.endsAt-Date.now())/1000));
+    if(disp)disp.textContent=fmt(sec);
+    if(sec<=0){clearInterval(TI[key]);d.running=false;d.remain=def;
       if(disp){disp.textContent='00:00';disp.classList.remove('running');disp.classList.add('finished');}
       if(btn)btn.textContent='▶ Iniciar';
       showToast('⏱ Descanso concluído!',false);
       if(navigator.vibrate)navigator.vibrate([200,100,200]);}
-  },1000);
+  };
+  tick();
+  TI[key]=setInterval(tick,250);
 }
 function resetTimer(key,def){
-  clearInterval(TI[key]);if(TD[key]){TD[key].sec=def;TD[key].running=false;}
+  clearInterval(TI[key]);if(TD[key]){TD[key].remain=def;TD[key].running=false;TD[key].endsAt=null;}
   const disp=document.getElementById('td-'+key),btn=document.getElementById('tb-'+key);
   if(disp){disp.textContent=fmt(def);disp.classList.remove('running','finished');}
   if(btn)btn.textContent='▶ Iniciar';
@@ -353,7 +371,7 @@ function updateActiveBanner(){
   const w=WORKOUTS[state.currentWorkout];
   el.innerHTML=`<div class="session-active-bar">
     <div><div class="label">Sessão em andamento</div><div style="font-size:12px;color:var(--done-border);margin-top:3px;">${w.name} · ${w.sub}</div></div>
-    <div style="text-align:right"><div class="label">Duração</div><div class="sab-time">${fmt(sec)}</div></div>
+    <div style="text-align:right"><div class="label">Duração</div><div class="sab-time">${fmtSec(sec)}</div></div>
   </div>`;
 }
 
@@ -379,6 +397,8 @@ function finishSession(){
   state.history.unshift({id:Date.now(),workoutId:w.id,workoutName:w.name,workoutSub:w.sub,
     startISO:state.sessionStart,endISO:now.toISOString(),durationMin:durMin,
     totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,weights,completion:Math.round(doneS/totalS*100)});
+  // Avança apenas para o próximo treino do CICLO, mas não muda visualmente até o usuário sair da tela
+  // O hero card mostrará mensagem contextual ("treinos do dia concluídos") via renderTreino
   state.currentWorkout=(wi+1)%WORKOUTS.length;
   state.sessionSets=initSets(state.currentWorkout);state.sessionStart=null;
   TD={};Object.values(TI).forEach(clearInterval);TI={};clearInterval(clockInt);
@@ -386,7 +406,7 @@ function finishSession(){
   document.getElementById('startBtn').classList.remove('hidden');
   document.getElementById('progBlock').style.display='none';
   document.getElementById('finishRow').style.display='none';
-  save();showToast(`✓ Treino salvo! ${durMin} min`,true);
+  save();showToast(`✓ Treino salvo! ${fmtMin(durMin)}`,true);
   setTimeout(()=>{renderTreino();renderHistory();renderDashboard();renderPlano();updateAlertBadge();},300);
 }
 function resetSession(){
@@ -401,30 +421,62 @@ function resetSession(){
 }
 
 // RENDER TREINO
+function isRunDay(dow){return dow===2||dow===4||dow===6;} // Ter, Qui, Sáb
+function workoutDoneToday(){
+  const today=new Date();today.setHours(0,0,0,0);
+  return state.history.some(s=>{const d=new Date(s.startISO);d.setHours(0,0,0,0);return d.getTime()===today.getTime();});
+}
+function tomorrowMessage(){
+  const tomorrow=(new Date().getDay()+1)%7;
+  if(isRunDay(tomorrow))return '🏃 Amanhã é dia de corrida.';
+  if(DAY_TO_WORKOUT[tomorrow]!==undefined){const tw=WORKOUTS[DAY_TO_WORKOUT[tomorrow]];return `🏋️ Amanhã: ${tw.name} — ${tw.sub}.`;}
+  return '😴 Amanhã é dia de descanso.';
+}
 function renderTreino(){
   const wi=state.currentWorkout,w=WORKOUTS[wi];
-  const isToday=w.dayIdx===new Date().getDay();
+  const todayDow=new Date().getDay();
+  const isToday=w.dayIdx===todayDow;
+  const runToday=isRunDay(todayDow);
+  const doneToday=workoutDoneToday();
   // hero
-  document.getElementById('heroCard').innerHTML=`
-    <div class="hero-card" style="position:relative">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:80px;color:var(--accent);opacity:.07;position:absolute;right:16px;top:-8px;line-height:1;pointer-events:none;">${w.id}</div>
+  let heroBody;
+  if(runToday){
+    heroBody=`<div class="hero-inner">
+        <div class="label" style="margin-bottom:6px">Hoje no plano</div>
+        <div class="hero-workout-name">🏃 Dia de corrida</div>
+        <div class="hero-workout-sub">Sem treino de força hoje</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--muted2)">${tomorrowMessage()}</div>
+      </div>`;
+  }else if(doneToday){
+    heroBody=`<div class="hero-inner">
+        <div class="label" style="margin-bottom:6px">Treino do dia</div>
+        <div class="hero-workout-name">✓ Concluído</div>
+        <div class="hero-workout-sub">Bom trabalho! Recupere bem.</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--muted2)">${tomorrowMessage()}</div>
+      </div>`;
+  }else{
+    heroBody=`<div style="font-family:'Bebas Neue',sans-serif;font-size:80px;color:var(--accent);opacity:.07;position:absolute;right:16px;top:-8px;line-height:1;pointer-events:none;">${w.id}</div>
       <div class="hero-inner">
         <div class="label" style="margin-bottom:6px">Treino do dia</div>
         <div class="hero-workout-name">${w.name}</div>
         <div class="hero-workout-sub">${w.sub}</div>
         ${isToday?'<div class="hero-day-badge">HOJE</div>':'<div style="margin-top:8px;font-size:12px;color:var(--muted)">'+w.day+'</div>'}
-      </div>
-    </div>`;
+      </div>`;
+  }
+  document.getElementById('heroCard').innerHTML=`<div class="hero-card" style="position:relative">${heroBody}</div>`;
   document.getElementById('wnav-name').innerHTML=`${w.name} — ${w.sub}${isToday?'<span class="today-pill">HOJE</span>':''}`;
   document.getElementById('wnav-day').textContent=w.day;
   const active=!!state.sessionStart;
-  document.getElementById('startBtn').classList.toggle('hidden',active);
+  // Em dia de corrida ou com treino já concluído, escondemos botão de iniciar e a lista
+  const blockToday=(runToday||doneToday)&&!active;
+  document.getElementById('startBtn').classList.toggle('hidden',active||blockToday);
   document.getElementById('progBlock').style.display=active?'':'none';
   document.getElementById('finishRow').style.display=active?'':'none';
   if(active){startClock();updateActiveBanner();}
   renderSwitchNotice();
   const sets=state.sessionSets;let total=0,done=0;
   const container=document.getElementById('exerciseList');container.innerHTML='';
+  if(blockToday){return;}
   w.exercises.forEach((ex,ei)=>{
     total+=ex.series;
     const dc=sets[ei]?sets[ei].filter(Boolean).length:0;done+=dc;
@@ -521,7 +573,7 @@ function renderHistory(){
         <div style="text-align:right"><div style="font-size:13px;font-weight:600">${dateStr}</div><div style="font-size:11px;color:var(--muted)">${startStr} → ${endStr}</div></div>
       </div>
       <div class="hist-badges">
-        <span class="hbadge">⏱ ${s.durationMin} min</span>
+        <span class="hbadge">⏱ ${fmtMin(s.durationMin)}</span>
         <span class="hbadge">📊 ${s.doneSets}/${s.totalSets} séries</span>
         <span class="hbadge" style="color:${cc};border-color:${cc}">${s.completion}%</span>
       </div>
@@ -578,10 +630,20 @@ function renderSilhouette(){
 
 // DASHBOARD
 function getCompData(){
-  if(!state.programStart||!state.history.length)return{planned:0,n:0,missed:0,adh:100,weeks:0};
-  const first=new Date(state.history[state.history.length-1].startISO);
-  const weeks=Math.max(1,Math.ceil((Date.now()-first.getTime())/(7*24*60*60*1000)));
-  const n=state.history.length,planned=weeks*3,missed=Math.max(0,planned-n),adh=Math.min(100,Math.round(n/planned*100));
+  if(!state.programStart)return{planned:0,n:0,missed:0,adh:100,weeks:0};
+  const start=new Date(state.programStart);start.setHours(0,0,0,0);
+  const today=new Date();today.setHours(23,59,59,999);
+  const days=Math.floor((today-start)/86400000)+1;
+  const weeks=Math.max(1,Math.ceil(days/7));
+  // Conta apenas dias planejados que JÁ passaram (incluindo hoje)
+  let planned=0;
+  for(let i=0;i<days;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);
+    if(DAY_TO_WORKOUT[d.getDay()]!==undefined)planned++;
+  }
+  const n=state.history.length;
+  const missed=Math.max(0,planned-n);
+  const adh=planned>0?Math.min(100,Math.round(n/planned*100)):100;
   return{planned,n,missed,adh,weeks};
 }
 function renderDashboard(){
@@ -689,6 +751,40 @@ function showToast(msg,accent){
 function clearAllData(){
   if(!confirm('Apagar TODOS os dados? Não é possível desfazer.'))return;
   localStorage.removeItem('fpv5');location.reload();
+}
+function exportBackup(){
+  const payload={app:'treino-do-pai',version:1,exportedAt:new Date().toISOString(),state};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const d=new Date(),pad=n=>String(n).padStart(2,'0');
+  const fname=`treino-do-pai-backup-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.json`;
+  const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+  showToast('✓ Backup exportado',true);
+}
+function importBackup(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      const restored=data&&data.state?data.state:data;
+      if(!restored||typeof restored!=='object'||!('history' in restored))throw new Error('arquivo inválido');
+      if(!confirm('Restaurar este backup vai substituir TODOS os dados atuais. Continuar?'))return;
+      localStorage.setItem('fpv5',JSON.stringify(restored));
+      showToast('✓ Backup restaurado',true);
+      setTimeout(()=>location.reload(),500);
+    }catch(err){alert('Backup inválido: '+err.message);}
+  };
+  reader.readAsText(file);
+  document.getElementById('restoreInput').value='';
+}
+function restartProgram(){
+  if(!confirm('Reiniciar o plano? O histórico será mantido, mas a aderência e a contagem de semanas começam de hoje.'))return;
+  state.programStart=new Date().toISOString();
+  state.switchDismissed=false;
+  save();showToast('🔄 Plano reiniciado',true);
+  setTimeout(()=>location.reload(),500);
 }
 
 // INIT
