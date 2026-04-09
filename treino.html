@@ -861,8 +861,11 @@ function renderTreino(){
     document.getElementById('heroCard').after(card);
   }
   // Se está em modo "musculação hoje" num dia de corrida, mostra botão de voltar
+  const oldBack=document.getElementById('backToRunBtn');
+  if(oldBack)oldBack.remove();
   if(runToday&&isForcingStrengthToday()&&!active){
     const back=document.createElement('button');
+    back.id='backToRunBtn';
     back.className='btn btn-outline btn-full';
     back.style.marginBottom='12px';
     back.textContent='← Voltar para corrida';
