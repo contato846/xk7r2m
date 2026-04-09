@@ -33,6 +33,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .menu-item .mbadge{width:10px;height:10px;border-radius:50%;background:var(--danger);display:none;}
 .menu-item .mbadge.show{display:block;}
 .app-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--accent);}
+.app-title-wrap{display:flex;align-items:center;gap:10px;}
+.app-logo{height:36px;width:auto;display:block;}
 .date-badge{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;}
 .nav-tabs{display:flex;}
 .nav-tab{flex:1;padding:9px 4px;background:transparent;border:none;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.2px;cursor:pointer;text-align:center;border-bottom:2px solid transparent;transition:all .2s;position:relative;}
@@ -192,6 +194,33 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .hist-load-row .hl-name{color:var(--muted2);flex:1;padding-right:8px;}
 .hist-load-row .hl-kg{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums;}
 
+/* QUICK MODE */
+.quick-mode-bar{margin-bottom:14px;}
+.qm-label{font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--muted);margin-bottom:6px;}
+.qm-seg{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px;}
+.qm-btn{flex:1;padding:9px 4px;background:transparent;color:var(--muted2);border:0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .15s;}
+.qm-btn.active{background:var(--accent);color:#000;}
+.qm-seg.locked{opacity:.4;pointer-events:none;}
+.qm-hint{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.4;}
+
+/* EDIT MODE */
+.edit-toolbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.edit-toolbar .btn{padding:8px 12px;font-size:12px;}
+.ex-edit-ctrls{display:flex;gap:4px;margin-left:4px;}
+.ex-edit-ctrls button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;padding:0;font-family:inherit;}
+.ex-edit-ctrls button:active{background:var(--border);}
+.sub-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;display:flex;align-items:flex-end;animation:fadeIn .18s ease;}
+.sub-modal-inner{background:var(--surface);border-top:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:480px;margin:0 auto;max-height:72vh;overflow-y:auto;padding:18px 18px 28px;}
+.sub-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.sub-modal-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:var(--accent);}
+.sub-modal-close{background:transparent;border:0;color:var(--text);font-size:24px;cursor:pointer;line-height:1;}
+.sub-item{padding:12px 10px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.sub-item:last-child{border-bottom:none;}
+.sub-item:active{background:var(--card);}
+.sub-item .si-name{flex:1;}
+.sub-item .si-meta{font-size:11px;color:var(--muted);}
+.stat-sub{font-size:9px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.6px;}
+
 /* ALERTS */
 .alert{border-radius:10px;padding:12px 14px;margin-bottom:10px;border-left:3px solid;}
 .alert.warn{background:#261c00;border-color:var(--warn);}
@@ -231,7 +260,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div class="nav">
   <div class="nav-top">
-    <div class="app-title">TREINO DO PAI</div>
+    <div class="app-title-wrap">
+      <img src="logo.png" class="app-logo" alt="" onerror="this.style.display='none'">
+      <div class="app-title">TREINO DO PAI</div>
+    </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div class="date-badge" id="dateDisplay"></div>
       <button class="menu-btn" onclick="openMenu()" aria-label="Menu">☰</button>
@@ -253,6 +285,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <div class="page active" id="page-treino">
   <div id="switchNotice"></div>
   <div id="heroCard"></div>
+  <div class="quick-mode-bar" id="quickModeBar"></div>
   <button class="session-start-cta" id="startBtn" onclick="startSession()">▶ &nbsp;INICIAR TREINO</button>
   <div id="sessionActiveBanner"></div>
   <div class="prog-block" id="progBlock" style="display:none">
@@ -330,6 +363,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   <div id="profileStats"></div>
 </div>
 
+<div class="sub-modal" id="subModal" style="display:none"></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -373,10 +407,147 @@ const DAY_TO_WORKOUT={1:0,3:1,5:2};
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
 function save(){localStorage.setItem('fpv5',JSON.stringify(state));}
 function initSets(wi){return WORKOUTS[wi].exercises.map(e=>Array(e.series).fill(false));}
-let state=load()||{currentWorkout:0,sessionSets:null,sessionStart:null,history:[],programStart:null,switchDismissed:false};
-if(!state.history)state.history=[];
-if(!state.weights)state.weights={};
-if(!state.profile)state.profile={name:'',age:null,sex:'M',weightKg:null,heightCm:null,goalKg:null};
+function ensureStateDefaults(s){
+  if(!s.history)s.history=[];
+  if(!s.weights)s.weights={};
+  if(!s.profile)s.profile={name:'',age:null,sex:'M',weightKg:null,heightCm:null,goalKg:null};
+  if(s.sessionPlan===undefined)s.sessionPlan=null;
+  if(!s.quickMode)s.quickMode='off';
+  s.editMode=false;
+  return s;
+}
+let state=ensureStateDefaults(load()||{currentWorkout:0,sessionSets:null,sessionStart:null,history:[],programStart:null,switchDismissed:false});
+
+// QUICK MODE & SESSION PLAN HELPERS
+function getOriginalWorkout(wi){return WORKOUTS[wi];}
+function applyQuickMode(exercises,mode){
+  if(!mode||mode==='off')return exercises;
+  if(mode==='pressa')return exercises.map(ex=>({...ex,series:Math.min(ex.series,3),rest:Math.max(20,Math.round(ex.rest*0.6))}));
+  if(mode==='preguica'){
+    const nonCore=exercises.filter(ex=>!(ex.muscles.length===1&&ex.muscles[0]==='core'));
+    let picked=nonCore.slice(0,3);
+    if(picked.length===0)picked=exercises.slice(0,1);
+    return picked.map(ex=>({...ex,series:Math.min(ex.series,2)}));
+  }
+  return exercises;
+}
+function getCurrentExercises(wi){
+  if(state.sessionPlan&&Array.isArray(state.sessionPlan))return state.sessionPlan;
+  return applyQuickMode(WORKOUTS[wi].exercises,state.quickMode);
+}
+function initSetsFromPlan(plan){return plan.map(e=>Array(e.series).fill(false));}
+function setQuickMode(mode){
+  if(state.sessionStart){showToast('⚠ Pause a sessão para mudar o modo',false);return;}
+  if(state.sessionPlan){
+    if(!confirm('Mudar o modo vai descartar as alterações manuais no plano. Continuar?'))return;
+    state.sessionPlan=null;
+  }
+  state.quickMode=mode;
+  state.sessionSets=initSetsFromPlan(getCurrentExercises(state.currentWorkout));
+  TD={};Object.values(TI).forEach(clearInterval);TI={};
+  save();renderTreino();
+  showToast(mode==='off'?'✓ Treino completo':mode==='pressa'?'⚡ Modo pressa':'😴 Modo preguiça',true);
+}
+function toggleEditMode(){state.editMode=!state.editMode;renderTreino();}
+function materializePlan(){
+  if(!state.sessionPlan){
+    state.sessionPlan=getCurrentExercises(state.currentWorkout).map(e=>({...e,muscles:[...e.muscles]}));
+  }
+}
+function moveExercise(ei,dir){
+  const ni=ei+dir;
+  materializePlan();
+  if(ni<0||ni>=state.sessionPlan.length)return;
+  const p=state.sessionPlan,s=state.sessionSets;
+  [p[ei],p[ni]]=[p[ni],p[ei]];
+  [s[ei],s[ni]]=[s[ni],s[ei]];
+  TD={};Object.values(TI).forEach(clearInterval);TI={};
+  save();renderTreino();
+}
+function removeExercise(ei){
+  materializePlan();
+  if(state.sessionPlan.length<=1){showToast('⚠ Deve ter pelo menos 1 exercício',false);return;}
+  state.sessionPlan.splice(ei,1);
+  state.sessionSets.splice(ei,1);
+  TD={};Object.values(TI).forEach(clearInterval);TI={};
+  save();renderTreino();
+}
+function substituteExercise(ei,poolIdx){
+  const pool=getSubstitutionPool();
+  const src=pool[poolIdx];if(!src)return;
+  materializePlan();
+  const newEx={...src,muscles:[...src.muscles]};
+  state.sessionPlan[ei]=newEx;
+  state.sessionSets[ei]=Array(newEx.series).fill(false);
+  TD={};Object.values(TI).forEach(clearInterval);TI={};
+  closeSubstituteModal();
+  save();renderTreino();
+  showToast('✓ Exercício substituído',true);
+}
+function addExercise(poolIdx){
+  const pool=getSubstitutionPool();
+  const src=pool[poolIdx];if(!src)return;
+  materializePlan();
+  const newEx={...src,muscles:[...src.muscles]};
+  state.sessionPlan.push(newEx);
+  state.sessionSets.push(Array(newEx.series).fill(false));
+  closeSubstituteModal();
+  save();renderTreino();
+  showToast('✓ Exercício adicionado',true);
+}
+function resetSessionPlan(){
+  if(!state.sessionPlan)return;
+  state.sessionPlan=null;
+  state.sessionSets=initSetsFromPlan(getCurrentExercises(state.currentWorkout));
+  TD={};Object.values(TI).forEach(clearInterval);TI={};
+  save();renderTreino();
+  showToast('↺ Plano restaurado',true);
+}
+let _POOL_CACHE=null;
+function getSubstitutionPool(){
+  if(_POOL_CACHE)return _POOL_CACHE;
+  const seen=new Set(),pool=[];
+  WORKOUTS.forEach(w=>w.exercises.forEach(ex=>{
+    if(!seen.has(ex.name)){seen.add(ex.name);pool.push(ex);}
+  }));
+  pool.push({name:'🏃 Corrida (30 min)',series:1,reps:'30 min',obs:'Corrida contínua em ritmo moderado. Substitui o treino de força do dia.',rest:0,muscles:['quadriceps','panturrilha','posteriores','core']});
+  pool.push({name:'🏃 Corrida leve (20 min)',series:1,reps:'20 min',obs:'Corrida em ritmo leve para recuperação ativa.',rest:0,muscles:['quadriceps','panturrilha']});
+  _POOL_CACHE=pool;return pool;
+}
+function openSubstituteModal(ei){
+  const el=document.getElementById('subModal');
+  const pool=getSubstitutionPool();
+  const isAdd=ei===-1;
+  const items=pool.map((ex,i)=>{
+    const cb=isAdd?`addExercise(${i})`:`substituteExercise(${ei},${i})`;
+    const meta=ex.rest===0?ex.reps:`${ex.series}× ${ex.reps}`;
+    return `<div class="sub-item" onclick="${cb}"><span class="si-name">${ex.name}</span><span class="si-meta">${meta}</span></div>`;
+  }).join('');
+  el.innerHTML=`<div class="sub-modal-inner">
+    <div class="sub-modal-head">
+      <div class="sub-modal-title">${isAdd?'+ Adicionar exercício':'⇄ Substituir exercício'}</div>
+      <button class="sub-modal-close" onclick="closeSubstituteModal()" aria-label="Fechar">×</button>
+    </div>
+    ${items}
+  </div>`;
+  el.style.display='flex';
+}
+function closeSubstituteModal(){const el=document.getElementById('subModal');el.style.display='none';el.innerHTML='';}
+function renderQuickModeBar(locked){
+  const el=document.getElementById('quickModeBar');if(!el)return;
+  const m=state.quickMode||'off';
+  const hint=m==='pressa'?'Séries limitadas a 3, descanso reduzido ~40%':
+             m==='preguica'?'Só os 3 principais, máx. 2 séries cada':
+             'Plano completo — volume normal';
+  el.innerHTML=`
+    <div class="qm-label">Modo rápido</div>
+    <div class="qm-seg${locked?' locked':''}">
+      <button class="qm-btn${m==='off'?' active':''}" onclick="setQuickMode('off')" ${locked?'disabled':''}>Completo</button>
+      <button class="qm-btn${m==='pressa'?' active':''}" onclick="setQuickMode('pressa')" ${locked?'disabled':''}>⚡ Pressa</button>
+      <button class="qm-btn${m==='preguica'?' active':''}" onclick="setQuickMode('preguica')" ${locked?'disabled':''}>😴 Preguiça</button>
+    </div>
+    <div class="qm-hint">${hint}${locked?' · bloqueado durante sessão ativa':''}</div>`;
+}
 function setWeight(name,v){state.weights[name]=v.trim();save();}
 function renderPerfil(){
   const p=state.profile;
@@ -414,7 +585,12 @@ function saveProfile(){
   save();renderPerfil();showToast('✓ Perfil salvo',true);
 }
 if(!state.sessionStart){const dow=new Date().getDay();if(DAY_TO_WORKOUT[dow]!==undefined)state.currentWorkout=DAY_TO_WORKOUT[dow];}
-if(!state.sessionSets||state.sessionSets.length!==WORKOUTS[state.currentWorkout].exercises.length)state.sessionSets=initSets(state.currentWorkout);
+(function(){
+  const expected=getCurrentExercises(state.currentWorkout);
+  if(!state.sessionSets||state.sessionSets.length!==expected.length){
+    state.sessionSets=initSetsFromPlan(expected);
+  }
+})();
 save();
 
 // TIMER
@@ -496,28 +672,45 @@ function updateActiveBanner(){
 function startSession(){
   state.sessionStart=new Date().toISOString();
   if(!state.programStart)state.programStart=state.sessionStart;
+  // Re-seed sessionSets from the effective plan (in case quickMode/plan changed since last render)
+  const planNow=getCurrentExercises(state.currentWorkout);
+  if(!state.sessionSets||state.sessionSets.length!==planNow.length){
+    state.sessionSets=initSetsFromPlan(planNow);
+  }
+  state.editMode=false;
   save();
   document.getElementById('startBtn').classList.add('hidden');
   document.getElementById('progBlock').style.display='';
   document.getElementById('finishRow').style.display='';
   startClock();updateActiveBanner();
+  renderTreino();
   showToast('▶ Treino iniciado!',true);
 }
 function finishSession(){
-  const wi=state.currentWorkout,w=WORKOUTS[wi],sets=state.sessionSets;
-  const totalS=w.exercises.reduce((a,e)=>a+e.series,0);
+  const wi=state.currentWorkout;
+  const origW=getOriginalWorkout(wi);
+  const planEx=getCurrentExercises(wi);
+  const sets=state.sessionSets;
+  const totalS=planEx.reduce((a,e)=>a+e.series,0);
   const doneS=sets.reduce((a,arr)=>a+(arr?arr.filter(Boolean).length:0),0);
   if(doneS===0){showToast('⚠ Nenhuma série registrada',false);return;}
   const now=new Date(),start=new Date(state.sessionStart),durMin=Math.round((now-start)/60000);
   const muscles=new Set(),exercisesDone=[],weights={};
-  w.exercises.forEach((ex,ei)=>{if(sets[ei]&&sets[ei].some(Boolean)){ex.muscles.forEach(m=>muscles.add(m));exercisesDone.push(ex.name);if(state.weights[ex.name])weights[ex.name]=state.weights[ex.name];}});
-  state.history.unshift({id:Date.now(),workoutId:w.id,workoutName:w.name,workoutSub:w.sub,
+  planEx.forEach((ex,ei)=>{if(sets[ei]&&sets[ei].some(Boolean)){ex.muscles.forEach(m=>muscles.add(m));exercisesDone.push(ex.name);if(state.weights[ex.name])weights[ex.name]=state.weights[ex.name];}});
+  const fullTotal=origW.exercises.reduce((a,e)=>a+e.series,0);
+  const completion=totalS>0?Math.round(doneS/totalS*100):0;
+  const fullCompletion=fullTotal>0?Math.min(100,Math.round(doneS/fullTotal*100)):0;
+  const planSnapshot=planEx.map(e=>({name:e.name,series:e.series,muscles:[...e.muscles]}));
+  state.history.unshift({id:Date.now(),workoutId:origW.id,workoutName:origW.name,workoutSub:origW.sub,
     startISO:state.sessionStart,endISO:now.toISOString(),durationMin:durMin,
-    totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,weights,completion:Math.round(doneS/totalS*100)});
-  // Avança apenas para o próximo treino do CICLO, mas não muda visualmente até o usuário sair da tela
-  // O hero card mostrará mensagem contextual ("treinos do dia concluídos") via renderTreino
+    totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,weights,completion,
+    fullCompletion,quickMode:state.quickMode||'off',plan:planSnapshot});
+  // Avança apenas para o próximo treino do CICLO
   state.currentWorkout=(wi+1)%WORKOUTS.length;
-  state.sessionSets=initSets(state.currentWorkout);state.sessionStart=null;
+  state.sessionPlan=null;
+  state.sessionSets=initSetsFromPlan(getCurrentExercises(state.currentWorkout));
+  state.sessionStart=null;
+  state.editMode=false;
   TD={};Object.values(TI).forEach(clearInterval);TI={};clearInterval(clockInt);
   document.getElementById('sessionActiveBanner').innerHTML='';
   document.getElementById('startBtn').classList.remove('hidden');
@@ -528,7 +721,10 @@ function finishSession(){
 }
 function resetSession(){
   if(!confirm('Reiniciar este treino e descartar o progresso atual?'))return;
-  state.sessionSets=initSets(state.currentWorkout);state.sessionStart=null;
+  state.sessionPlan=null;
+  state.sessionSets=initSetsFromPlan(getCurrentExercises(state.currentWorkout));
+  state.sessionStart=null;
+  state.editMode=false;
   TD={};Object.values(TI).forEach(clearInterval);TI={};clearInterval(clockInt);
   document.getElementById('sessionActiveBanner').innerHTML='';
   document.getElementById('startBtn').classList.remove('hidden');
@@ -551,6 +747,7 @@ function tomorrowMessage(){
 }
 function renderTreino(){
   const wi=state.currentWorkout,w=WORKOUTS[wi];
+  const exercises=getCurrentExercises(wi);
   const todayDow=new Date().getDay();
   const isToday=w.dayIdx===todayDow;
   const runToday=isRunDay(todayDow);
@@ -591,21 +788,43 @@ function renderTreino(){
   document.getElementById('finishRow').style.display=active?'':'none';
   if(active){startClock();updateActiveBanner();}
   renderSwitchNotice();
+  renderQuickModeBar(active||blockToday);
   const sets=state.sessionSets;let total=0,done=0;
   const container=document.getElementById('exerciseList');container.innerHTML='';
-  if(blockToday){return;}
-  w.exercises.forEach((ex,ei)=>{
+  if(blockToday){document.getElementById('quickModeBar').innerHTML='';return;}
+  // Edit toolbar
+  const editToolbar=document.createElement('div');
+  editToolbar.className='edit-toolbar';
+  editToolbar.innerHTML=`
+    <button class="btn btn-outline" onclick="toggleEditMode()">${state.editMode?'✓ Concluir edição':'✎ Editar sessão'}</button>
+    ${state.editMode?`<button class="btn btn-outline" onclick="resetSessionPlan()">↺ Restaurar</button>
+                      <button class="btn btn-outline" onclick="openSubstituteModal(-1)">+ Adicionar</button>`:''}
+    ${state.sessionPlan&&!state.editMode?`<button class="btn btn-outline" onclick="resetSessionPlan()">↺ Restaurar padrão</button>`:''}`;
+  container.appendChild(editToolbar);
+  // Safety: sessionSets length must match effective plan
+  if(!sets||sets.length!==exercises.length){
+    state.sessionSets=initSetsFromPlan(exercises);
+  }
+  const sets2=state.sessionSets;
+  exercises.forEach((ex,ei)=>{
     total+=ex.series;
-    const dc=sets[ei]?sets[ei].filter(Boolean).length:0;done+=dc;
-    const allDone=dc===ex.series;
+    const dc=sets2[ei]?sets2[ei].filter(Boolean).length:0;done+=dc;
+    const allDone=ex.series>0&&dc===ex.series;
     const card=document.createElement('div');
     card.className=`ex-card${allDone?' completed':''}`;card.id=`ec-${ei}`;
     const key=`${wi}-${ei}`;if(!TD[key])TD[key]={sec:ex.rest,running:false};
     const serBtns=Array.from({length:ex.series},(_,si)=>{
-      const d=sets[ei]&&sets[ei][si];
+      const d=sets2[ei]&&sets2[ei][si];
       return `<button class="serie-btn${d?' done':''}" onclick="toggleSerie(${ei},${si})">${si+1}<span class="slabel">${d?'✓':'série'}</span></button>`;
     }).join('');
     const mtags=ex.muscles.map(m=>`<span class="mtag">${MUSCLES[m]}</span>`).join('');
+    const editCtrls=state.editMode?`
+        <div class="ex-edit-ctrls" onclick="event.stopPropagation()">
+          <button onclick="moveExercise(${ei},-1)" aria-label="Mover para cima">↑</button>
+          <button onclick="moveExercise(${ei}, 1)" aria-label="Mover para baixo">↓</button>
+          <button onclick="openSubstituteModal(${ei})" aria-label="Substituir">⇄</button>
+          <button onclick="removeExercise(${ei})" aria-label="Remover">✕</button>
+        </div>`:'';
     card.innerHTML=`
       <div class="ex-header" onclick="toggleEx(${ei})">
         <div class="ex-num">${String(ei+1).padStart(2,'0')}</div>
@@ -613,12 +832,12 @@ function renderTreino(){
           <div class="ex-name">${ex.name}</div>
           <div class="ex-meta">${ex.series}× ${ex.reps}</div>
         </div>
-        <div class="ex-load" onclick="event.stopPropagation()">
+        ${state.editMode?editCtrls:`<div class="ex-load" onclick="event.stopPropagation()">
           <input type="text" inputmode="decimal" value="${(state.weights&&state.weights[ex.name])||''}" placeholder="—" onchange="setWeight(this.dataset.n,this.value)" data-n="${ex.name.replace(/"/g,'&quot;')}">
           <span>kg</span>
         </div>
         <div class="ex-check">${allDone?'✓':''}</div>
-        <div class="chevron">⌄</div>
+        <div class="chevron">⌄</div>`}
       </div>
       <div class="ex-panel">
         <div class="ex-panel-body">
@@ -634,14 +853,14 @@ function renderTreino(){
               <button class="tbtn" onclick="resetCountUp('${key}')">↺ Reset</button>
             </div>
           </div>`:''}
-          <div class="timer-area">
-            <div class="timer-label">Descanso — ${ex.rest>=60?Math.floor(ex.rest/60)+'min':ex.rest+'s'}</div>
+          ${ex.rest>0?`<div class="timer-area">
+            <div class="timer-label">Descanso — ${ex.rest>=60?Math.floor(ex.rest/60)+'min'+(ex.rest%60?' '+(ex.rest%60)+'s':''):ex.rest+'s'}</div>
             <div class="timer-disp" id="td-${key}">${fmt(TD[key].sec)}</div>
             <div class="timer-btns">
               <button class="tbtn primary" id="tb-${key}" onclick="startTimer('${key}',${ex.rest})">▶ Iniciar</button>
               <button class="tbtn" onclick="resetTimer('${key}',${ex.rest})">↺ Reset</button>
             </div>
-          </div>
+          </div>`:''}
         </div>
       </div>`;
     container.appendChild(card);
@@ -661,7 +880,8 @@ function toggleEx(ei){
 function toggleSerie(ei,si){
   if(!state.sessionStart){showToast('▶ Inicie o treino primeiro',false);return;}
   const wi=state.currentWorkout;
-  if(!state.sessionSets[ei])state.sessionSets[ei]=Array(WORKOUTS[wi].exercises[ei].series).fill(false);
+  const planEx=getCurrentExercises(wi);
+  if(!state.sessionSets[ei])state.sessionSets[ei]=Array(planEx[ei].series).fill(false);
   state.sessionSets[ei][si]=!state.sessionSets[ei][si];save();
   renderTreino();
   setTimeout(()=>{const c=document.getElementById('ec-'+ei);if(c)c.classList.add('open');},30);
@@ -669,7 +889,11 @@ function toggleSerie(ei,si){
 }
 function navWorkout(dir){
   state.currentWorkout=(state.currentWorkout+dir+WORKOUTS.length)%WORKOUTS.length;
-  if(!state.sessionStart){state.sessionSets=initSets(state.currentWorkout);save();}
+  if(!state.sessionStart){
+    state.sessionPlan=null;
+    state.sessionSets=initSetsFromPlan(getCurrentExercises(state.currentWorkout));
+    save();
+  }
   TD={};Object.values(TI).forEach(clearInterval);TI={};renderTreino();
 }
 function renderSwitchNotice(){
@@ -685,7 +909,7 @@ function dismissSwitch(){state.switchDismissed=true;save();document.getElementBy
 let editingHist=null;
 function renderHistEdit(s,hi){
   const w=WORKOUTS.find(x=>x.id===s.workoutId)||WORKOUTS[0];
-  const exs=w.exercises;
+  const exs=(s.plan&&s.plan.length)?s.plan:w.exercises;
   const exDone=new Set(s.exercisesDone||[]);
   const start=new Date(s.startISO);
   const dateStr=start.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
@@ -712,12 +936,13 @@ function cancelHistEdit(){editingHist=null;renderHistory();}
 function saveHistEdit(hi){
   const s=state.history[hi];if(!s)return;
   const w=WORKOUTS.find(x=>x.id===s.workoutId)||WORKOUTS[0];
+  const exs=(s.plan&&s.plan.length)?s.plan:w.exercises;
   const root=document.getElementById('he-'+hi);if(!root)return;
   const exDone=[];
   const muscles=new Set();
   let doneSets=0,totalSets=0;
   if(!state.weights)state.weights={};
-  w.exercises.forEach((ex,i)=>{
+  exs.forEach((ex,i)=>{
     totalSets+=ex.series;
     const chk=root.querySelector(`input[data-eh="done"][data-i="${i}"]`);
     const kg=root.querySelector(`input[data-eh="kg"][data-i="${i}"]`);
@@ -734,6 +959,9 @@ function saveHistEdit(hi){
   s.totalSets=totalSets;
   s.muscles=Array.from(muscles);
   s.completion=totalSets>0?Math.round(doneSets/totalSets*100):0;
+  // fullCompletion vs plano completo original
+  const fullTotal=w.exercises.reduce((a,e)=>a+e.series,0);
+  s.fullCompletion=fullTotal>0?Math.min(100,Math.round(doneSets/fullTotal*100)):s.completion;
   s.weights=Object.fromEntries(exDone.map(n=>[n,state.weights[n]||'']));
   save();editingHist=null;
   renderHistory();renderDashboard();
@@ -845,12 +1073,15 @@ function renderDashboard(){
   const n=state.history.length;
   const totalMin=state.history.reduce((a,s)=>a+s.durationMin,0);
   const totalSets=state.history.reduce((a,s)=>a+s.doneSets,0);
-  const avgComp=n>0?Math.round(state.history.reduce((a,s)=>a+s.completion,0)/n):0;
+  // Conclusão média usa fullCompletion (vs plano completo) quando disponível, penalizando sessões em modo rápido
+  const avgComp=n>0?Math.round(state.history.reduce((a,s)=>a+(s.fullCompletion!=null?s.fullCompletion:s.completion),0)/n):0;
+  const quickCount=state.history.filter(s=>s.quickMode&&s.quickMode!=='off').length;
+  const quickSub=n>0&&quickCount>0?`<div class="stat-sub">${quickCount}/${n} em modo rápido</div>`:'';
   document.getElementById('statsGrid').innerHTML=`
     <div class="stat-card"><div class="stat-val">${n}</div><div class="stat-label">Treinos realizados</div></div>
     <div class="stat-card"><div class="stat-val">${totalMin}min</div><div class="stat-label">Tempo total</div></div>
     <div class="stat-card"><div class="stat-val">${totalSets}</div><div class="stat-label">Séries totais</div></div>
-    <div class="stat-card"><div class="stat-val">${avgComp}%</div><div class="stat-label">Conclusão média</div></div>`;
+    <div class="stat-card"><div class="stat-val">${avgComp}%</div><div class="stat-label">Conclusão média</div>${quickSub}</div>`;
   const mc={};Object.keys(MUSCLES).forEach(m=>mc[m]=0);
   state.history.forEach(s=>s.muscles.forEach(m=>{if(mc[m]!==undefined)mc[m]++;}));
   const maxC=Math.max(...Object.values(mc),1);
@@ -1087,6 +1318,7 @@ function importBackup(file){
       const restored=data&&data.state?data.state:data;
       if(!restored||typeof restored!=='object'||!('history' in restored))throw new Error('arquivo inválido');
       if(!confirm('Restaurar este backup vai substituir TODOS os dados atuais. Continuar?'))return;
+      ensureStateDefaults(restored);
       localStorage.setItem('fpv5',JSON.stringify(restored));
       showToast('✓ Backup restaurado',true);
       setTimeout(()=>location.reload(),500);
