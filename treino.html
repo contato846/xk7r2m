@@ -879,6 +879,31 @@ function fitCRC(buf){
   }
   return crc&0xFFFF;
 }
+function fitExerciseCategory(name){
+  const n=name.toLowerCase();
+  if(/supino/.test(n))return 0;          // bench_press
+  if(/panturrilha/.test(n))return 1;     // calf_raise
+  if(/prancha/.test(n))return 19;        // plank
+  if(/ab wheel|abdominal|crunch/.test(n))return 5; // core
+  if(/eleva.*perna|leg raise/.test(n))return 16;   // leg_raise
+  if(/rosca/.test(n))return 7;           // curl
+  if(/terra|deadlift/.test(n))return 8;  // deadlift
+  if(/leg curl|flexora/.test(n))return 15; // leg_curl
+  if(/lunge|afundo|b[úu]lgaro/.test(n))return 17; // lunge
+  if(/pull[- ]?up|barra fixa/.test(n))return 21;  // pull_up
+  if(/push[- ]?up|flex[ãa]o de bra/.test(n))return 22; // push_up
+  if(/remada|row/.test(n))return 23;     // row
+  if(/press militar|shoulder|desenvolvimento/.test(n))return 24; // shoulder_press
+  if(/agachamento|squat|leg press/.test(n))return 28; // squat
+  if(/burpee|kettlebell|swing/.test(n))return 29;  // total_body
+  if(/tr[íi]ceps|mergulho|dip/.test(n))return 30;  // triceps_extension
+  return 65534; // unknown
+}
+function fitEstimateCalories(durationMin){
+  // ~6 METs strength training, peso médio 80kg
+  // kcal = METs * 80 * (min/60)
+  return Math.round(6*80*(durationMin/60));
+}
 function fitWriteSession(s){
   const FE=631065600;
   const st=Math.floor(new Date(s.startISO).getTime()/1000)-FE;
@@ -895,12 +920,14 @@ function fitWriteSession(s){
     const mS=String(ex.reps).match(/(\d+)(?:\D+(\d+))?\s*seg/i);
     const reps=mR?parseInt(mR[2]||mR[1],10):0;
     const dur=mS?parseInt(mS[2]||mS[1],10):Math.min(perSeries,60);
+    const cat=fitExerciseCategory(ex.name);
     for(let i=0;i<ex.series;i++){
-      sets.push({start:cur,dur:dur,reps:reps,weight:wt});
+      sets.push({start:cur,dur:dur,reps:reps,weight:wt,cat:cat});
       cur+=Math.max(perSeries,dur+(ex.rest||60));
       if(cur>et)cur=et;
     }
   });
+  const calories=fitEstimateCalories(s.durationMin||Math.round(total/60));
   const out=[];const push=(...a)=>{for(const x of a)out.push(x&0xFF);};
   const u16=v=>{push(v,v>>8);};
   const u32=v=>{push(v,v>>8,v>>16,v>>24);};
@@ -909,13 +936,13 @@ function fitWriteSession(s){
   push(0,1,0x00); push(1,2,0x84); push(2,2,0x84); push(3,4,0x86); push(4,4,0x86);
   push(0x00,4); u16(255); u16(0); u32(1); u32(st);
   // set local 1 global 225
-  push(0x41,0,0); u16(225); push(7);
-  push(254,4,0x86); push(7,4,0x86); push(0,4,0x86); push(3,2,0x84); push(4,2,0x84); push(5,1,0x02); push(11,2,0x84);
+  push(0x41,0,0); u16(225); push(8);
+  push(254,4,0x86); push(7,4,0x86); push(0,4,0x86); push(3,2,0x84); push(4,2,0x84); push(5,1,0x02); push(11,2,0x84); push(8,2,0x84);
   sets.forEach((s2,i)=>{
     push(0x01);
     u32(s2.start+s2.dur); u32(s2.start); u32(s2.dur*1000);
     u16(Math.min(65535,s2.reps)); u16(Math.min(65535,Math.round(s2.weight*16)));
-    push(2); u16(i);
+    push(2); u16(i); u16(s2.cat);
   });
   // lap local 2 global 19
   push(0x42,0,0); u16(19); push(9);
@@ -924,11 +951,11 @@ function fitWriteSession(s){
   push(0x02); u16(0); u32(et); u32(st); u32(total*1000); u32(total*1000);
   push(10,20,9,1);
   // session local 3 global 18
-  push(0x43,0,0); u16(18); push(11);
+  push(0x43,0,0); u16(18); push(12);
   push(254,2,0x84); push(253,4,0x86); push(2,4,0x86); push(7,4,0x86); push(8,4,0x86);
-  push(5,1,0x00); push(6,1,0x00); push(0,1,0x00); push(1,1,0x00); push(25,2,0x84); push(26,2,0x84);
+  push(5,1,0x00); push(6,1,0x00); push(0,1,0x00); push(1,1,0x00); push(25,2,0x84); push(26,2,0x84); push(11,2,0x84);
   push(0x03); u16(0); u32(et); u32(st); u32(total*1000); u32(total*1000);
-  push(10,20,8,1); u16(0); u16(1);
+  push(10,20,8,1); u16(0); u16(1); u16(Math.min(65535,calories));
   // activity local 4 global 34
   push(0x44,0,0); u16(34); push(6);
   push(253,4,0x86); push(0,4,0x86); push(1,2,0x84); push(2,1,0x00); push(3,1,0x00); push(4,1,0x00);
