@@ -20,8 +20,20 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overscroll-behavior:none;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;}
+body{padding-bottom:78px;}
 .nav{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;}
-.nav-top{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;}
+.nav-top{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 14px;}
+.tabbar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:300;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 16px rgba(0,0,0,.3);}
+.tab-btn{flex:1;background:transparent;border:none;color:var(--muted);padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-family:inherit;position:relative;transition:color .15s;}
+.tab-btn .ticon{font-size:22px;line-height:1;}
+.tab-btn .tlabel{font-size:10px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;}
+.tab-btn.active{color:var(--accent);}
+.tab-btn.center .ticon{font-size:30px;}
+.tab-btn.center{margin-top:-12px;}
+.tab-btn.center .tcircle{width:54px;height:54px;border-radius:50%;background:var(--accent);color:#0a0a0a;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(255,255,255,.15);}
+.tab-btn.center.active .tcircle{background:var(--accent);}
+.tab-btn .tbadge{position:absolute;top:6px;right:calc(50% - 18px);width:8px;height:8px;border-radius:50%;background:var(--danger);display:none;}
+.tab-btn .tbadge.show{display:block;}
 .app-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--accent);}
 .date-badge{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;}
 .nav-tabs{display:flex;}
@@ -170,6 +182,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .he-kg{display:flex;align-items:center;gap:4px;}
 .he-kg input{width:60px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:13px;text-align:right;}
 .he-kg span{font-size:11px;color:var(--muted);}
+.profile-form{display:flex;flex-direction:column;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.pf-row{display:flex;flex-direction:column;gap:5px;}
+.pf-row label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.pf-row input,.pf-row select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:15px;font-family:inherit;}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.ps-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
+.ps-val{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent);}
+.ps-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
 .hist-load-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
 .hist-load-row .hl-name{color:var(--muted2);flex:1;padding-right:8px;}
 .hist-load-row .hl-kg{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums;}
@@ -216,13 +236,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div class="app-title">TREINO DO PAI</div>
     <div class="date-badge" id="dateDisplay"></div>
   </div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchPage('treino',this)">TREINO</button>
-    <button class="nav-tab" onclick="switchPage('historico',this)">HISTÓRICO</button>
-    <button class="nav-tab" onclick="switchPage('dashboard',this)">DASHBOARD<span class="nbadge" id="alertBadge"></span></button>
-    <button class="nav-tab" onclick="switchPage('plano',this)">PLANO</button>
-  </div>
 </div>
+<nav class="tabbar">
+  <button class="tab-btn" onclick="switchPage('dashboard',this)"><span class="ticon">📊</span><span class="tlabel">Dashboard</span><span class="tbadge" id="alertBadge"></span></button>
+  <button class="tab-btn" onclick="switchPage('historico',this)"><span class="ticon">📋</span><span class="tlabel">Histórico</span></button>
+  <button class="tab-btn center active" onclick="switchPage('treino',this)"><span class="tcircle"><span class="ticon">🏋️</span></span><span class="tlabel">Treino</span></button>
+  <button class="tab-btn" onclick="switchPage('plano',this)"><span class="ticon">📅</span><span class="tlabel">Plano</span></button>
+  <button class="tab-btn" onclick="switchPage('perfil',this)"><span class="ticon">👤</span><span class="tlabel">Perfil</span></button>
+</nav>
 
 <div class="page active" id="page-treino">
   <div id="switchNotice"></div>
@@ -289,6 +310,21 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
 </div>
 
+<div class="page" id="page-perfil">
+  <div class="section-title">Dados pessoais</div>
+  <div class="profile-form">
+    <div class="pf-row"><label>Nome</label><input type="text" id="pf-name" placeholder="Bruno"></div>
+    <div class="pf-row"><label>Idade</label><input type="number" id="pf-age" min="10" max="120" placeholder="40"></div>
+    <div class="pf-row"><label>Sexo</label><select id="pf-sex"><option value="M">Masculino</option><option value="F">Feminino</option></select></div>
+    <div class="pf-row"><label>Peso atual (kg)</label><input type="number" id="pf-weight" step="0.1" min="20" max="300" placeholder="80"></div>
+    <div class="pf-row"><label>Altura (cm)</label><input type="number" id="pf-height" min="100" max="250" placeholder="175"></div>
+    <div class="pf-row"><label>Meta de peso (kg)</label><input type="number" id="pf-goal" step="0.1" min="20" max="300" placeholder="75"></div>
+    <button class="btn btn-primary btn-full" onclick="saveProfile()">✓ Salvar perfil</button>
+  </div>
+  <div class="section-title">Indicadores</div>
+  <div id="profileStats"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -335,7 +371,43 @@ function initSets(wi){return WORKOUTS[wi].exercises.map(e=>Array(e.series).fill(
 let state=load()||{currentWorkout:0,sessionSets:null,sessionStart:null,history:[],programStart:null,switchDismissed:false};
 if(!state.history)state.history=[];
 if(!state.weights)state.weights={};
+if(!state.profile)state.profile={name:'',age:null,sex:'M',weightKg:null,heightCm:null,goalKg:null};
 function setWeight(name,v){state.weights[name]=v.trim();save();}
+function renderPerfil(){
+  const p=state.profile;
+  document.getElementById('pf-name').value=p.name||'';
+  document.getElementById('pf-age').value=p.age||'';
+  document.getElementById('pf-sex').value=p.sex||'M';
+  document.getElementById('pf-weight').value=p.weightKg||'';
+  document.getElementById('pf-height').value=p.heightCm||'';
+  document.getElementById('pf-goal').value=p.goalKg||'';
+  const el=document.getElementById('profileStats');
+  if(!p.weightKg||!p.heightCm){el.innerHTML='<div class="empty"><p>Preencha peso e altura para ver IMC e gasto calórico estimado.</p></div>';return;}
+  const m=p.heightCm/100;
+  const imc=p.weightKg/(m*m);
+  const imcCat=imc<18.5?'Abaixo':imc<25?'Normal':imc<30?'Sobrepeso':'Obesidade';
+  const bmr=p.sex==='F'?(10*p.weightKg+6.25*p.heightCm-5*(p.age||30)-161):(10*p.weightKg+6.25*p.heightCm-5*(p.age||30)+5);
+  const tdee=Math.round(bmr*1.55);
+  const diff=p.goalKg?(p.weightKg-p.goalKg).toFixed(1):'—';
+  el.innerHTML=`<div class="profile-stats">
+    <div class="ps-card"><div class="ps-val">${imc.toFixed(1)}</div><div class="ps-lbl">IMC — ${imcCat}</div></div>
+    <div class="ps-card"><div class="ps-val">${Math.round(bmr)}</div><div class="ps-lbl">BMR (kcal/dia)</div></div>
+    <div class="ps-card"><div class="ps-val">${tdee}</div><div class="ps-lbl">Gasto diário est.</div></div>
+    <div class="ps-card"><div class="ps-val">${diff} kg</div><div class="ps-lbl">Para a meta</div></div>
+  </div>`;
+}
+function saveProfile(){
+  const num=(id,fl)=>{const v=document.getElementById(id).value;if(!v)return null;return fl?parseFloat(v.replace(',','.')):parseInt(v,10);};
+  state.profile={
+    name:document.getElementById('pf-name').value.trim(),
+    age:num('pf-age',false),
+    sex:document.getElementById('pf-sex').value,
+    weightKg:num('pf-weight',true),
+    heightCm:num('pf-height',false),
+    goalKg:num('pf-goal',true)
+  };
+  save();renderPerfil();showToast('✓ Perfil salvo',true);
+}
 if(!state.sessionStart){const dow=new Date().getDay();if(DAY_TO_WORKOUT[dow]!==undefined)state.currentWorkout=DAY_TO_WORKOUT[dow];}
 if(!state.sessionSets||state.sessionSets.length!==WORKOUTS[state.currentWorkout].exercises.length)state.sessionSets=initSets(state.currentWorkout);
 save();
@@ -853,12 +925,13 @@ function renderPlano(){
 // NAV
 function switchPage(page,tab){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   tab.classList.add('active');
   if(page==='historico')renderHistory();
   if(page==='dashboard')renderDashboard();
   if(page==='plano')renderPlano();
+  if(page==='perfil')renderPerfil();
 }
 function showToast(msg,accent){
   const t=document.getElementById('toast');t.textContent=msg;
@@ -900,9 +973,8 @@ function fitExerciseCategory(name){
   return 65534; // unknown
 }
 function fitEstimateCalories(durationMin){
-  // ~6 METs strength training, peso médio 80kg
-  // kcal = METs * 80 * (min/60)
-  return Math.round(6*80*(durationMin/60));
+  const w=(state.profile&&state.profile.weightKg)||80;
+  return Math.round(6*w*(durationMin/60));
 }
 function fitWriteSession(s){
   const FE=631065600;
