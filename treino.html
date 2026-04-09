@@ -34,7 +34,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .menu-item .mbadge.show{display:block;}
 .app-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--accent);}
 .app-title-wrap{display:flex;align-items:center;gap:10px;}
-.app-logo{height:36px;width:auto;display:block;}
+.app-logo{height:40px;width:auto;display:block;image-rendering:auto;}
 .date-badge{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;}
 .nav-tabs{display:flex;}
 .nav-tab{flex:1;padding:9px 4px;background:transparent;border:none;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.2px;cursor:pointer;text-align:center;border-bottom:2px solid transparent;transition:all .2s;position:relative;}
@@ -289,8 +289,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <div class="nav">
   <div class="nav-top">
     <div class="app-title-wrap">
-      <img src="logo.png" class="app-logo" alt="" onerror="this.style.display='none'">
-      <div class="app-title">TREINO DO PAI</div>
+      <img src="logo.png?v=2" class="app-logo" alt="TREINO DO PAI" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <div class="app-title" style="display:none">TREINO DO PAI</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div class="date-badge" id="dateDisplay"></div>
