@@ -114,6 +114,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .rl-row label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
 .rl-row input,.rl-row select,.rl-row textarea{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:15px;font-family:inherit;}
 .rl-row textarea{resize:vertical;min-height:42px;}
+.run-override-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(255,170,0,.12),rgba(255,170,0,.04));border:1px solid rgba(255,170,0,.4);border-radius:12px;padding:12px 14px;margin-bottom:14px;}
+.rob-icon{font-size:26px;line-height:1;}
+.rob-body{flex:1;}
+.rob-title{font-size:13px;font-weight:700;color:#ffaa00;}
+.rob-sub{font-size:11px;color:var(--muted2);margin-top:2px;}
+.rob-back{background:transparent;border:1px solid rgba(255,170,0,.5);color:#ffaa00;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.rob-back:active{background:rgba(255,170,0,.15);}
 .muscle-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;}
 .mtag{font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted2);background:var(--surface);}
 .series-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;}
@@ -201,6 +208,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .ps-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
 .ps-val{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent);}
 .ps-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.profile-chart{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:10px;}
+.pc-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.pc-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.pc-delta{font-size:12px;font-weight:700;}
+.profile-chart svg{display:block;}
+.profile-chart-empty{background:var(--card);border:1px dashed var(--border);border-radius:12px;padding:16px;margin-top:14px;text-align:center;font-size:12px;color:var(--muted);}
 .hist-load-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
 .hist-load-row .hl-name{color:var(--muted2);flex:1;padding-right:8px;}
 .hist-load-row .hl-kg{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums;}
@@ -665,7 +678,61 @@ function renderPerfil(){
     <div class="ps-card"><div class="ps-val">${Math.round(bmr)}</div><div class="ps-lbl">BMR (kcal/dia)</div></div>
     <div class="ps-card"><div class="ps-val">${tdee}</div><div class="ps-lbl">Gasto diário est.</div></div>
     <div class="ps-card"><div class="ps-val">${diff} kg</div><div class="ps-lbl">Para a meta</div></div>
-  </div>`;
+  </div>`+renderProfileChart();
+}
+function renderProfileChart(){
+  const hist=state.profileHistory||[];
+  if(hist.length<2)return '<div class="profile-chart-empty">📈 Salve o perfil pelo menos 2 vezes em datas diferentes para ver o gráfico de evolução.</div>';
+  const p=state.profile;
+  const heightM=p.heightCm?p.heightCm/100:null;
+  const series=hist.map(h=>({
+    date:new Date(h.date),
+    weight:h.weightKg,
+    imc:heightM&&h.weightKg?h.weightKg/(heightM*heightM):null
+  })).filter(x=>x.weight);
+  if(series.length<2)return '<div class="profile-chart-empty">📈 Registre mais medições para ver o gráfico.</div>';
+  const chartW=320,chartH=140,padL=34,padR=14,padT=14,padB=24;
+  const plotW=chartW-padL-padR,plotH=chartH-padT-padB;
+  const minT=series[0].date.getTime(),maxT=series[series.length-1].date.getTime();
+  const xSpan=Math.max(1,maxT-minT);
+  const makeChart=(label,unit,values,color,goal)=>{
+    const minV=Math.min(...values,goal||Infinity);
+    const maxV=Math.max(...values,goal||-Infinity);
+    const vSpan=Math.max(0.1,maxV-minV);
+    const pad=vSpan*0.15;
+    const yMin=minV-pad,yMax=maxV+pad;
+    const x=t=>padL+((t-minT)/xSpan)*plotW;
+    const y=v=>padT+(1-(v-yMin)/(yMax-yMin))*plotH;
+    const pts=series.map((s,i)=>`${x(s.date.getTime())},${y(values[i])}`).join(' ');
+    const circles=series.map((s,i)=>`<circle cx="${x(s.date.getTime()).toFixed(1)}" cy="${y(values[i]).toFixed(1)}" r="3" fill="${color}"/>`).join('');
+    const fmtDate=d=>d.getDate()+'/'+(d.getMonth()+1);
+    const yTicks=[yMin,(yMin+yMax)/2,yMax].map(v=>`
+      <text x="${padL-4}" y="${y(v)+3}" fill="var(--muted)" font-size="9" text-anchor="end">${v.toFixed(1)}</text>
+      <line x1="${padL}" y1="${y(v)}" x2="${padL+plotW}" y2="${y(v)}" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2,2"/>`).join('');
+    const xLabels=`
+      <text x="${padL}" y="${chartH-6}" fill="var(--muted)" font-size="9">${fmtDate(series[0].date)}</text>
+      <text x="${padL+plotW}" y="${chartH-6}" fill="var(--muted)" font-size="9" text-anchor="end">${fmtDate(series[series.length-1].date)}</text>`;
+    const goalLine=goal!=null?`<line x1="${padL}" y1="${y(goal)}" x2="${padL+plotW}" y2="${y(goal)}" stroke="#72b800" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="${padL+plotW-2}" y="${y(goal)-3}" fill="#72b800" font-size="9" text-anchor="end">meta ${goal}</text>`:'';
+    const first=values[0],last=values[values.length-1];
+    const delta=(last-first).toFixed(1);
+    const arrow=last>first?'↑':last<first?'↓':'→';
+    const color2=last>first?'#ff4545':last<first?'#72b800':'var(--muted)';
+    return `<div class="profile-chart">
+      <div class="pc-head"><span class="pc-lbl">${label}</span><span class="pc-delta" style="color:${color2}">${arrow} ${Math.abs(delta)} ${unit}</span></div>
+      <svg viewBox="0 0 ${chartW} ${chartH}" width="100%" preserveAspectRatio="xMidYMid meet">
+        ${yTicks}${goalLine}
+        <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        ${circles}${xLabels}
+      </svg>
+    </div>`;
+  };
+  const weightChart=makeChart('Peso','kg',series.map(s=>s.weight),'#ffd600',p.goalKg||null);
+  let out='<div class="section-title" style="margin-top:18px">Evolução</div>'+weightChart;
+  if(series.every(s=>s.imc!=null)){
+    out+=makeChart('IMC','',series.map(s=>parseFloat(s.imc.toFixed(2))),'#7aa2ff',null);
+  }
+  return out;
 }
 function saveProfile(){
   const num=(id,fl)=>{const v=document.getElementById(id).value;if(!v)return null;return fl?parseFloat(v.replace(',','.')):parseInt(v,10);};
@@ -677,6 +744,16 @@ function saveProfile(){
     heightCm:num('pf-height',false),
     goalKg:num('pf-goal',true)
   };
+  // Registra snapshot no histórico (máx 1 por dia, substitui o do dia corrente)
+  if(state.profile.weightKg){
+    if(!state.profileHistory)state.profileHistory=[];
+    const today=new Date();const key=today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    const existing=state.profileHistory.findIndex(h=>{const d=new Date(h.date);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()===key;});
+    const snap={date:today.toISOString(),weightKg:state.profile.weightKg,heightCm:state.profile.heightCm,age:state.profile.age,goalKg:state.profile.goalKg};
+    if(existing>=0)state.profileHistory[existing]=snap;
+    else state.profileHistory.push(snap);
+    state.profileHistory.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  }
   save();renderPerfil();showToast('✓ Perfil salvo',true);
 }
 if(!state.sessionStart){const dow=new Date().getDay();if(DAY_TO_WORKOUT[dow]!==undefined)state.currentWorkout=DAY_TO_WORKOUT[dow];}
@@ -943,17 +1020,22 @@ function renderTreino(){
     `;
     document.getElementById('heroCard').after(card);
   }
-  // Se está em modo "musculação hoje" num dia de corrida, mostra botão de voltar
+  // Se está em modo "musculação hoje" num dia de corrida, mostra aviso + botão de voltar
   const oldBack=document.getElementById('backToRunBtn');
   if(oldBack)oldBack.remove();
   if(runToday&&isForcingStrengthToday()&&!active){
-    const back=document.createElement('button');
-    back.id='backToRunBtn';
-    back.className='btn btn-outline btn-full';
-    back.style.marginBottom='12px';
-    back.textContent='← Voltar para corrida';
-    back.onclick=toggleForceStrength;
-    document.getElementById('heroCard').after(back);
+    const banner=document.createElement('div');
+    banner.id='backToRunBtn';
+    banner.className='run-override-banner';
+    banner.innerHTML=`
+      <div class="rob-icon">🏃</div>
+      <div class="rob-body">
+        <div class="rob-title">Hoje era dia de corrida</div>
+        <div class="rob-sub">Você escolheu fazer musculação no lugar.</div>
+      </div>
+      <button class="rob-back" onclick="toggleForceStrength()">Voltar</button>
+    `;
+    document.getElementById('heroCard').after(banner);
   }
   document.getElementById('startBtn').classList.toggle('hidden',active||blockToday);
   document.getElementById('progBlock').style.display=active?'':'none';
