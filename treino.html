@@ -345,6 +345,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .rt-next{font-size:13px;color:var(--muted2);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;margin-top:8px;}
 .rt-controls{display:flex;gap:10px;margin-top:18px;width:100%;max-width:400px;justify-content:center;}
 .rt-controls .btn{flex:1;padding:10px 6px;}
+.no-plan-cta{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 18px;text-align:center;margin-top:12px;}
+.npc-icon{font-size:48px;margin-bottom:8px;}
+.npc-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1px;margin-bottom:10px;}
+.npc-msg{font-size:13px;line-height:1.7;color:var(--text);margin-bottom:4px;}
+.npc-divider{border-top:1px solid var(--border);margin:18px 0;}
+.npc-alt-title{font-size:12px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;}
 .rl-planned{margin-bottom:8px;}
 .rl-segments{display:flex;flex-direction:column;gap:4px;margin:6px 0;}
 .rl-seg{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
@@ -653,6 +659,7 @@ function ensureStateDefaults(s){
   if(!s.customRunPlan)s.customRunPlan=null;
   if(s.customRunHasOwnPlan===undefined)s.customRunHasOwnPlan=false;
   if(s.disclaimerAccepted===undefined)s.disclaimerAccepted=false;
+  if(s.quickFullbody===undefined)s.quickFullbody=false;
   s.editMode=false;
   return s;
 }
@@ -1090,6 +1097,26 @@ function updateActiveBanner(){
   </div>`;
 }
 
+// QUICK FULLBODY (no plan)
+function startQuickFullbody(){
+  const targets=['peito','costas','quadriceps','ombros','gluteos','biceps','triceps','core'];
+  const pool=EXDB.filter(ex=>ex.diff<=2&&ex.type==='composto');
+  const picked=[];
+  for(const m of targets){
+    if(picked.length>=6)break;
+    const cand=pool.find(ex=>ex.muscles[0]===m&&!picked.some(p=>p.name===ex.name));
+    if(cand)picked.push(cand);
+  }
+  const exercises=picked.map(ex=>({name:ex.name,series:3,reps:'10–12 reps',obs:ex.obs,rest:90,muscles:ex.muscles.slice()}));
+  const dow=new Date().getDay();
+  state.customWorkouts=[{id:'FB',name:'Full Body',sub:'Treino rápido (sem plano)',day:'—',dayIdx:dow,exercises}];
+  state.customDayMap={[dow]:0};
+  state.useCustomPlan=true;
+  state.currentWorkout=0;
+  state.quickFullbody=true; // flag: not a real plan
+  state.sessionSets=initSets(0);
+  save();renderTreino();startSession();
+}
 // START / FINISH
 function startSession(){
   state.sessionStart=new Date().toISOString();
@@ -1128,6 +1155,11 @@ function finishSession(){
     startISO:state.sessionStart,endISO:now.toISOString(),durationMin:durMin,
     totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,weights,notes,completion,
     fullCompletion,quickMode:state.quickMode||'off',plan:planSnapshot});
+  // Clean up quick fullbody
+  if(state.quickFullbody){
+    state.useCustomPlan=false;state.customWorkouts=null;state.customDayMap=null;
+    state.quickFullbody=false;
+  }
   // Avança apenas para o próximo treino do CICLO
   state.currentWorkout=(wi+1)%getActiveWorkouts().length;
   state.sessionPlan=null;
@@ -1145,6 +1177,10 @@ function finishSession(){
 }
 function resetSession(){
   if(!confirm('Reiniciar este treino e descartar o progresso atual?'))return;
+  if(state.quickFullbody){
+    state.useCustomPlan=false;state.customWorkouts=null;state.customDayMap=null;
+    state.quickFullbody=false;
+  }
   state.sessionPlan=null;
   state.sessionSets=initSetsFromPlan(getCurrentExercises(state.currentWorkout));
   state.sessionStart=null;
@@ -1262,10 +1298,12 @@ function renderTreino(){
   const doneToday=todayCount();
   // Modo de visualização: corrida ou musculação
   const showRun=state.treinoView==='run';
+  const noPlan=!state.useCustomPlan&&!state.quickFullbody;
   // hero
   let heroBody;
   let planLabel='';
-  if(runToday)planLabel='🏃 Dia de corrida';
+  if(noPlan&&!showRun)planLabel='📋 Sem plano definido';
+  else if(runToday)planLabel='🏃 Dia de corrida';
   else if(strengthToday)planLabel=`🏋️ ${w.name}`;
   else planLabel=rnd(HUMOR.restDay[isFem()?'F':'M']);
   const doneMsg=doneToday>0?`<div style="margin-top:6px;font-size:12px;color:var(--done-border)">✓ ${doneToday} treino${doneToday>1?'s':''} registrado${doneToday>1?'s':''} hoje</div>`:'';
@@ -1357,15 +1395,35 @@ function renderTreino(){
     }
   }
   const blockUI=showRun&&!active;
-  document.getElementById('startBtn').classList.toggle('hidden',active||blockUI);
+  document.getElementById('startBtn').classList.toggle('hidden',active||blockUI||(!showRun&&noPlan));
   document.getElementById('progBlock').style.display=active?'':'none';
   document.getElementById('finishRow').style.display=active?'':'none';
   if(active){startClock();updateActiveBanner();}
   renderSwitchNotice();
-  renderQuickModeBar(active||blockUI);
+  renderQuickModeBar(active||blockUI||(noPlan&&!showRun));
   const sets=state.sessionSets;let total=0,done=0;
   const container=document.getElementById('exerciseList');container.innerHTML='';
   if(blockUI){document.getElementById('quickModeBar').innerHTML='';return;}
+  // No plan CTA
+  if(noPlan&&!active&&!showRun){
+    const g=isFem()?'F':'M';
+    const greeting=state.profile.name?`, ${state.profile.name}`:'';
+    const ctaMsg=g==='F'
+      ?`Oi${greeting}! Você ainda não tem um plano de treino montado. Bora criar um sob medida pra você? Leva menos de 2 minutinhos e vai fazer toda a diferença! 💪`
+      :` E aí${greeting}! Sem plano de treino por aqui ainda. Bora montar um personalizado? É rápido — menos de 2 minutos e você já sai treinando com direção! 💪`;
+    container.innerHTML=`
+      <div class="no-plan-cta">
+        <div class="npc-icon">📋</div>
+        <div class="npc-title">Monte seu plano de treino</div>
+        <div class="npc-msg">${ctaMsg}</div>
+        <button class="btn btn-primary btn-full" onclick="switchPage('plano');setTimeout(()=>openPlanChat(),200);" style="font-size:15px;padding:14px;margin-top:12px">✨ Criar meu plano personalizado</button>
+        <div class="npc-divider"></div>
+        <div class="npc-alt-title">Ou treine sem plano:</div>
+        <button class="btn btn-outline btn-full" onclick="startQuickFullbody()" style="margin-top:8px">🏋️ Treino rápido Full Body</button>
+      </div>`;
+    if(noPlan)document.getElementById('quickModeBar').innerHTML='';
+    return;
+  }
   // Edit toolbar
   const editToolbar=document.createElement('div');
   editToolbar.className='edit-toolbar';
