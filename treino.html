@@ -372,8 +372,21 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </div>
 
 <div class="page" id="page-historico">
+  <button class="btn btn-outline btn-full" style="margin-bottom:14px" onclick="openAddRecord()">+ Adicionar registro</button>
   <div class="section-title">Sessões realizadas</div>
   <div id="historyList"></div>
+</div>
+
+<div class="page" id="page-addrecord">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div class="section-title" style="margin:0">Adicionar registro</div>
+    <button class="btn btn-secondary btn-small" onclick="closeAddRecord()">✕ Fechar</button>
+  </div>
+  <div class="treino-toggle" id="ar-toggle">
+    <button class="tt-btn active" onclick="setAddRecordType('strength')">🏋️ Musculação</button>
+    <button class="tt-btn" onclick="setAddRecordType('run')">🏃 Corrida</button>
+  </div>
+  <div id="addRecordForm"></div>
 </div>
 
 <div class="page" id="page-dashboard">
@@ -1905,6 +1918,148 @@ function renderRunGoals(){
   el.innerHTML=html;
   // Render dynamic fields after DOM is ready
   if(showRunGoalForm)setTimeout(renderRunGoalFormFields,0);
+}
+
+// ADD RECORD
+let addRecordType='strength';
+function openAddRecord(){
+  addRecordType='strength';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-addrecord').classList.add('active');
+  renderAddRecordForm();
+}
+function closeAddRecord(){
+  switchPage('historico');
+}
+function setAddRecordType(t){
+  addRecordType=t;
+  document.querySelectorAll('#ar-toggle .tt-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`#ar-toggle .tt-btn:${t==='run'?'last':'first'}-child`).classList.add('active');
+  renderAddRecordForm();
+}
+function renderAddRecordForm(){
+  const el=document.getElementById('addRecordForm');
+  if(addRecordType==='run'){
+    el.innerHTML=`<div class="run-log-card">
+      <div class="rl-row"><label>Data do treino</label><input type="date" id="ar-date" value="${fmtDateISO(new Date())}"></div>
+      <div class="rl-grid">
+        <div class="rl-row"><label>Distância (km)</label><input type="text" inputmode="decimal" id="ar-km" placeholder="559 ou 5,59" maxlength="5"></div>
+        <div class="rl-row"><label>Duração</label><input type="text" inputmode="numeric" id="ar-dur" placeholder="5215 ou 52:15" maxlength="7"></div>
+      </div>
+      <div class="rl-grid">
+        <div class="rl-row"><label>Tipo</label>
+          <select id="ar-type">
+            <option value="Z2">Z2 (base aeróbica)</option>
+            <option value="Tiro">Tiro / intervalado</option>
+            <option value="Longão">Longão</option>
+            <option value="Regenerativo">Regenerativo</option>
+            <option value="Livre">Livre</option>
+          </select>
+        </div>
+        <div class="rl-row"><label>Hora de conclusão</label><input type="time" id="ar-time"></div>
+      </div>
+      <div class="rl-row"><label>Observações</label><textarea id="ar-notes" rows="2" placeholder="Percurso, sensações, clima…"></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="saveAddRecordRun()">✓ Registrar corrida</button>
+    </div>`;
+  }else{
+    const wopts=WORKOUTS.map((w,i)=>`<option value="${i}">${w.name} — ${w.sub}</option>`).join('');
+    el.innerHTML=`<div class="run-log-card">
+      <div class="rl-row"><label>Data do treino</label><input type="date" id="ar-date" value="${fmtDateISO(new Date())}"></div>
+      <div class="rl-row"><label>Treino</label><select id="ar-workout" onchange="renderAddRecordExercises()">${wopts}</select></div>
+      <div class="rl-row"><label>Modo de execução</label>
+        <select id="ar-mode">
+          <option value="off">Completo</option>
+          <option value="pressa">⚡ Pressa</option>
+          <option value="preguica">😴 Preguiça</option>
+        </select>
+      </div>
+      <div class="rl-grid">
+        <div class="rl-row"><label>Hora de início</label><input type="time" id="ar-start"></div>
+        <div class="rl-row"><label>Hora de término</label><input type="time" id="ar-end"></div>
+      </div>
+      <div class="section-title" style="margin-top:10px">Exercícios</div>
+      <div id="ar-exercises"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="saveAddRecordStrength()">✓ Registrar musculação</button>
+    </div>`;
+    renderAddRecordExercises();
+  }
+}
+function renderAddRecordExercises(){
+  const wi=parseInt(document.getElementById('ar-workout').value,10);
+  const w=WORKOUTS[wi];
+  const el=document.getElementById('ar-exercises');
+  el.innerHTML=w.exercises.map((ex,i)=>`<div class="he-row">
+    <label class="he-check"><input type="checkbox" data-ar="done" data-i="${i}" checked><span>${ex.name}</span></label>
+    <div class="he-kg"><input type="text" inputmode="decimal" data-ar="kg" data-i="${i}" value="${state.weights&&state.weights[ex.name]||''}" placeholder="—"><span>kg</span></div>
+  </div>`).join('');
+}
+function saveAddRecordRun(){
+  const dateVal=document.getElementById('ar-date').value;
+  if(!dateVal){showToast('⚠ Preencha a data',false);return;}
+  const km=parseDistance(document.getElementById('ar-km').value);
+  if(!km||km<=0||km>99.99){showToast('⚠ Distância inválida (0,01 a 99,99 km)',false);return;}
+  const durSec=parseDuration(document.getElementById('ar-dur').value);
+  if(durSec<=0){showToast('⚠ Duração inválida (use mm:ss ou h:mm:ss)',false);return;}
+  const type=document.getElementById('ar-type').value;
+  const notes=document.getElementById('ar-notes').value.trim();
+  const timeVal=document.getElementById('ar-time').value;
+  let end=new Date(dateVal+'T12:00:00');
+  if(timeVal){const[hh,mi]=timeVal.split(':').map(Number);end.setHours(hh,mi,0,0);}
+  const start=new Date(end.getTime()-durSec*1000);
+  const paceSecPerKm=durSec/km;
+  state.history.push({
+    id:Date.now(),type:'cardio',workoutId:'RUN',
+    workoutName:`🏃 Corrida — ${type}`,workoutSub:`${km.toFixed(2).replace('.',',')} km em ${fmtDuration(durSec)}`,
+    startISO:start.toISOString(),endISO:end.toISOString(),
+    durationMin:Math.round(durSec/60*100)/100,durationSec:durSec,paceSecPerKm:paceSecPerKm,
+    totalSets:1,doneSets:1,completion:100,fullCompletion:100,
+    muscles:[],exercisesDone:[],weights:{},notes:{},
+    distanceKm:km,runType:type,runNotes:notes,quickMode:'off',plan:[]
+  });
+  state.history.sort((a,b)=>new Date(b.startISO)-new Date(a.startISO));
+  save();
+  showToast(`✓ Corrida registrada — ${km.toFixed(2).replace('.',',')} km`,true);
+  closeAddRecord();
+}
+function saveAddRecordStrength(){
+  const dateVal=document.getElementById('ar-date').value;
+  if(!dateVal){showToast('⚠ Preencha a data',false);return;}
+  const wi=parseInt(document.getElementById('ar-workout').value,10);
+  const w=WORKOUTS[wi];
+  const mode=document.getElementById('ar-mode').value;
+  const startTime=document.getElementById('ar-start').value;
+  const endTime=document.getElementById('ar-end').value;
+  let startDt=new Date(dateVal+'T08:00:00'),endDt=new Date(dateVal+'T09:00:00');
+  if(startTime){const[h,m]=startTime.split(':').map(Number);startDt.setHours(h,m,0,0);}
+  if(endTime){const[h,m]=endTime.split(':').map(Number);endDt.setHours(h,m,0,0);}
+  if(endDt<=startDt)endDt=new Date(startDt.getTime()+3600000);
+  const durationMin=Math.round((endDt-startDt)/60000);
+  const exDone=[],muscles=new Set(),weights={};
+  let doneSets=0,totalSets=0;
+  w.exercises.forEach((ex,i)=>{
+    totalSets+=ex.series;
+    const chk=document.querySelector(`input[data-ar="done"][data-i="${i}"]`);
+    const kg=document.querySelector(`input[data-ar="kg"][data-i="${i}"]`);
+    const kgVal=kg?kg.value.trim():'';
+    if(chk&&chk.checked){
+      exDone.push(ex.name);doneSets+=ex.series;
+      ex.muscles.forEach(m=>muscles.add(m));
+      weights[ex.name]=kgVal;
+      if(kgVal){if(!state.weights)state.weights={};state.weights[ex.name]=kgVal;}
+    }
+  });
+  const completion=totalSets>0?Math.round(doneSets/totalSets*100):0;
+  state.history.push({
+    id:Date.now(),workoutId:w.id,workoutName:w.name,workoutSub:w.sub,
+    startISO:startDt.toISOString(),endISO:endDt.toISOString(),durationMin:durationMin,
+    totalSets:totalSets,doneSets:doneSets,completion:completion,fullCompletion:completion,
+    muscles:Array.from(muscles),exercisesDone:exDone,weights:weights,notes:{},
+    quickMode:mode,plan:w.exercises
+  });
+  state.history.sort((a,b)=>new Date(b.startISO)-new Date(a.startISO));
+  save();
+  showToast(`✓ ${w.name} registrado`,true);
+  closeAddRecord();
 }
 
 // NAV
