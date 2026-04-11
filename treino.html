@@ -292,6 +292,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .pd-status.none{background:var(--surface);border:1px solid var(--border);color:var(--muted);}
 .renew-btns{display:flex;gap:8px;margin-top:10px;}
 .renew-btns button{flex:1;}
+.rg-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+.rg-card.achieved{border-color:var(--done-border);background:var(--done-bg);}
+.rg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.rg-name{font-size:15px;font-weight:700;}
+.rg-type{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);background:var(--surface);padding:2px 8px;border-radius:6px;}
+.rg-details{font-size:13px;color:var(--muted2);line-height:1.6;}
+.rg-progress{margin-top:8px;}
+.rg-bar-track{height:6px;background:var(--surface);border-radius:3px;overflow:hidden;}
+.rg-bar-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .3s;}
+.rg-bar-label{font-size:11px;color:var(--muted);margin-top:3px;text-align:right;}
+.rg-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;}
+.rg-form{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;}
+.rg-form .rl-grid{margin-bottom:0;}
 .empty{text-align:center;padding:48px 20px;color:var(--muted);}
 .empty .emoji{font-size:44px;display:block;margin-bottom:14px;}
 .empty p{font-size:14px;line-height:1.6;}
@@ -382,8 +395,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   <div id="weekView"></div>
   <div class="section-title">Ajuste automático</div>
   <div id="adjustedPlan"></div>
-  <div class="section-title">Progressão e troca de programa</div>
+  <div class="section-title">Progressão do programa</div>
   <div class="prog-advice" id="progressionAdvice"></div>
+  <div class="section-title">🏃 Metas de corrida</div>
+  <div id="runGoals"></div>
 </div>
 
 <div class="page" id="page-perfil">
@@ -462,6 +477,7 @@ function ensureStateDefaults(s){
   if(s.sessionPlan===undefined)s.sessionPlan=null;
   if(!s.quickMode)s.quickMode='off';
   if(!s.planEnd)s.planEnd=null;
+  if(!s.runGoals)s.runGoals=[];
   s.editMode=false;
   return s;
 }
@@ -1656,15 +1672,189 @@ function renderPlano(){
   document.getElementById('adjustedPlan').innerHTML=adj;
   const wi=state.programStart?Math.floor((Date.now()-new Date(state.programStart).getTime())/(7*24*60*60*1000)):0;
   const expired=isPlanExpired();
+  const phases=[
+    {week:'Semana 1–2',title:'Adaptação',icon:'🟢',
+     body:'Fase de aprendizado. O objetivo é dominar a técnica de cada exercício e encontrar os pesos iniciais adequados. Não se preocupe em pegar pesado — priorize a execução correta e a amplitude completa do movimento. Anote os pesos utilizados como referência para as próximas semanas.'},
+    {week:'Semana 3–4',title:'Construção de carga',icon:'🟡',
+     body:'Agora que os movimentos estão fluidos, é hora de aumentar gradualmente o peso. Acrescente 2,5 a 5 kg nos exercícios compostos (supino, agachamento, terra). Se a técnica começar a falhar, reduza 1 série para manter a qualidade. Registre todos os pesos — a evolução aparece nos números.'},
+    {week:'Semana 5',title:'Semana leve (recuperação ativa)',icon:'🔵',
+     body:'O corpo precisa de pausas programadas para crescer. Nesta semana, faça apenas metade das séries habituais, mantendo o mesmo peso. Isso permite que músculos, articulações e sistema nervoso se recuperem. Pode parecer pouco, mas é essencial para evitar lesões e preparar o corpo para o próximo ciclo. Não pule esta etapa.'},
+    {week:'Semana 6–7',title:'Ciclo avançado',icon:'🟠',
+     body:'Corpo recuperado, hora de avançar. Retome o volume total de séries e busque superar os pesos registrados nas semanas 3–4. Este é o momento de registrar seus novos máximos. Mantenha a técnica impecável — peso sem controle é peso sem resultado.'},
+    {week:'Semana 8',title:'Avaliação e renovação',icon:'🔴',
+     body:'Após 8 semanas, o corpo se adapta ao estímulo e o progresso desacelera. É hora de avaliar: troque 2–3 exercícios por variações, altere a faixa de repetições (ex: de 10 para 8 com mais peso) ou mude o método de treino. Renove o plano acima para iniciar um novo ciclo.'}
+  ];
   let prog='';
-  if(!state.history.length)prog='Inicie o programa para ver o guia de progressão personalizado.';
-  else if(expired)prog=`<strong>⚡ Plano vencido.</strong> O programa continua em execução, mas recomendamos renovar ou alterar os exercícios, séries/reps e método de periodização.<br><br>Renove acima para continuar o acompanhamento com prazo definido.`;
-  else if(wi<2)prog=`<strong>Semana 1–2 (atual):</strong> Volume base. Estabeleça os pesos de referência.<br><br><strong>Semana 3–4:</strong> +2,5–5 kg nos compostos. Reduza 1 série se necessário.<br><br><strong>Semana 5:</strong> Deload — 50% do volume, mesma intensidade.<br><br><strong>Semana 6–7:</strong> Volume total com cargas superiores.<br><br><strong>Semana 8:</strong> Avalie troca de programa.`;
-  else if(wi<4)prog=`<strong>Semana ${wi+1} — Intensidade.</strong> +2,5–5 kg nos compostos. Reduza 1 série se a técnica cair.<br><br><strong>Próxima:</strong> Deload na semana 5 — obrigatório.`;
-  else if(wi===4)prog=`<strong>Semana 5 — DELOAD.</strong> 50% das séries, mesma carga. Não pule.`;
-  else if(wi<8)prog=`<strong>Semana ${wi+1} — Ciclo avançado.</strong> Volume total retomado. Registre seus novos máximos.`;
-  else prog=`<strong>⚡ Semana ${wi+1} — Programa vencido.</strong> 8+ semanas. Altere exercícios, séries/reps ou método de periodização.`;
+  if(!state.history.length){
+    prog='Inicie seu primeiro treino para ver o guia de progressão personalizado.';
+  }else if(expired){
+    prog=`<strong>⚡ Plano vencido.</strong> O programa continua funcionando normalmente, mas recomendamos renovar ou atualizar os exercícios para continuar progredindo.<br><br>Renove o prazo acima ou altere o programa na aba Treino.`;
+  }else{
+    const current=wi<2?0:wi<4?1:wi===4?2:wi<7?3:4;
+    prog=phases.map((p,idx)=>{
+      const isCurrent=idx===current;
+      return `<div style="padding:10px 0;${idx<phases.length-1?'border-bottom:1px solid var(--border);':''}${isCurrent?'':'opacity:.5'}">
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px">${p.icon} ${p.week} — ${p.title} ${isCurrent?'<span style="background:var(--accent);color:#000;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:800;letter-spacing:.5px">ATUAL</span>':''}</div>
+        <div style="font-size:13px;color:var(--muted2);line-height:1.6">${p.body}</div>
+      </div>`;
+    }).join('');
+  }
   document.getElementById('progressionAdvice').innerHTML=prog;
+  renderRunGoals();
+}
+
+// RUN GOALS
+let showRunGoalForm=false;
+function toggleRunGoalForm(){showRunGoalForm=!showRunGoalForm;renderRunGoals();}
+function getRunStats(){
+  const runs=state.history.filter(s=>s.type==='cardio'||s.workoutId==='RUN');
+  if(!runs.length)return{totalKm:0,bestPace:null,longestRun:0,count:0};
+  const totalKm=runs.reduce((a,s)=>a+(s.distanceKm||0),0);
+  const paces=runs.filter(s=>s.paceSecPerKm&&s.paceSecPerKm>0).map(s=>s.paceSecPerKm);
+  const bestPace=paces.length?Math.min(...paces):null;
+  const longestRun=Math.max(...runs.map(s=>s.distanceKm||0));
+  return{totalKm,bestPace,longestRun,count:runs.length};
+}
+function calcGoalProgress(g){
+  const stats=getRunStats();
+  const runs=state.history.filter(s=>s.type==='cardio'||s.workoutId==='RUN');
+  switch(g.type){
+    case 'prova':{
+      if(!g.date)return{pct:0,label:'Sem data definida'};
+      const daysLeft=Math.ceil((new Date(g.date)-new Date())/(86400000));
+      if(daysLeft<0)return{pct:100,label:'Prova já realizada'};
+      return{pct:Math.max(0,Math.round((1-daysLeft/Math.max(1,Math.ceil((new Date(g.date)-new Date(g.created))/(86400000))))*100)),label:`${daysLeft} dia${daysLeft>1?'s':''} restante${daysLeft>1?'s':''}`};
+    }
+    case 'pace':{
+      if(!g.targetPace||!stats.bestPace)return{pct:0,label:'Sem corridas registradas'};
+      const target=g.targetPace;
+      const pct=Math.min(100,Math.round(target/stats.bestPace*100));
+      return{pct,label:`Melhor pace: ${fmtPace(stats.bestPace)}`};
+    }
+    case 'distancia_unica':{
+      if(!g.targetKm)return{pct:0,label:'—'};
+      const pct=Math.min(100,Math.round(stats.longestRun/g.targetKm*100));
+      return{pct,label:`Maior corrida: ${stats.longestRun.toFixed(2).replace('.',',')} km`};
+    }
+    case 'km_acumulado':{
+      if(!g.targetKm)return{pct:0,label:'—'};
+      const pct=Math.min(100,Math.round(stats.totalKm/g.targetKm*100));
+      return{pct,label:`Acumulado: ${stats.totalKm.toFixed(1).replace('.',',')} km`};
+    }
+    default:return{pct:0,label:'—'};
+  }
+}
+function saveRunGoal(){
+  const type=document.getElementById('rg-type').value;
+  const name=document.getElementById('rg-name').value.trim();
+  if(!name){showToast('⚠ Dê um nome à meta',false);return;}
+  const g={id:Date.now(),type,name,created:new Date().toISOString(),achieved:false};
+  if(type==='prova'){
+    g.date=document.getElementById('rg-date').value||'';
+    g.distance=parseFloat((document.getElementById('rg-dist').value||'0').replace(',','.'))||0;
+    g.notes=document.getElementById('rg-gnotes').value.trim();
+  }else if(type==='pace'){
+    const paceRaw=document.getElementById('rg-pace').value;
+    g.targetPace=parseDuration(paceRaw);
+    if(!g.targetPace){showToast('⚠ Pace inválido (use m:ss)',false);return;}
+  }else if(type==='distancia_unica'){
+    g.targetKm=parseDistance(document.getElementById('rg-tkm').value);
+    if(!g.targetKm){showToast('⚠ Distância inválida',false);return;}
+  }else if(type==='km_acumulado'){
+    g.targetKm=parseDistance(document.getElementById('rg-tkm').value);
+    if(!g.targetKm){showToast('⚠ Distância inválida',false);return;}
+  }
+  state.runGoals.push(g);save();
+  showRunGoalForm=false;
+  renderRunGoals();
+  showToast('✓ Meta registrada',true);
+}
+function toggleGoalAchieved(id){
+  const g=state.runGoals.find(x=>x.id===id);
+  if(g){g.achieved=!g.achieved;save();renderRunGoals();}
+}
+function deleteRunGoal(id){
+  if(!confirm('Remover esta meta?'))return;
+  state.runGoals=state.runGoals.filter(x=>x.id!==id);save();renderRunGoals();
+  showToast('🗑 Meta removida',true);
+}
+function rgTypeLabel(t){
+  return{prova:'Prova',pace:'Pace alvo',distancia_unica:'Distância única',km_acumulado:'Km acumulado'}[t]||t;
+}
+function renderRunGoalFormFields(){
+  const sel=document.getElementById('rg-type');if(!sel)return;
+  const t=sel.value;
+  const box=document.getElementById('rg-dynamic');
+  if(t==='prova')box.innerHTML=`
+    <div class="rl-grid">
+      <div class="rl-row"><label>Data da prova</label><input type="date" id="rg-date"></div>
+      <div class="rl-row"><label>Distância (km)</label><input type="text" inputmode="decimal" id="rg-dist" placeholder="21,10"></div>
+    </div>
+    <div class="rl-row"><label>Observações</label><textarea id="rg-gnotes" rows="2" placeholder="Local, inscrição, estratégia…"></textarea></div>`;
+  else if(t==='pace')box.innerHTML=`
+    <div class="rl-row"><label>Pace alvo (min/km)</label><input type="text" inputmode="numeric" id="rg-pace" placeholder="530 ou 5:30" maxlength="5"></div>`;
+  else if(t==='distancia_unica')box.innerHTML=`
+    <div class="rl-row"><label>Distância alvo (km)</label><input type="text" inputmode="decimal" id="rg-tkm" placeholder="10,00"></div>
+    <div class="pd-info">Meta: completar uma corrida única com essa distância.</div>`;
+  else if(t==='km_acumulado')box.innerHTML=`
+    <div class="rl-row"><label>Quilometragem total alvo (km)</label><input type="text" inputmode="decimal" id="rg-tkm" placeholder="100,00"></div>
+    <div class="pd-info">Meta: acumular essa quilometragem somando todas as corridas.</div>`;
+}
+function renderRunGoals(){
+  const el=document.getElementById('runGoals');if(!el)return;
+  const goals=state.runGoals||[];
+  let html='';
+  // Formulário
+  if(showRunGoalForm){
+    html+=`<div class="rg-form">
+      <div class="rl-row"><label>Tipo de meta</label>
+        <select id="rg-type" onchange="renderRunGoalFormFields()">
+          <option value="prova">Prova / evento</option>
+          <option value="pace">Pace alvo</option>
+          <option value="distancia_unica">Distância única</option>
+          <option value="km_acumulado">Km acumulado</option>
+        </select>
+      </div>
+      <div class="rl-row"><label>Nome da meta</label><input type="text" id="rg-name" placeholder="Ex: Meia maratona de SP"></div>
+      <div id="rg-dynamic"></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-secondary btn-full" onclick="toggleRunGoalForm()">Cancelar</button>
+        <button class="btn btn-primary btn-full" onclick="saveRunGoal()">✓ Salvar meta</button>
+      </div>
+    </div>`;
+  }
+  // Goals list
+  if(!goals.length&&!showRunGoalForm){
+    html+=`<div class="rg-card"><div style="text-align:center;color:var(--muted);padding:10px;font-size:13px">Nenhuma meta definida ainda.<br>Defina metas para acompanhar seu progresso na corrida.</div></div>`;
+  }
+  goals.forEach(g=>{
+    const prog=calcGoalProgress(g);
+    const achieved=g.achieved||prog.pct>=100;
+    let details='';
+    if(g.type==='prova'&&g.date)details+=`📅 ${fmtDateBR(g.date)}${g.distance?` · ${g.distance} km`:''}`;
+    else if(g.type==='pace'&&g.targetPace)details+=`🎯 Alvo: ${fmtPace(g.targetPace)}`;
+    else if((g.type==='distancia_unica'||g.type==='km_acumulado')&&g.targetKm)details+=`🎯 Alvo: ${g.targetKm.toFixed(2).replace('.',',')} km`;
+    if(g.notes)details+=`<br>📝 ${g.notes}`;
+    html+=`<div class="rg-card ${achieved?'achieved':''}">
+      <div class="rg-head">
+        <div class="rg-name">${achieved?'✓ ':''}${g.name}</div>
+        <div class="rg-type">${rgTypeLabel(g.type)}</div>
+      </div>
+      ${details?`<div class="rg-details">${details}</div>`:''}
+      <div class="rg-progress">
+        <div class="rg-bar-track"><div class="rg-bar-fill" style="width:${Math.min(100,prog.pct)}%;${achieved?'background:var(--done-border)':''}"></div></div>
+        <div class="rg-bar-label">${prog.label} · ${prog.pct}%</div>
+      </div>
+      <div class="rg-actions">
+        <button class="btn btn-secondary btn-small" onclick="toggleGoalAchieved(${g.id})">${achieved?'↩ Reabrir':'✓ Concluída'}</button>
+        <button class="btn btn-danger btn-small" onclick="deleteRunGoal(${g.id})">🗑</button>
+      </div>
+    </div>`;
+  });
+  html+=`<button class="btn btn-outline btn-full" style="margin-top:6px" onclick="toggleRunGoalForm()">${showRunGoalForm?'':'+ Nova meta de corrida'}</button>`;
+  el.innerHTML=html;
+  // Render dynamic fields after DOM is ready
+  if(showRunGoalForm)setTimeout(renderRunGoalFormFields,0);
 }
 
 // NAV
