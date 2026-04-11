@@ -333,7 +333,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   <button class="menu-close" onclick="closeMenu()" aria-label="Fechar">×</button>
   <div class="menu-list">
     <button class="menu-item active" data-page="treino" onclick="switchPage('treino',this)">Treino</button>
-    <button class="menu-item" data-page="dashboard" onclick="switchPage('dashboard',this)">Dashboard<span class="mbadge" id="alertBadge"></span></button>
+    <button class="menu-item" data-page="dashboard" onclick="switchPage('dashboard',this)">Desempenho<span class="mbadge" id="alertBadge"></span></button>
     <button class="menu-item" data-page="historico" onclick="switchPage('historico',this)">Histórico</button>
     <button class="menu-item" data-page="plano" onclick="switchPage('plano',this)">Plano</button>
     <button class="menu-item" data-page="perfil" onclick="switchPage('perfil',this)">Perfil</button>
@@ -931,7 +931,7 @@ function finishSession(){
   document.getElementById('progBlock').style.display='none';
   document.getElementById('finishRow').style.display='none';
   save();showToast(`✓ Treino salvo! ${fmtMin(durMin)}`,true);
-  setTimeout(()=>{renderTreino();renderHistory();renderDashboard();renderPlano();updateAlertBadge();},300);
+  setTimeout(()=>{renderTreino();renderHistory();renderDesempenho();renderPlano();updateAlertBadge();},300);
 }
 function resetSession(){
   if(!confirm('Reiniciar este treino e descartar o progresso atual?'))return;
@@ -1026,7 +1026,7 @@ function saveRunLog(){
   });
   save();
   showToast(`✓ Corrida registrada — ${km.toFixed(2).replace('.',',')} km | ${paceLabel}`,true);
-  renderTreino();renderHistory();renderDashboard();
+  renderTreino();renderHistory();renderDesempenho();
 }
 function tomorrowMessage(){
   const tomorrow=(new Date().getDay()+1)%7;
@@ -1340,7 +1340,7 @@ function saveHistEdit(hi){
   s.fullCompletion=fullTotal>0?Math.min(100,Math.round(doneSets/fullTotal*100)):s.completion;
   s.weights=Object.fromEntries(exDone.map(n=>[n,state.weights[n]||'']));
   save();editingHist=null;
-  renderHistory();renderDashboard();
+  renderHistory();renderDesempenho();
   showToast('✓ Treino atualizado',true);
 }
 function saveRunHistEdit(hi){
@@ -1371,13 +1371,13 @@ function saveRunHistEdit(hi){
   s.startISO=start.toISOString();
   s.endISO=end.toISOString();
   save();editingHist=null;
-  renderHistory();renderDashboard();
+  renderHistory();renderDesempenho();
   showToast('✓ Corrida atualizada',true);
 }
 function deleteHistory(hi){
   if(!confirm('Apagar este treino do histórico? Esta ação não pode ser desfeita.'))return;
   state.history.splice(hi,1);save();
-  renderHistory();renderDashboard();
+  renderHistory();renderDesempenho();
   showToast('🗑 Treino removido',true);
 }
 function renderHistory(){
@@ -1487,7 +1487,7 @@ function getCompData(){
   const adhRun=pRun>0?Math.min(100,Math.round(nRun/pRun*100)):100;
   return{planned,n,missed,adh,weeks,pStr,nStr,adhStr,pRun,nRun,adhRun};
 }
-function renderDashboard(){
+function renderDesempenho(){
   renderSilhouette();
   const n=state.history.length;
   const runs=state.history.filter(s=>s.type==='cardio'||s.workoutId==='RUN');
@@ -1583,14 +1583,14 @@ function savePlanDates(){
     if(!state.planEnd||!endEl.value)state.planEnd=suggestPlanEnd(startEl.value);
   }
   if(endEl&&endEl.value)state.planEnd=endEl.value;
-  save();renderPlano();renderDashboard();
+  save();renderPlano();renderDesempenho();
   showToast('✓ Datas do plano salvas',true);
 }
 function renewPlan(days){
   const base=state.planEnd?new Date(state.planEnd):new Date();
   base.setDate(base.getDate()+days);
   state.planEnd=fmtDateISO(base);
-  save();renderPlano();renderDashboard();
+  save();renderPlano();renderDesempenho();
   showToast(`✓ Plano renovado por +${days} dias (até ${fmtDateBR(state.planEnd)})`,true);
 }
 function renderPlanDates(){
@@ -1868,7 +1868,7 @@ function switchPage(page,tab){
   if(target)target.classList.add('active');
   closeMenu();
   if(page==='historico')renderHistory();
-  if(page==='dashboard')renderDashboard();
+  if(page==='dashboard')renderDesempenho();
   if(page==='plano')renderPlano();
   if(page==='perfil')renderPerfil();
 }
