@@ -632,9 +632,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.11.1';
+const APP_VERSION='0.12.0';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.12.0',d:'2026-04-11',items:['Compatibilidade automática ao restaurar backups de versões anteriores','Backups antigos são atualizados para a versão atual na importação']},
   {v:'0.11.1',d:'2026-04-11',items:['Correções de bugs e melhorias do app']},
   {v:'0.11.0',d:'2026-04-11',items:['Alertas sonoros diferenciados para cada etapa do treino','Sons ao iniciar, pausar, retomar e encerrar sessões de musculação e corrida']},
   {v:'0.10.0',d:'2026-04-11',items:['Melhorias no visual do cronômetro de corrida','Botão central circular para pausar/retomar','Botões auxiliares redesenhados']},
@@ -647,30 +648,67 @@ const CHANGELOG=[
 ];
 
 // STATE
+const STATE_VERSION=5;
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
 function save(){localStorage.setItem('fpv5',JSON.stringify(state));}
 function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.series).fill(false));}
-function ensureStateDefaults(s){
-  if(!s.history)s.history=[];
-  if(!s.weights)s.weights={};
-  if(!s.profile)s.profile={name:'',age:null,sex:'',weightKg:null,heightCm:null,goalKg:null};
-  if(s.sessionPlan===undefined)s.sessionPlan=null;
-  if(!s.quickMode)s.quickMode='off';
-  if(!s.planEnd)s.planEnd=null;
-  if(!s.runGoals)s.runGoals=[];
-  if(s.useCustomPlan===undefined)s.useCustomPlan=false;
-  if(!s.customWorkouts)s.customWorkouts=null;
-  if(!s.customDayMap)s.customDayMap=null;
-  if(!s.customRunDays)s.customRunDays=null;
-  if(!s.customPlanMeta)s.customPlanMeta=null;
-  if(!s.customRunPlan)s.customRunPlan=null;
-  if(s.customRunHasOwnPlan===undefined)s.customRunHasOwnPlan=false;
-  if(s.disclaimerAccepted===undefined)s.disclaimerAccepted=false;
-  if(s.quickFullbody===undefined)s.quickFullbody=false;
-  s.editMode=false;
+
+// ── Versioned state migrations ──
+const MIGRATIONS=[
+  // v0→v1: campos básicos de perfil e pesos
+  function v1(s){
+    if(!s.history)s.history=[];
+    if(!s.weights)s.weights={};
+    if(!s.profile)s.profile={name:'',age:null,sex:'',weightKg:null,heightCm:null,goalKg:null};
+    if(s.sessionPlan===undefined)s.sessionPlan=null;
+    if(!s.quickMode)s.quickMode='off';
+    s.editMode=false;
+  },
+  // v1→v2: plano customizado, corrida, metas
+  function v2(s){
+    if(!s.planEnd)s.planEnd=null;
+    if(!s.runGoals)s.runGoals=[];
+    if(s.useCustomPlan===undefined)s.useCustomPlan=false;
+    if(!s.customWorkouts)s.customWorkouts=null;
+    if(!s.customDayMap)s.customDayMap=null;
+    if(!s.customRunDays)s.customRunDays=null;
+    if(!s.customPlanMeta)s.customPlanMeta=null;
+    if(!s.customRunPlan)s.customRunPlan=null;
+    if(s.customRunHasOwnPlan===undefined)s.customRunHasOwnPlan=false;
+  },
+  // v2→v3: disclaimer e fullbody rápido
+  function v3(s){
+    if(s.disclaimerAccepted===undefined)s.disclaimerAccepted=false;
+    if(s.quickFullbody===undefined)s.quickFullbody=false;
+  },
+  // v3→v4: histórico de perfil, notas, view de treino
+  function v4(s){
+    if(!s.profileHistory)s.profileHistory=[];
+    if(!s.notes)s.notes={};
+    if(!s.treinoView)s.treinoView='strength';
+  },
+  // v4→v5: campos obrigatórios nos registros de histórico
+  function v5(s){
+    if(s.history){
+      s.history.forEach(h=>{
+        if(h.fullCompletion===undefined)h.fullCompletion=h.completion||0;
+        if(!h.quickMode)h.quickMode='off';
+        if(!h.plan)h.plan=[];
+        if(!h.notes)h.notes={};
+        if(!h.exercisesDone)h.exercisesDone=[];
+        if(!h.weights)h.weights={};
+      });
+    }
+    delete s.forceStrengthDate;
+  }
+];
+function migrateState(s){
+  const from=s._stateVersion||0;
+  for(let i=from;i<MIGRATIONS.length;i++)MIGRATIONS[i](s);
+  s._stateVersion=STATE_VERSION;
   return s;
 }
-let state=ensureStateDefaults(load()||{currentWorkout:0,sessionSets:null,sessionStart:null,history:[],programStart:null,switchDismissed:false});
+let state=migrateState(load()||{currentWorkout:0,sessionSets:null,sessionStart:null,history:[],programStart:null,switchDismissed:false,_stateVersion:0});
 
 // QUICK MODE & SESSION PLAN HELPERS
 function getOriginalWorkout(wi){return getActiveWorkouts()[wi];}
@@ -2687,7 +2725,7 @@ function exportFit(idx){
   }catch(e){alert('Erro ao gerar .fit: '+e.message);}
 }
 function exportBackup(){
-  const payload={app:'treino-do-pai',version:1,exportedAt:new Date().toISOString(),state};
+  const payload={app:'treino-do-pai',version:1,stateVersion:STATE_VERSION,appVersion:APP_VERSION,exportedAt:new Date().toISOString(),state};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const d=new Date(),pad=n=>String(n).padStart(2,'0');
@@ -2704,10 +2742,17 @@ function importBackup(file){
       const data=JSON.parse(e.target.result);
       const restored=data&&data.state?data.state:data;
       if(!restored||typeof restored!=='object'||!('history' in restored))throw new Error('arquivo inválido');
-      if(!confirm('Restaurar este backup vai substituir TODOS os dados atuais. Continuar?'))return;
-      ensureStateDefaults(restored);
+      // Detect stateVersion: from payload, from state, or assume 0 (legacy)
+      const sv=data.stateVersion||restored._stateVersion||0;
+      restored._stateVersion=sv;
+      const migrated=sv<STATE_VERSION;
+      const msg=migrated
+        ?`Restaurar este backup vai substituir TODOS os dados atuais.\n\n⚠ Este backup é de uma versão anterior (v${sv}) e será atualizado automaticamente para a versão atual (v${STATE_VERSION}).\n\nContinuar?`
+        :'Restaurar este backup vai substituir TODOS os dados atuais. Continuar?';
+      if(!confirm(msg))return;
+      migrateState(restored);
       localStorage.setItem('fpv5',JSON.stringify(restored));
-      showToast('✓ Backup restaurado',true);
+      showToast(migrated?'✓ Backup restaurado e atualizado':'✓ Backup restaurado',true);
       setTimeout(()=>location.reload(),500);
     }catch(err){alert('Backup inválido: '+err.message);}
   };
