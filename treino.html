@@ -355,6 +355,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .disclaimer-brand{font-family:'Bebas Neue',sans-serif;line-height:1;margin-bottom:20px;}
 .disclaimer-brand-top{display:block;font-size:14px;color:var(--muted2);letter-spacing:4px;}
 .disclaimer-brand-main{display:block;font-size:28px;letter-spacing:2px;margin-top:2px;}
+.gender-btn{flex:1;background:transparent;border:2px solid;border-radius:14px;padding:20px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all .2s;}
+.gender-btn:active{transform:scale(.96);}
+.gender-icon{font-size:40px;}
+.gender-label{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
 .chat-free-input{display:flex;gap:8px;padding:4px 0;}
 .chat-free-input input{flex:1;padding:10px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;}
 .chat-free-input input:focus{border-color:var(--accent);}
@@ -554,11 +558,32 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
 </div>
 
+<!-- Gender picker (after disclaimer) -->
+<div id="genderPicker" class="disclaimer-overlay" style="display:none">
+  <div class="disclaimer-box" style="text-align:center">
+    <div class="disclaimer-brand">
+      <span class="disclaimer-brand-top">TREINO</span>
+      <span class="disclaimer-brand-main"><span style="color:#ff69b4">DA MÃE</span> <span style="color:#909090">&</span> <span style="color:#e8ff47">DO PAI</span></span>
+    </div>
+    <p style="font-size:15px;color:var(--text);margin-bottom:20px">Quem vai treinar?</p>
+    <div style="display:flex;gap:12px">
+      <button class="gender-btn" onclick="selectGender('F')" style="border-color:#ff69b4">
+        <span class="gender-icon">👩</span>
+        <span class="gender-label" style="color:#ff69b4">DA MÃE</span>
+      </button>
+      <button class="gender-btn" onclick="selectGender('M')" style="border-color:#e8ff47">
+        <span class="gender-icon">👨</span>
+        <span class="gender-label" style="color:#e8ff47">DO PAI</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Onboarding alert -->
 <div id="onboardingAlert" class="onboarding-overlay" style="display:none">
-  <div class="disclaimer-box">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:2px;margin-bottom:10px">Bem-vindo!</div>
-    <div style="font-size:13px;line-height:1.7;color:var(--text);margin-bottom:18px">
+  <div class="disclaimer-box" style="text-align:center">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:2px;margin-bottom:10px" id="onboardingTitle">Bem-vindo!</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--text);margin-bottom:18px;text-align:left">
       <p style="margin-bottom:8px">Parece que você ainda não tem um plano de treino configurado.</p>
       <p style="margin-bottom:8px">Vamos montar um plano personalizado? O assistente vai te fazer algumas perguntas rápidas sobre seus objetivos, experiência e condições de saúde.</p>
       <p style="color:var(--muted2);font-size:12px">Leva menos de 2 minutos.</p>
@@ -2640,10 +2665,13 @@ function openPlanChat(editing){
 function closePlanChat(){switchPage('plano');}
 
 const CHAT_STEPS=[
-  {id:'welcome',bot:()=>chatState.editing
-    ?'Vamos ajustar o seu plano! Vou fazer algumas perguntas rápidas. Você pode mudar qualquer coisa: adicionar corrida, trocar divisão muscular, reduzir dias — é só responder. 💪'
-    :'Olá! Vou criar um plano de treino personalizado para você. Vou te fazer algumas perguntas sobre seu corpo, seus objetivos e sua rotina. São rápidas — vamos lá! 💪',
-   auto:true},
+  {id:'welcome',bot:()=>{
+    const fem=state.profile.sex==='F';
+    if(chatState.editing)return 'Vamos ajustar o seu plano! Vou fazer algumas perguntas rápidas. Você pode mudar qualquer coisa: adicionar corrida, trocar divisão muscular, reduzir dias — é só responder. 💪';
+    return fem
+      ?'Olá! Vou criar um plano de treino personalizado para você. Vou te fazer algumas perguntas sobre seu corpo, seus objetivos e sua rotina. São rápidas — vamos lá! 💪'
+      :'Olá! Vou criar um plano de treino personalizado para você. Vou te fazer algumas perguntas sobre seu corpo, seus objetivos e sua rotina. São rápidas — vamos lá! 💪';
+   },auto:true},
   // ── Perfil: nome ──
   {id:'userName',
    bot:()=>'Primeiro, como posso te chamar?',
@@ -3706,10 +3734,26 @@ function applyTheme(){
 function acceptDisclaimer(){
   state.disclaimerAccepted=true;save();
   document.getElementById('disclaimerModal').style.display='none';
+  // If gender not set, show gender picker; otherwise go to onboarding
+  if(!state.profile.sex){
+    document.getElementById('genderPicker').style.display='flex';
+  }else{
+    checkOnboarding();
+  }
+}
+function selectGender(sex){
+  state.profile.sex=sex;save();
+  applyTheme();
+  document.getElementById('genderPicker').style.display='none';
+  // Update onboarding greeting
+  const title=document.getElementById('onboardingTitle');
+  if(title)title.textContent=sex==='F'?'Bem-vinda!':'Bem-vindo!';
   checkOnboarding();
 }
 function checkOnboarding(){
   if(!state.useCustomPlan&&!state.profile.name&&state.history.length===0){
+    const title=document.getElementById('onboardingTitle');
+    if(title)title.textContent=state.profile.sex==='F'?'Bem-vinda!':'Bem-vindo!';
     document.getElementById('onboardingAlert').style.display='flex';
   }
 }
