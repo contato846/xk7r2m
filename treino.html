@@ -413,6 +413,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <button class="menu-item" data-page="historico" onclick="switchPage('historico',this)">Histórico</button>
     <button class="menu-item" data-page="plano" onclick="switchPage('plano',this)">Plano</button>
     <button class="menu-item" data-page="perfil" onclick="switchPage('perfil',this)">Perfil</button>
+    <button class="menu-item" data-page="sobre" onclick="switchPage('sobre',this)">Sobre</button>
   </div>
 </div>
 
@@ -511,6 +512,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <button class="btn btn-outline btn-full" onclick="openProfileEdit()">✎ Dados pessoais</button>
     <button class="btn btn-outline btn-full" onclick="openBackupPage()">💾 Backup e dados</button>
   </div>
+</div>
+
+<div class="page" id="page-sobre">
+  <div id="sobreContent"></div>
 </div>
 
 <div class="page" id="page-profileedit">
@@ -612,6 +617,10 @@ const WORKOUTS=[
 ];
 const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
+
+// APP VERSION — atualizar a cada commit
+const APP_VERSION='0.9.0';
+const APP_UPDATED='2026-04-11';
 
 // STATE
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
@@ -898,6 +907,37 @@ function openProfileEdit(){
   document.getElementById('pf-goal').value=p.goalKg||'';
 }
 function closeProfileEdit(){switchPage('perfil');}
+function renderSobre(){
+  const updFmt=(()=>{const[y,m,d]=APP_UPDATED.split('-');const meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];return `${+d} de ${meses[+m-1]} de ${y}`;})();
+  document.getElementById('sobreContent').innerHTML=`
+    <div style="text-align:center;margin-bottom:24px">
+      <div class="disclaimer-brand">
+        <span class="disclaimer-brand-top">TREINO</span>
+        <span class="disclaimer-brand-main"><span style="color:#ff69b4">DA MÃE</span> <span style="color:#909090">&</span> <span style="color:#e8ff47">DO PAI</span></span>
+      </div>
+    </div>
+    <div style="background:var(--card);border-radius:12px;padding:18px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="color:var(--muted2);font-size:12px;text-transform:uppercase;letter-spacing:1px">Versão</span>
+        <span style="font-size:18px;font-weight:700;color:var(--accent)">${APP_VERSION} <span style="font-size:11px;font-weight:400;color:var(--muted2)">beta</span></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="color:var(--muted2);font-size:12px;text-transform:uppercase;letter-spacing:1px">Última atualização</span>
+        <span style="font-size:14px;color:var(--text)">${updFmt}</span>
+      </div>
+    </div>
+    <div style="background:var(--card);border-radius:12px;padding:18px;margin-bottom:16px">
+      <div style="font-size:13px;line-height:1.7;color:var(--text)">
+        <p style="margin-bottom:10px"><strong>Aviso importante:</strong></p>
+        <p style="margin-bottom:8px">Este aplicativo gera planos de treino com base nas suas respostas, mas <strong>não substitui a orientação de um profissional de educação física ou médico</strong>.</p>
+        <p style="margin-bottom:8px">Ao utilizar o app, você assume total responsabilidade pela execução dos exercícios e sessões de corrida. Se você tem qualquer condição de saúde, lesão ou dúvida, <strong>consulte um profissional antes de iniciar</strong>.</p>
+        <p style="margin-bottom:0">O app é uma ferramenta de apoio — a responsabilidade pela prática segura é sempre sua.</p>
+      </div>
+    </div>
+    <div style="text-align:center;color:var(--muted2);font-size:11px;margin-top:20px;line-height:1.6">
+      Feito com 💪 para quem treina de verdade.
+    </div>`;
+}
 function openBackupPage(){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-backup').classList.add('active');
@@ -2476,6 +2516,7 @@ function switchPage(page,tab){
   if(page==='dashboard')renderDesempenho();
   if(page==='plano')renderPlano();
   if(page==='perfil')renderPerfil();
+  if(page==='sobre')renderSobre();
 }
 function showToast(msg,accent){
   const t=document.getElementById('toast');t.textContent=msg;
