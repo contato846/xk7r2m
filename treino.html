@@ -2901,6 +2901,22 @@ function submitChatFreeText(key){
   const input=document.getElementById('chatFreeInput');
   const val=(input?input.value:'').trim();
   if(!val)return;
+  // Validate numeric fields
+  if(key==='userAge'){
+    const n=parseInt(val);
+    if(isNaN(n)||n<10||n>120){showToast('⚠ Informe uma idade válida (10–120)',false);return;}
+    selectChatOption(key,String(n));return;
+  }
+  if(key==='userWeight'){
+    const n=parseFloat(val.replace(',','.'));
+    if(isNaN(n)||n<20||n>300){showToast('⚠ Informe um peso válido em kg (20–300)',false);return;}
+    selectChatOption(key,String(n));return;
+  }
+  if(key==='userHeight'){
+    const n=parseInt(val);
+    if(isNaN(n)||n<100||n>250){showToast('⚠ Informe uma altura válida em cm (100–250)',false);return;}
+    selectChatOption(key,String(n));return;
+  }
   selectChatOption(key,val);
 }
 
@@ -3119,11 +3135,15 @@ advanced:[
    ]},
 ]};
 
-function buildRunPlan(runDays,runExp,runGoal){
+function buildRunPlan(runDays,runExp,runGoal,age){
   const re=runExp||'';
   const rg=runGoal||'';
-  const isBegin=re.includes('Nunca')||re.includes('eventualmente');
-  const isAdv=re.includes('mais de 6');
+  const userAge2=age||30;
+  let isBegin=re.includes('Nunca')||re.includes('eventualmente');
+  let isAdv=re.includes('mais de 6');
+  // Age: seniors default to beginner if inexperienced; mature users cap at intermediate
+  if(userAge2>=60&&!isAdv){isBegin=true;isAdv=false;}
+  else if(userAge2>=50){isAdv=false;}
   const level=isBegin?'beginner':isAdv?'advanced':'intermediate';
   const sessPool=RUN_SESSIONS[level];
   const plan=[];
@@ -3192,6 +3212,13 @@ function generatePlan(){
   const hasDiabetes=allLimits.includes('Diabetes');
   const hasTendinitis=allLimits.includes('Tendinite');
 
+  // ── Age & gender adjustments ──
+  const userAge=parseInt(a.userAge||state.profile.age)||30;
+  const userSex=(a.userSex==='Masculino'||state.profile.sex==='M')?'M':'F';
+  const isSenior=userAge>=60;
+  const isMature=userAge>=50;
+  const isYoung=userAge<25;
+
   // ── STRENGTH PLAN ──
   if(wantStr){
     // Determine difficulty level
@@ -3201,6 +3228,9 @@ function generatePlan(){
     // Reduce difficulty for health conditions
     if(hasCardiac||hasPostOp||hasPregnancy)maxDiff=Math.min(maxDiff,1);
     else if(hasHypertension||hasObesity||hasArthritis)maxDiff=Math.min(maxDiff,2);
+    // Age-based difficulty cap
+    if(isSenior)maxDiff=Math.min(maxDiff,1);
+    else if(isMature)maxDiff=Math.min(maxDiff,2);
 
     const equipMap={'Academia completa':null,'Home gym (halteres + barra + banco)':['halteres','barra','corpo','acessório'],
       'Só halteres':['halteres','corpo','acessório'],'Só peso corporal (sem equipamento)':['corpo']};
@@ -3261,6 +3291,20 @@ function generatePlan(){
     }else if(hasObesity||hasArthritis){
       exPerSession=Math.min(exPerSession,6);
       compoundReps='10–15 reps';isolatedReps='12–15 reps';
+    }
+    // Age-based adjustments
+    if(isSenior){
+      exPerSession=Math.min(exPerSession,5);compoundSeries=Math.min(compoundSeries,3);isolatedSeries=Math.min(isolatedSeries,2);
+      compoundReps='10–12 reps';isolatedReps='12–15 reps';
+      compoundRest=Math.max(compoundRest,150);isolatedRest=Math.max(isolatedRest,90);
+    }else if(isMature){
+      compoundRest=Math.max(compoundRest,120);isolatedRest=Math.max(isolatedRest,75);
+    }
+    // Gender: women tend to benefit from higher rep ranges and shorter rest for hypertrophy
+    if(userSex==='F'&&!goal.includes('força')){
+      compoundReps=compoundReps.includes('3–5')?'6–8 reps':compoundReps;
+      isolatedReps='12–15 reps';
+      compoundRest=Math.min(compoundRest,120);isolatedRest=Math.min(isolatedRest,75);
     }
 
     function pickExercises(targetMuscles,count,usedNames){
@@ -3407,11 +3451,11 @@ function generatePlan(){
   // ── RUNNING PLAN ──
   if(wantRun&&runDays>0){
     if(!hasOwnRunPlan){
-      runPlanData=buildRunPlan(runDays,a.runExp,a.runGoalType);
+      runPlanData=buildRunPlan(runDays,a.runExp,a.runGoalType,userAge);
       // Adjust for health conditions
       if(hasCardiac||hasAsthma||hasPregnancy){
         // Force beginner level for these conditions
-        runPlanData=buildRunPlan(runDays,'Nunca corri',a.runGoalType);
+        runPlanData=buildRunPlan(runDays,'Nunca corri',a.runGoalType,userAge);
       }
     }
     // Assign run days in gaps
