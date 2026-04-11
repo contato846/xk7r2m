@@ -1451,9 +1451,9 @@ function renderSilhouette(){
 function getCompData(){
   if(!state.programStart)return{planned:0,n:0,missed:0,adh:100,weeks:0,pStr:0,nStr:0,adhStr:100,pRun:0,nRun:0,adhRun:100};
   const start=new Date(state.programStart);start.setHours(0,0,0,0);
-  const today=new Date();today.setHours(23,59,59,999);
-  const days=Math.floor((today-start)/86400000)+1;
-  const weeks=Math.max(1,Math.ceil(days/7));
+  const today=new Date();today.setHours(0,0,0,0);
+  const days=Math.floor((today-start)/86400000); // não inclui hoje (dia não encerrado)
+  const weeks=Math.max(1,Math.ceil((days+1)/7));
   let pStr=0,pRun=0;
   for(let i=0;i<days;i++){
     const d=new Date(start);d.setDate(start.getDate()+i);
@@ -1626,11 +1626,22 @@ function renderPlano(){
   const weekSess=state.history.filter(s=>{const d=new Date(s.startISO);return d>=weekStart&&d<new Date(weekStart.getTime()+7*24*60*60*1000);});
   const doneDays=new Set(weekSess.map(s=>(new Date(s.startISO).getDay()+6)%7));
   const todayIdx=(today.getDay()+6)%7;
+  const planStart=state.programStart?new Date(state.programStart):null;
+  if(planStart)planStart.setHours(0,0,0,0);
   let wHTML='<div class="plan-week">';
   for(let i=0;i<7;i++){
-    const dd=new Date(weekStart);dd.setDate(weekStart.getDate()+i);
-    const isDone=doneDays.has(i),isPlanned=plannedD.includes(i),isRun=runD.includes(i),isPast=dd<today&&i!==todayIdx,isMissed=isPast&&(isPlanned||isRun)&&!isDone;
-    const icon=isDone?'✓':isRun?'🏃':isPlanned?'🏋️':'—';
+    const dd=new Date(weekStart);dd.setDate(weekStart.getDate()+i);dd.setHours(0,0,0,0);
+    const beforePlan=planStart&&dd<planStart;
+    const isDone=doneDays.has(i),isPlanned=plannedD.includes(i),isRun=runD.includes(i);
+    const isPast=i<todayIdx;
+    const isMissed=!beforePlan&&isPast&&(isPlanned||isRun)&&!isDone;
+    const isRest=!isPlanned&&!isRun;
+    let icon;
+    if(beforePlan)icon='—';
+    else if(isDone)icon='✓';
+    else if(isRest)icon='😎';
+    else if(isRun)icon='🏃';
+    else icon='🏋️';
     const cls=i===todayIdx?'today':isDone?'done-day':isMissed?'missed':'';
     wHTML+=`<div class="plan-day ${cls}"><div class="pd-label">${dayL[i]}</div><div class="pd-icon">${icon}</div></div>`;
   }
