@@ -311,6 +311,29 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .empty{text-align:center;padding:48px 20px;color:var(--muted);}
 .empty .emoji{font-size:44px;display:block;margin-bottom:14px;}
 .empty p{font-size:14px;line-height:1.6;}
+
+/* PLAN CHAT */
+.chat-area{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;min-height:200px;}
+.chat-bubble{max-width:88%;padding:12px 15px;border-radius:14px;font-size:13px;line-height:1.6;animation:fadeIn .25s ease;}
+.chat-bubble.bot{background:var(--card);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
+.chat-bubble.user{background:var(--accent);color:#000;align-self:flex-end;border-bottom-right-radius:4px;font-weight:600;}
+.chat-options{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;}
+.chat-opt{padding:9px 14px;border-radius:20px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;font-weight:500;}
+.chat-opt:active,.chat-opt:hover{background:var(--accent);color:#000;}
+.chat-opt.selected{background:var(--accent);color:#000;}
+.chat-multi{display:flex;flex-wrap:wrap;gap:6px;}
+.chat-multi .chat-opt{font-size:12px;padding:7px 12px;}
+.chat-multi .chat-opt.on{background:var(--accent);color:#000;border-color:var(--accent);}
+.chat-multi .chat-opt.off{background:transparent;color:var(--muted2);border-color:var(--border);}
+.chat-confirm{display:flex;gap:8px;margin-top:6px;}
+.chat-confirm button{flex:1;}
+.plan-preview{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:8px 0;font-size:13px;}
+.plan-preview .pp-day{padding:10px 0;border-bottom:1px solid var(--border);}
+.plan-preview .pp-day:last-child{border-bottom:none;}
+.plan-preview .pp-day-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--accent);margin-bottom:6px;}
+.plan-preview .pp-ex{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;color:var(--muted2);}
+.plan-preview .pp-ex .pp-name{flex:1;}
+.plan-preview .pp-ex .pp-sets{font-size:11px;color:var(--muted);}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 22px;border-radius:40px;font-size:13px;font-weight:500;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.5);}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .toast.accent{background:var(--accent);color:#000;border-color:var(--accent);}
@@ -407,6 +430,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div class="page" id="page-plano">
   <div id="planDates"></div>
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="btn btn-primary btn-full" onclick="openPlanChat()" style="font-size:14px">💬 Criar novo plano</button>
+    <button class="btn btn-outline btn-full" onclick="openPlanChat(true)" style="font-size:14px">✎ Alterar plano</button>
+  </div>
   <div class="section-title">Semana atual</div>
   <div id="weekView"></div>
   <div class="section-title">Ajuste automático</div>
@@ -415,6 +442,15 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   <div class="prog-advice" id="progressionAdvice"></div>
   <div class="section-title">🏃 Metas de corrida</div>
   <div id="runGoals"></div>
+</div>
+
+<div class="page" id="page-planchat">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div class="section-title" style="margin:0">💬 Assistente de plano</div>
+    <button class="btn btn-secondary btn-small" onclick="closePlanChat()">✕ Fechar</button>
+  </div>
+  <div class="chat-area" id="chatArea"></div>
+  <div id="chatInput"></div>
 </div>
 
 <div class="page" id="page-perfil">
@@ -451,7 +487,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div class="section-title" style="margin:0">Backup e dados</div>
     <button class="btn btn-secondary btn-small" onclick="closeBackupPage()">✕ Fechar</button>
   </div>
-  <p class="backup-intro">O backup contém: histórico completo, cargas, observações, perfil, evolução, planos customizados, metas de corrida, período do plano, sessão em andamento, métricas e preferências.</p>
+  <p class="backup-intro">O backup contém: histórico completo, cargas, observações, perfil, evolução, planos customizados (incluindo planos criados pelo assistente), metas de corrida, período do plano, sessão em andamento, métricas e preferências.</p>
   <div class="backup-block">
     <button class="btn btn-secondary btn-full" onclick="exportBackup()">⬇ Exportar backup (.json)</button>
     <button class="btn btn-secondary btn-full" onclick="document.getElementById('restoreInput').click()">⬆ Restaurar backup</button>
@@ -504,7 +540,7 @@ const DAY_TO_WORKOUT={1:0,3:1,5:2};
 // STATE
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
 function save(){localStorage.setItem('fpv5',JSON.stringify(state));}
-function initSets(wi){return WORKOUTS[wi].exercises.map(e=>Array(e.series).fill(false));}
+function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.series).fill(false));}
 function ensureStateDefaults(s){
   if(!s.history)s.history=[];
   if(!s.weights)s.weights={};
@@ -513,13 +549,18 @@ function ensureStateDefaults(s){
   if(!s.quickMode)s.quickMode='off';
   if(!s.planEnd)s.planEnd=null;
   if(!s.runGoals)s.runGoals=[];
+  if(s.useCustomPlan===undefined)s.useCustomPlan=false;
+  if(!s.customWorkouts)s.customWorkouts=null;
+  if(!s.customDayMap)s.customDayMap=null;
+  if(!s.customRunDays)s.customRunDays=null;
+  if(!s.customPlanMeta)s.customPlanMeta=null;
   s.editMode=false;
   return s;
 }
 let state=ensureStateDefaults(load()||{currentWorkout:0,sessionSets:null,sessionStart:null,history:[],programStart:null,switchDismissed:false});
 
 // QUICK MODE & SESSION PLAN HELPERS
-function getOriginalWorkout(wi){return WORKOUTS[wi];}
+function getOriginalWorkout(wi){return getActiveWorkouts()[wi];}
 function applyQuickMode(exercises,mode){
   if(!mode||mode==='off')return exercises;
   if(mode==='pressa')return exercises.map(ex=>({...ex,series:Math.min(ex.series,3),rest:Math.max(20,Math.round(ex.rest*0.6))}));
@@ -533,7 +574,7 @@ function applyQuickMode(exercises,mode){
 }
 function getCurrentExercises(wi){
   if(state.sessionPlan&&Array.isArray(state.sessionPlan))return state.sessionPlan;
-  return applyQuickMode(WORKOUTS[wi].exercises,state.quickMode);
+  return applyQuickMode(getActiveWorkouts()[wi].exercises,state.quickMode);
 }
 function initSetsFromPlan(plan){return plan.map(e=>Array(e.series).fill(false));}
 function setQuickMode(mode){
@@ -663,6 +704,9 @@ let _POOL_CACHE=null;
 function getSubstitutionPool(){
   if(_POOL_CACHE)return _POOL_CACHE;
   const seen=new Set(),pool=[];
+  getActiveWorkouts().forEach(w=>w.exercises.forEach(ex=>{
+    if(!seen.has(ex.name)){seen.add(ex.name);pool.push(ex);}
+  }));
   WORKOUTS.forEach(w=>w.exercises.forEach(ex=>{
     if(!seen.has(ex.name)){seen.add(ex.name);pool.push(ex);}
   }));
@@ -858,9 +902,11 @@ function saveProfile(){
   }
   save();showToast('✓ Perfil salvo',true);switchPage('perfil');
 }
-if(!state.sessionStart){const dow=new Date().getDay();if(DAY_TO_WORKOUT[dow]!==undefined)state.currentWorkout=DAY_TO_WORKOUT[dow];}
+if(!state.sessionStart){const dow=new Date().getDay();const adm=getActiveDayMap();if(adm[dow]!==undefined)state.currentWorkout=adm[dow];}
+// Clamp currentWorkout to valid range
+if(state.currentWorkout>=getActiveWorkouts().length)state.currentWorkout=0;
 // Default treinoView based on today (reset each load)
-state.treinoView=isRunDay(new Date().getDay())?'run':'strength';
+state.treinoView=isRunDayActive(new Date().getDay())?'run':'strength';
 (function(){
   const expected=getCurrentExercises(state.currentWorkout);
   if(!state.sessionSets||state.sessionSets.length!==expected.length){
@@ -937,7 +983,7 @@ function startClock(){clearInterval(clockInt);clockInt=setInterval(updateActiveB
 function updateActiveBanner(){
   const el=document.getElementById('sessionActiveBanner');if(!el||!state.sessionStart)return;
   const sec=Math.floor((Date.now()-new Date(state.sessionStart).getTime())/1000);
-  const w=WORKOUTS[state.currentWorkout];
+  const w=getActiveWorkouts()[state.currentWorkout];
   el.innerHTML=`<div class="session-active-bar">
     <div><div class="label">Sessão em andamento</div><div style="font-size:12px;color:var(--done-border);margin-top:3px;">${w.name} · ${w.sub}</div></div>
     <div style="text-align:right"><div class="label">Duração</div><div class="sab-time">${fmtSec(sec)}</div></div>
@@ -983,7 +1029,7 @@ function finishSession(){
     totalSets:totalS,doneSets:doneS,muscles:Array.from(muscles),exercisesDone,weights,notes,completion,
     fullCompletion,quickMode:state.quickMode||'off',plan:planSnapshot});
   // Avança apenas para o próximo treino do CICLO
-  state.currentWorkout=(wi+1)%WORKOUTS.length;
+  state.currentWorkout=(wi+1)%getActiveWorkouts().length;
   state.sessionPlan=null;
   state.sessionSets=initSetsFromPlan(getCurrentExercises(state.currentWorkout));
   state.sessionStart=null;
@@ -1093,22 +1139,23 @@ function saveRunLog(){
 }
 function tomorrowMessage(){
   const tomorrow=(new Date().getDay()+1)%7;
-  if(isRunDay(tomorrow))return '🏃 Amanhã é dia de corrida.';
-  if(DAY_TO_WORKOUT[tomorrow]!==undefined){const tw=WORKOUTS[DAY_TO_WORKOUT[tomorrow]];return `🏋️ Amanhã: ${tw.name} — ${tw.sub}.`;}
+  if(isRunDayActive(tomorrow))return '🏃 Amanhã é dia de corrida.';
+  const adm=getActiveDayMap();
+  if(adm[tomorrow]!==undefined){const tw=getActiveWorkouts()[adm[tomorrow]];return `🏋️ Amanhã: ${tw.name} — ${tw.sub}.`;}
   return '😴 Amanhã é dia de descanso.';
 }
 function todayCount(type){
   const today=new Date();today.setHours(0,0,0,0);
   return state.history.filter(s=>{const d=new Date(s.startISO);d.setHours(0,0,0,0);return d.getTime()===today.getTime()&&(!type||s.type===type);}).length;
 }
-function isRestDay(dow){return !isRunDay(dow)&&DAY_TO_WORKOUT[dow]===undefined;}
+function isRestDay(dow){return !isRunDayActive(dow)&&getActiveDayMap()[dow]===undefined;}
 function renderTreino(){
-  const wi=state.currentWorkout,w=WORKOUTS[wi];
+  const wi=state.currentWorkout,w=getActiveWorkouts()[wi];
   const exercises=getCurrentExercises(wi);
   const todayDow=new Date().getDay();
   const isToday=w.dayIdx===todayDow;
-  const runToday=isRunDay(todayDow);
-  const strengthToday=DAY_TO_WORKOUT[todayDow]!==undefined;
+  const runToday=isRunDayActive(todayDow);
+  const strengthToday=getActiveDayMap()[todayDow]!==undefined;
   const doneToday=todayCount();
   // Modo de visualização: corrida ou musculação
   const showRun=state.treinoView==='run';
@@ -1296,7 +1343,7 @@ function toggleSerie(ei,si){
   if(state.sessionSets[ei].every(Boolean))showToast('✓ Exercício concluído!',true);
 }
 function navWorkout(dir){
-  state.currentWorkout=(state.currentWorkout+dir+WORKOUTS.length)%WORKOUTS.length;
+  state.currentWorkout=(state.currentWorkout+dir+getActiveWorkouts().length)%getActiveWorkouts().length;
   if(!state.sessionStart){
     state.sessionPlan=null;
     state.sessionSets=initSetsFromPlan(getCurrentExercises(state.currentWorkout));
@@ -1348,7 +1395,8 @@ function renderHistEdit(s,hi){
       </div>
     </div>`;
   }
-  const w=WORKOUTS.find(x=>x.id===s.workoutId)||WORKOUTS[0];
+  const aw=getActiveWorkouts();
+  const w=aw.find(x=>x.id===s.workoutId)||WORKOUTS.find(x=>x.id===s.workoutId)||aw[0];
   const exs=(s.plan&&s.plan.length)?s.plan:w.exercises;
   const exDone=new Set(s.exercisesDone||[]);
   const rows=exs.map((ex,i)=>{
@@ -1373,7 +1421,8 @@ function editHistory(hi){editingHist=hi;renderHistory();}
 function cancelHistEdit(){editingHist=null;renderHistory();}
 function saveHistEdit(hi){
   const s=state.history[hi];if(!s)return;
-  const w=WORKOUTS.find(x=>x.id===s.workoutId)||WORKOUTS[0];
+  const aw2=getActiveWorkouts();
+  const w=aw2.find(x=>x.id===s.workoutId)||WORKOUTS.find(x=>x.id===s.workoutId)||aw2[0];
   const exs=(s.plan&&s.plan.length)?s.plan:w.exercises;
   const root=document.getElementById('he-'+hi);if(!root)return;
   const exDone=[];
@@ -1498,7 +1547,8 @@ function renderSilhouette(){
   const counts={};
   Object.keys(MUSCLES).forEach(m=>counts[m]=0);
   const exMap={};
-  WORKOUTS.forEach(w=>w.exercises.forEach(e=>{exMap[e.name]=e.muscles;}));
+  getActiveWorkouts().forEach(w=>w.exercises.forEach(e=>{exMap[e.name]=e.muscles;}));
+  WORKOUTS.forEach(w=>w.exercises.forEach(e=>{if(!exMap[e.name])exMap[e.name]=e.muscles;}));
   // Incluir exercícios do EXTRA_POOL e sessões customizadas
   weekHist.forEach(s=>{
     if(s.type==='cardio'||s.workoutId==='RUN')return;
@@ -1589,8 +1639,9 @@ function getCompData(){
   for(let i=0;i<days;i++){
     const d=new Date(start);d.setDate(start.getDate()+i);
     const dow=d.getDay();
-    if(DAY_TO_WORKOUT[dow]!==undefined)pStr++;
-    if(isRunDay(dow))pRun++;
+    const adm2=getActiveDayMap();
+    if(adm2[dow]!==undefined)pStr++;
+    if(isRunDayActive(dow))pRun++;
   }
   const planned=pStr+pRun;
   const nStr=state.history.filter(s=>s.type!=='cardio'&&s.workoutId!=='RUN').length;
@@ -1624,13 +1675,14 @@ function renderDesempenho(){
   const{ws:wkS,we:wkE}=getWeekRange();
   const weekStrHist=state.history.filter(s=>{const d=new Date(s.startISO);return d>=wkS&&d<wkE&&s.type!=='cardio'&&s.workoutId!=='RUN';});
   const mc={};Object.keys(MUSCLES).forEach(m=>mc[m]=0);
-  const exMapD={};WORKOUTS.forEach(w=>w.exercises.forEach(e=>{exMapD[e.name]=e.muscles;}));
+  const exMapD={};getActiveWorkouts().forEach(w=>w.exercises.forEach(e=>{exMapD[e.name]=e.muscles;}));
+  WORKOUTS.forEach(w=>w.exercises.forEach(e=>{if(!exMapD[e.name])exMapD[e.name]=e.muscles;}));
   weekStrHist.forEach(s=>(s.exercisesDone||[]).forEach(name=>{
     (exMapD[name]||[]).forEach(m=>{if(mc[m]!==undefined)mc[m]++;});
   }));
   const maxC=Math.max(...Object.values(mc),1);
   // Esperado por semana: quantos exercícios por grupo nos 3 treinos padrão
-  const epw={};Object.keys(MUSCLES).forEach(m=>{epw[m]=0;WORKOUTS.forEach(w=>{epw[m]+=w.exercises.filter(e=>e.muscles.includes(m)).length;});});
+  const epw={};const aw3=getActiveWorkouts();Object.keys(MUSCLES).forEach(m=>{epw[m]=0;aw3.forEach(w=>{epw[m]+=w.exercises.filter(e=>e.muscles.includes(m)).length;});});
   document.getElementById('muscleStatus').innerHTML=Object.entries(mc).sort((a,b)=>b[1]-a[1]).map(([m,c])=>{
     const pct=maxC>0?Math.round(c/maxC*100):0;
     const expected=epw[m]||0;
@@ -1764,7 +1816,10 @@ function renderPlano(){
   renderPlanDates();
   const today=new Date(),dow=today.getDay();
   const weekStart=new Date(today);weekStart.setDate(today.getDate()-((dow===0?7:dow)-1));
-  const dayL=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],plannedD=[0,2,4],runD=[1,3,5];
+  const dayL=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const admP=getActiveDayMap();
+  const plannedD=[];Object.keys(admP).forEach(k=>{const dow=parseInt(k);plannedD.push((dow+6)%7);});
+  const runD=[];for(let dd=0;dd<7;dd++){if(isRunDayActive([1,2,3,4,5,6,0][dd]))runD.push(dd);}
   const weekSess=state.history.filter(s=>{const d=new Date(s.startISO);return d>=weekStart&&d<new Date(weekStart.getTime()+7*24*60*60*1000);});
   const doneDays=new Set(weekSess.map(s=>(new Date(s.startISO).getDay()+6)%7));
   const todayIdx=(today.getDay()+6)%7;
@@ -2025,7 +2080,7 @@ function renderAddRecordForm(){
       <button class="btn btn-primary btn-full" onclick="saveAddRecordRun()">✓ Registrar corrida</button>
     </div>`;
   }else{
-    const wopts=WORKOUTS.map((w,i)=>`<option value="${i}">${w.name} — ${w.sub}</option>`).join('');
+    const wopts=getActiveWorkouts().map((w,i)=>`<option value="${i}">${w.name} — ${w.sub}</option>`).join('');
     el.innerHTML=`<div class="run-log-card">
       <div class="rl-row"><label>Data do treino</label><input type="date" id="ar-date" value="${fmtDateISO(new Date())}"></div>
       <div class="rl-row"><label>Treino</label><select id="ar-workout" onchange="renderAddRecordExercises()">${wopts}</select></div>
@@ -2049,7 +2104,7 @@ function renderAddRecordForm(){
 }
 function renderAddRecordExercises(){
   const wi=parseInt(document.getElementById('ar-workout').value,10);
-  const w=WORKOUTS[wi];
+  const w=getActiveWorkouts()[wi];
   const el=document.getElementById('ar-exercises');
   el.innerHTML=w.exercises.map((ex,i)=>`<div class="he-row">
     <label class="he-check"><input type="checkbox" data-ar="done" data-i="${i}" checked><span>${ex.name}</span></label>
@@ -2088,7 +2143,7 @@ function saveAddRecordStrength(){
   const dateVal=document.getElementById('ar-date').value;
   if(!dateVal){showToast('⚠ Preencha a data',false);return;}
   const wi=parseInt(document.getElementById('ar-workout').value,10);
-  const w=WORKOUTS[wi];
+  const w=getActiveWorkouts()[wi];
   const mode=document.getElementById('ar-mode').value;
   const startTime=document.getElementById('ar-start').value;
   const endTime=document.getElementById('ar-end').value;
@@ -2188,7 +2243,8 @@ function fitWriteSession(s){
   const st=Math.floor(new Date(s.startISO).getTime()/1000)-FE;
   const et=Math.floor(new Date(s.endISO).getTime()/1000)-FE;
   const total=Math.max(1,et-st);
-  const w=WORKOUTS.find(x=>x.id===s.workoutId)||WORKOUTS[0];
+  const aw4=getActiveWorkouts();
+  const w=aw4.find(x=>x.id===s.workoutId)||WORKOUTS.find(x=>x.id===s.workoutId)||aw4[0];
   const sets=[];
   const totalSeries=w.exercises.reduce((a,e)=>a+e.series,0)||1;
   const perSeries=Math.max(20,Math.floor(total/totalSeries));
@@ -2300,6 +2356,676 @@ function restartProgram(){
   state.switchDismissed=false;
   save();showToast('🔄 Plano reiniciado',true);
   setTimeout(()=>location.reload(),500);
+}
+
+// ═══════════════════════════════════════════════
+// EXERCISE DATABASE — comprehensive, categorized
+// ═══════════════════════════════════════════════
+const EXDB=[
+// ─── PEITO ───
+{name:'Supino reto com barra',muscles:['peito','triceps','ombros'],equip:'barra',diff:2,type:'composto',
+ obs:'Escápulas retraídas, arco lombar controlado. O exercício mais clássico para peito.'},
+{name:'Supino inclinado com barra',muscles:['peito','triceps','ombros'],equip:'barra',diff:2,type:'composto',
+ obs:'Inclinação 30–45°. Enfatiza a porção superior (clavicular) do peitoral.'},
+{name:'Supino reto com halteres',muscles:['peito','triceps','ombros'],equip:'halteres',diff:2,type:'composto',
+ obs:'Maior amplitude que a barra. Cada braço trabalha de forma independente.'},
+{name:'Supino inclinado com halteres',muscles:['peito','triceps','ombros'],equip:'halteres',diff:2,type:'composto',
+ obs:'Inclinação 30–45°. Foco na porção clavicular do peitoral.'},
+{name:'Crucifixo com halteres',muscles:['peito'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Braços levemente flexionados. Foco na abertura e contração do peitoral.'},
+{name:'Crucifixo na máquina (peck deck)',muscles:['peito'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Contração máxima no centro. Boa opção para iniciantes.'},
+{name:'Crossover no cabo (cruzamento de polias)',muscles:['peito','ombros'],equip:'cabo',diff:2,type:'isolado',
+ obs:'Excelente para definição. Varie a altura das polias para diferentes ângulos.'},
+{name:'Flexão de braço (push-up)',muscles:['peito','triceps','ombros','core'],equip:'corpo',diff:1,type:'composto',
+ obs:'Corpo alinhado da cabeça aos pés. Pode ser feito em qualquer lugar.'},
+{name:'Flexão de braço com pés elevados',muscles:['peito','triceps','ombros','core'],equip:'corpo',diff:2,type:'composto',
+ obs:'Pés em banco ou step. Enfatiza peito superior. Mais difícil que a flexão normal.'},
+{name:'Supino declinado com barra',muscles:['peito','triceps'],equip:'barra',diff:2,type:'composto',
+ obs:'Banco declinado 15–30°. Enfatiza a porção inferior do peitoral.'},
+// ─── COSTAS ───
+{name:'Remada curvada com barra',muscles:['costas','biceps','ombros','core'],equip:'barra',diff:2,type:'composto',
+ obs:'Tronco a ~45°, puxar até o abdômen. Um dos melhores exercícios para espessura das costas.'},
+{name:'Puxada alta na polia (pulley frente)',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
+ obs:'Pegada aberta. Puxe até o peito, escápulas retraídas. Simula o movimento do pull-up.'},
+{name:'Remada sentada na máquina (pulley baixo)',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
+ obs:'Tronco fixo, puxe cotovelos rente ao corpo. Foco na retração escapular.'},
+{name:'Remada unilateral com halter (serrote)',muscles:['costas','biceps','core'],equip:'halteres',diff:1,type:'composto',
+ obs:'Apoiado no banco com uma mão, puxe o halter até a cintura. Corrige desequilíbrios.'},
+{name:'Remada cavalinho (T-bar row)',muscles:['costas','biceps','ombros'],equip:'barra',diff:2,type:'composto',
+ obs:'Tronco a 45°, puxe até tocar o peito. Grande ativação do trapézio médio.'},
+{name:'Pull-up (barra fixa)',muscles:['costas','biceps','ombros','core'],equip:'corpo',diff:3,type:'composto',
+ obs:'Pegada pronada. Extensão completa na descida. O rei dos exercícios de costas.'},
+{name:'Pull-up com carga',muscles:['costas','biceps','ombros','core'],equip:'corpo',diff:3,type:'composto',
+ obs:'Carga no cinto. Extensão completa na descida. Para avançados.'},
+{name:'Barra fixa assistida (gravitron)',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
+ obs:'Alternativa ao pull-up livre. Ajuste o contrapeso conforme sua força.'},
+{name:'Puxada alta pegada fechada',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
+ obs:'Pegada supinada ou neutra. Maior ativação do bíceps.'},
+{name:'Remada na máquina (row machine)',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
+ obs:'Boa opção para iniciantes. Movimento guiado reduz risco de lesão.'},
+// ─── OMBROS ───
+{name:'Press militar com barra',muscles:['ombros','triceps','core'],equip:'barra',diff:2,type:'composto',
+ obs:'Em pé ou sentado. Core contraído durante todo o movimento. O principal exercício de ombro.'},
+{name:'Desenvolvimento com halteres',muscles:['ombros','triceps'],equip:'halteres',diff:2,type:'composto',
+ obs:'Sentado ou em pé. Não trave os cotovelos no topo. Maior amplitude que a barra.'},
+{name:'Elevação lateral com halteres',muscles:['ombros'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Cotovelos levemente flexionados. Sem balanço. Foco no deltoide médio (largura dos ombros).'},
+{name:'Elevação frontal com halteres',muscles:['ombros'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Braços estendidos até a altura dos olhos. Trabalha o deltoide anterior.'},
+{name:'Crucifixo invertido na máquina',muscles:['ombros','costas'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Foco na retração escapular. Trabalha o deltoide posterior, frequentemente negligenciado.'},
+{name:'Elevação lateral no cabo',muscles:['ombros'],equip:'cabo',diff:1,type:'isolado',
+ obs:'Tensão constante em toda a amplitude. Excelente variação da elevação lateral.'},
+{name:'Encolhimento com halteres (trapézio)',muscles:['costas','ombros'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Eleve os ombros em direção às orelhas. Sem rotação. Trabalha o trapézio superior.'},
+{name:'Arnold press',muscles:['ombros','triceps'],equip:'halteres',diff:2,type:'composto',
+ obs:'Rotação dos punhos durante o movimento. Trabalha as 3 porções do deltoide.'},
+// ─── BÍCEPS ───
+{name:'Rosca direta com barra',muscles:['biceps'],equip:'barra',diff:1,type:'isolado',
+ obs:'Cotovelos fixos junto ao corpo. Excêntrica controlada (3 seg descendo).'},
+{name:'Rosca alternada com halteres',muscles:['biceps'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Alterne os braços. Supine o antebraço na subida. Permite foco individual.'},
+{name:'Rosca martelo com halteres',muscles:['biceps'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Pegada neutra. Foco no braquial e braquiorradial — dá "espessura" ao braço.'},
+{name:'Rosca scott (banco preacher)',muscles:['biceps'],equip:'barra',diff:1,type:'isolado',
+ obs:'Isola o bíceps removendo impulso. Excelente para o pico do bíceps.'},
+{name:'Rosca no cabo',muscles:['biceps'],equip:'cabo',diff:1,type:'isolado',
+ obs:'Tensão constante. Pode usar barra reta, EZ ou corda.'},
+{name:'Rosca concentrada',muscles:['biceps'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Sentado, cotovelo apoiado na coxa. Máximo isolamento do bíceps.'},
+// ─── TRÍCEPS ───
+{name:'Tríceps mergulho (dip)',muscles:['triceps','peito','ombros'],equip:'corpo',diff:2,type:'composto',
+ obs:'No banco ou barras paralelas. Desça até 90° no cotovelo. Cuidado com os ombros.'},
+{name:'Tríceps mergulho com carga',muscles:['triceps','peito','ombros'],equip:'corpo',diff:3,type:'composto',
+ obs:'Carga no cinto. Para avançados que já dominam o mergulho com peso corporal.'},
+{name:'Tríceps na polia (corda)',muscles:['triceps'],equip:'cabo',diff:1,type:'isolado',
+ obs:'Cotovelos colados ao corpo. Abra as pontas da corda no final para contração extra.'},
+{name:'Tríceps testa com barra (francês)',muscles:['triceps'],equip:'barra',diff:2,type:'isolado',
+ obs:'Cotovelos fixos apontando para cima. Desça até a testa. Trabalha a cabeça longa.'},
+{name:'Tríceps coice com halter (kick back)',muscles:['triceps'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Apoiado no banco. Braço paralelo ao tronco. Bom para contração de pico.'},
+{name:'Tríceps na polia (barra reta)',muscles:['triceps'],equip:'cabo',diff:1,type:'isolado',
+ obs:'Pegada pronada. Cotovelos fixos. Alternativa à corda.'},
+{name:'Tríceps mergulho no banco',muscles:['triceps','ombros'],equip:'corpo',diff:1,type:'composto',
+ obs:'Mãos no banco atrás, pés no chão ou em outro banco. Versão mais fácil do dip.'},
+// ─── QUADRÍCEPS / PERNAS ANTERIORES ───
+{name:'Agachamento livre com barra',muscles:['quadriceps','gluteos','core','posteriores'],equip:'barra',diff:3,type:'composto',
+ obs:'O rei dos exercícios. Profundidade: coxa paralela ou abaixo. Coluna neutra, core firme.'},
+{name:'Agachamento no smith',muscles:['quadriceps','gluteos','posteriores'],equip:'máquina',diff:1,type:'composto',
+ obs:'Pés ligeiramente à frente. Barra guiada — mais seguro para iniciantes.'},
+{name:'Leg press 45°',muscles:['quadriceps','gluteos','posteriores'],equip:'máquina',diff:1,type:'composto',
+ obs:'Pés na largura dos ombros. Não trave os joelhos no topo. Excelente para volume.'},
+{name:'Leg press explosivo',muscles:['quadriceps','gluteos','posteriores'],equip:'máquina',diff:2,type:'composto',
+ obs:'70% da carga máxima. Concêntrica em velocidade máxima. Para treinos de potência.'},
+{name:'Hack squat na máquina',muscles:['quadriceps','gluteos'],equip:'máquina',diff:1,type:'composto',
+ obs:'Costas apoiadas. Desça até 90° no joelho. Menor exigência de estabilização.'},
+{name:'Cadeira extensora (leg extension)',muscles:['quadriceps'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Contração máxima no topo. Movimento controlado. Isola o quadríceps.'},
+{name:'Agachamento búlgaro',muscles:['quadriceps','gluteos','core','posteriores'],equip:'halteres',diff:2,type:'composto',
+ obs:'Pé traseiro elevado. Execute cada lado antes de trocar. Trabalha equilíbrio e força.'},
+{name:'Afundo com halteres (passada)',muscles:['quadriceps','gluteos','posteriores'],equip:'halteres',diff:1,type:'composto',
+ obs:'Passo longo. Joelho da frente a 90°. Pode ser feito caminhando ou parado.'},
+{name:'Agachamento com salto lastrado',muscles:['quadriceps','gluteos','posteriores'],equip:'halteres',diff:3,type:'composto',
+ obs:'Descida controlada, subida explosiva. Treino de potência. Cuidado com a aterrissagem.'},
+{name:'Agachamento goblet (com halter)',muscles:['quadriceps','gluteos','core'],equip:'halteres',diff:1,type:'composto',
+ obs:'Halter junto ao peito. Ideal para aprender a agachar corretamente. Ótimo para iniciantes.'},
+{name:'Agachamento sumô',muscles:['quadriceps','gluteos','posteriores'],equip:'barra',diff:2,type:'composto',
+ obs:'Pés bem abertos, pontas para fora. Maior ativação de glúteos e adutores.'},
+// ─── POSTERIORES / GLÚTEOS ───
+{name:'Levantamento terra',muscles:['posteriores','gluteos','costas','core','quadriceps'],equip:'barra',diff:3,type:'composto',
+ obs:'Barra rente à perna, coluna neutra. Um dos exercícios mais completos que existem.'},
+{name:'Levantamento terra romeno (stiff)',muscles:['posteriores','gluteos','costas'],equip:'barra',diff:2,type:'composto',
+ obs:'Joelhos semi-flexionados. Quadril para trás. Foco no alongamento dos posteriores.'},
+{name:'Stiff com halteres',muscles:['posteriores','gluteos'],equip:'halteres',diff:2,type:'composto',
+ obs:'Mesmo padrão do stiff com barra. Halteres permitem maior liberdade de movimento.'},
+{name:'Leg curl (mesa flexora)',muscles:['posteriores'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Excêntrica lenta (3 seg) para máximo recrutamento dos isquiotibiais.'},
+{name:'Cadeira flexora (leg curl sentado)',muscles:['posteriores'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Variação sentada. Igualmente eficaz para isolar os isquiotibiais.'},
+{name:'Elevação pélvica com barra (hip thrust)',muscles:['gluteos','posteriores','core'],equip:'barra',diff:2,type:'composto',
+ obs:'Ombros no banco, barra sobre a pelve. O melhor exercício para glúteo máximo.'},
+{name:'Glúteo na máquina (glute kickback)',muscles:['gluteos'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Foco no glúteo máximo. Sem arquear a lombar. Movimento controlado.'},
+{name:'Abdução na máquina (glúteo médio)',muscles:['gluteos'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Foco no glúteo médio. Tronco levemente inclinado para maior ativação.'},
+// ─── PANTURRILHA ───
+{name:'Panturrilha em pé com carga',muscles:['panturrilha'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Pausa de 1 seg no topo. Amplitude máxima. Trabalha o gastrocnêmio.'},
+{name:'Panturrilha sentado na máquina',muscles:['panturrilha'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Trabalha o sóleo (músculo profundo). Amplitude total.'},
+{name:'Panturrilha no leg press',muscles:['panturrilha'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Só a ponta dos pés apoiada. Empurre e desça controlado.'},
+// ─── CORE ───
+{name:'Prancha frontal',muscles:['core'],equip:'corpo',diff:1,type:'isolado',
+ obs:'Estabilização do core — quadril alinhado. Mantenha a posição sem deixar o quadril cair.'},
+{name:'Prancha lateral',muscles:['core'],equip:'corpo',diff:1,type:'isolado',
+ obs:'Corpo alinhado, quadril elevado. Trabalha os oblíquos e estabilizadores laterais.'},
+{name:'Ab wheel (roda abdominal)',muscles:['core'],equip:'acessório',diff:2,type:'isolado',
+ obs:'Flexão de tronco — lento e controlado. Excelente para reto abdominal e oblíquos.'},
+{name:'Elevação de pernas suspenso',muscles:['core'],equip:'corpo',diff:2,type:'isolado',
+ obs:'Pendurado na barra. Foco em iliopsoas e reto abdominal inferior.'},
+{name:'Elevação de pernas deitado',muscles:['core'],equip:'corpo',diff:1,type:'isolado',
+ obs:'Lombar colada no chão. Desça sem encostar os pés. Versão mais acessível.'},
+{name:'Abdominal crunch na máquina',muscles:['core'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Flexão de tronco controlada. Não puxe o pescoço. Resistência ajustável.'},
+{name:'Rotação de tronco (oblíquos)',muscles:['core'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Máquina rotatória ou com cabo. Movimento lento e controlado.'},
+// ─── FULL BODY / POTÊNCIA ───
+{name:'Kettlebell swing',muscles:['gluteos','posteriores','core','costas','ombros'],equip:'kettlebell',diff:2,type:'composto',
+ obs:'Hip hinge explosivo. Força vem do quadril, não dos braços. Excelente para condicionamento.'},
+{name:'Burpee com salto explosivo',muscles:['quadriceps','peito','ombros','core','triceps','gluteos'],equip:'corpo',diff:2,type:'composto',
+ obs:'Cadeia cinética completa. Salto máximo a cada rep. Muito usado em circuitos.'},
+{name:'Clean and press',muscles:['ombros','quadriceps','gluteos','core','costas'],equip:'barra',diff:3,type:'composto',
+ obs:'Levantamento olímpico simplificado. Puxa do chão e pressiona acima da cabeça.'},
+{name:'Turkish get-up',muscles:['core','ombros','gluteos','quadriceps'],equip:'kettlebell',diff:3,type:'composto',
+ obs:'Sequência de movimentos do chão até em pé com peso acima da cabeça. Estabilidade total.'},
+{name:'Thruster (agachamento + press)',muscles:['quadriceps','ombros','gluteos','triceps','core'],equip:'halteres',diff:2,type:'composto',
+ obs:'Agachamento frontal seguido de press acima da cabeça em um movimento fluido.'},
+];
+// diff: 1=iniciante, 2=intermediário, 3=avançado
+// equip: 'corpo','halteres','barra','máquina','cabo','kettlebell','acessório'
+// type: 'composto','isolado'
+
+// ═══════════════════════════════════════════════
+// PLAN CHAT — conversational wizard
+// ═══════════════════════════════════════════════
+let chatState={step:0,answers:{},messages:[],editing:false};
+
+function openPlanChat(editing){
+  chatState={step:0,answers:{},messages:[],editing:!!editing};
+  // Pre-fill from profile if available
+  if(state.profile){
+    if(state.profile.age)chatState.answers.age=state.profile.age;
+    if(state.profile.sex)chatState.answers.sex=state.profile.sex;
+  }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-planchat').classList.add('active');
+  renderChat();
+  advanceChat();
+}
+function closePlanChat(){switchPage('plano');}
+
+const CHAT_STEPS=[
+  {id:'welcome',bot:()=>chatState.editing
+    ?'Vamos ajustar o seu plano de treino! Vou fazer algumas perguntas para entender melhor o que você quer mudar. 💪'
+    :'Olá! Vou criar um plano de treino personalizado para você. Vamos conversar sobre seus objetivos, experiência e rotina. São perguntas rápidas! 💪',
+   auto:true},
+  {id:'goal',
+   bot:()=>'Qual é o seu **objetivo principal** com o treino?',
+   options:['Ganhar massa muscular (hipertrofia)','Emagrecer / queimar gordura','Condicionamento e resistência','Saúde geral e qualidade de vida','Ganhar força máxima'],
+   key:'goal'},
+  {id:'experience',
+   bot:()=>'Qual é a sua **experiência** com musculação?',
+   options:['Nunca treinei (iniciante)','Treinei menos de 6 meses','Treino há 6 meses a 2 anos','Treino há mais de 2 anos'],
+   key:'experience'},
+  {id:'familiarity',
+   bot:()=>{
+     const exp=chatState.answers.experience||'';
+     if(exp.includes('Nunca'))return 'Sem problema! Vou montar um plano com exercícios acessíveis e explicar cada um. Você sabe o que é um **exercício composto** (como agachamento, que trabalha vários músculos ao mesmo tempo)?';
+     if(exp.includes('menos de 6'))return 'Boa! Você já conhece os exercícios básicos. Você se sente confortável com **exercícios com barra livre** (supino, agachamento, terra)?';
+     return 'Legal, você tem experiência! Posso incluir exercícios mais avançados como **levantamento terra, pull-up com carga e clean & press**?';
+   },
+   options:()=>{
+     const exp=chatState.answers.experience||'';
+     if(exp.includes('Nunca'))return['Não sei o que é, me explique!','Sim, já ouvi falar','Sim, conheço bem'];
+     if(exp.includes('menos de 6'))return['Ainda não, prefiro máquinas','Sim, mas preciso aprimorar','Sim, me sinto seguro'];
+     return['Pode incluir os avançados','Prefiro ficar nos intermediários'];
+   },
+   key:'familiarity'},
+  {id:'days',
+   bot:()=>'Quantos **dias por semana** você pode treinar musculação?',
+   options:['2 dias','3 dias','4 dias','5 dias','6 dias'],
+   key:'days'},
+  {id:'runInclude',
+   bot:()=>'Deseja incluir **treinos de corrida** no plano?',
+   options:['Sim, quero correr também','Não, só musculação'],
+   key:'runInclude'},
+  {id:'runDays',
+   bot:()=>'Quantos dias de corrida por semana?',
+   options:['1 dia','2 dias','3 dias'],
+   key:'runDays',
+   condition:()=>(chatState.answers.runInclude||'').includes('Sim')},
+  {id:'duration',
+   bot:()=>'Quanto **tempo** você tem por sessão de treino?',
+   options:['30 minutos','45 minutos','60 minutos','90 minutos ou mais'],
+   key:'duration'},
+  {id:'equipment',
+   bot:()=>'Que **equipamento** você tem disponível?',
+   options:['Academia completa','Home gym (halteres + barra + banco)','Só halteres','Só peso corporal (sem equipamento)'],
+   key:'equipment'},
+  {id:'limitations',
+   bot:()=>'Possui alguma **limitação ou lesão** que eu deva considerar?',
+   options:['Nenhuma limitação','Problema no joelho','Problema no ombro','Problema na lombar','Tenho outra limitação'],
+   key:'limitations'},
+  {id:'preference',
+   bot:()=>'Última pergunta! Tem alguma **preferência** de estilo de treino?',
+   options:['Clássico (ABC, séries tradicionais)','Full body (corpo todo em cada treino)','Push / Pull / Legs','Deixo você decidir o melhor!'],
+   key:'preference'},
+  {id:'generating',
+   bot:()=>'Perfeito! Analisando suas respostas e montando o plano ideal... 🧠',
+   auto:true,action:'generate'},
+];
+
+function advanceChat(){
+  const steps=CHAT_STEPS;
+  while(chatState.step<steps.length){
+    const s=steps[chatState.step];
+    if(s.condition&&!s.condition()){chatState.step++;continue;}
+    // Add bot message
+    const botMsg=typeof s.bot==='function'?s.bot():s.bot;
+    chatState.messages.push({type:'bot',text:botMsg});
+    renderChat();
+    if(s.auto){
+      chatState.step++;
+      if(s.action==='generate'){
+        setTimeout(()=>generatePlan(),400);
+      }else{
+        setTimeout(()=>advanceChat(),600);
+      }
+      return;
+    }
+    // Show options
+    const opts=typeof s.options==='function'?s.options():s.options;
+    renderChatOptions(opts,s.key);
+    return;
+  }
+}
+
+function selectChatOption(key,value){
+  chatState.answers[key]=value;
+  chatState.messages.push({type:'user',text:value});
+  chatState.step++;
+  renderChat();
+  setTimeout(()=>advanceChat(),350);
+}
+
+function renderChat(){
+  const area=document.getElementById('chatArea');
+  area.innerHTML=chatState.messages.map(m=>
+    `<div class="chat-bubble ${m.type}">${m.text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`
+  ).join('');
+  area.scrollTop=area.scrollHeight;
+}
+
+function renderChatOptions(opts,key){
+  const el=document.getElementById('chatInput');
+  el.innerHTML=`<div class="chat-options">${opts.map(o=>
+    `<button class="chat-opt" onclick="selectChatOption('${key}',this.textContent)">${o}</button>`
+  ).join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════════
+// PLAN GENERATION ALGORITHM
+// ═══════════════════════════════════════════════
+function generatePlan(){
+  const a=chatState.answers;
+  const nDays=parseInt(a.days)||3;
+  const exp=a.experience||'';
+  const goal=a.goal||'';
+  const equip=a.equipment||'Academia completa';
+  const fam=a.familiarity||'';
+  const dur=a.duration||'60 minutos';
+  const limit=a.limitations||'Nenhuma';
+  const pref=a.preference||'Deixo você decidir';
+  const wantRun=(a.runInclude||'').includes('Sim');
+  const runDays=wantRun?parseInt(a.runDays)||2:0;
+
+  // Determine difficulty level
+  let maxDiff=2;
+  if(exp.includes('Nunca')||fam.includes('Não sei'))maxDiff=1;
+  else if(exp.includes('mais de 2')&&(fam.includes('avançados')||fam.includes('seguro')))maxDiff=3;
+
+  // Filter equipment
+  const equipMap={'Academia completa':null,'Home gym (halteres + barra + banco)':['halteres','barra','corpo','acessório'],
+    'Só halteres':['halteres','corpo','acessório'],'Só peso corporal (sem equipamento)':['corpo']};
+  const allowedEquip=equipMap[equip]||null;
+
+  // Filter limitations
+  const limitMuscles=new Set();
+  if(limit.includes('joelho')){limitMuscles.add('quadriceps');}
+  if(limit.includes('ombro')){limitMuscles.add('ombros');}
+  if(limit.includes('lombar')){limitMuscles.add('costas');limitMuscles.add('posteriores');}
+
+  // Filter exercise pool
+  let pool=EXDB.filter(ex=>{
+    if(ex.diff>maxDiff)return false;
+    if(allowedEquip&&!allowedEquip.includes(ex.equip))return false;
+    if(limitMuscles.size>0&&ex.muscles.some(m=>limitMuscles.has(m))&&ex.type==='isolado')return false;
+    return true;
+  });
+
+  // Determine split type
+  let splitType;
+  if(pref.includes('Full body'))splitType='fullbody';
+  else if(pref.includes('Push'))splitType='ppl';
+  else if(pref.includes('Clássico')||pref.includes('ABC'))splitType='abc';
+  else{
+    // Auto-decide based on days and experience
+    if(nDays<=2)splitType='fullbody';
+    else if(nDays===3)splitType=maxDiff>=2?'abc':'fullbody';
+    else if(nDays===4)splitType='abcd';
+    else splitType='ppl';
+  }
+
+  // Determine volume based on duration and goal
+  const durMin=parseInt(dur)||60;
+  let exPerSession=durMin<=30?4:durMin<=45?5:durMin<=60?7:9;
+  let baseSeries=goal.includes('força')?5:goal.includes('hipertrofia')?4:goal.includes('Emagrecer')?3:3;
+  let baseReps=goal.includes('força')?'4–6 reps':goal.includes('hipertrofia')?'8–12 reps':goal.includes('Emagrecer')?'12–15 reps':'10–12 reps';
+  let compoundSeries=goal.includes('força')?5:4;
+  let isolatedSeries=3;
+  let compoundReps=goal.includes('força')?'3–5 reps':goal.includes('hipertrofia')?'6–10 reps':'8–12 reps';
+  let isolatedReps=goal.includes('força')?'6–8 reps':goal.includes('hipertrofia')?'10–12 reps':'12–15 reps';
+  let compoundRest=goal.includes('força')?180:goal.includes('hipertrofia')?120:90;
+  let isolatedRest=goal.includes('força')?120:goal.includes('hipertrofia')?90:60;
+
+  // Helper: pick best exercises for target muscles
+  function pickExercises(targetMuscles,count,usedNames){
+    const tSet=new Set(targetMuscles);
+    const candidates=pool.filter(ex=>{
+      if(usedNames.has(ex.name))return false;
+      // Primary muscle (first in array) must match target, OR majority of muscles match
+      const matchCount=ex.muscles.filter(m=>tSet.has(m)).length;
+      const primaryMatch=tSet.has(ex.muscles[0]);
+      return primaryMatch||matchCount>=ex.muscles.length*0.5;
+    });
+    // Score: primary match + match count - penalty for unrelated muscles + compound bonus
+    candidates.sort((a,b)=>{
+      const aPrimary=tSet.has(a.muscles[0])?20:0;
+      const bPrimary=tSet.has(b.muscles[0])?20:0;
+      const aMatch=a.muscles.filter(m=>tSet.has(m)).length*3;
+      const bMatch=b.muscles.filter(m=>tSet.has(m)).length*3;
+      const aUnmatch=(a.muscles.length-a.muscles.filter(m=>tSet.has(m)).length)*2;
+      const bUnmatch=(b.muscles.length-b.muscles.filter(m=>tSet.has(m)).length)*2;
+      const aComp=a.type==='composto'?5:0;
+      const bComp=b.type==='composto'?5:0;
+      return(bPrimary+bMatch+bComp-bUnmatch)-(aPrimary+aMatch+aComp-aUnmatch);
+    });
+    const picked=[];
+    // Ensure variety: track picked primary muscles to spread coverage
+    const pickedPrimaries={};
+    for(const ex of candidates){
+      if(picked.length>=count)break;
+      const primary=ex.muscles[0];
+      const sameCount=pickedPrimaries[primary]||0;
+      // Allow max 4 exercises per primary muscle to ensure variety
+      if(sameCount>=4&&picked.length>=Math.ceil(count*0.6))continue;
+      picked.push(ex);
+      usedNames.add(ex.name);
+      pickedPrimaries[primary]=(sameCount||0)+1;
+    }
+    return picked;
+  }
+
+  function buildExercise(ex){
+    const isCompound=ex.type==='composto';
+    return{
+      name:ex.name,
+      series:isCompound?compoundSeries:isolatedSeries,
+      reps:isCompound?compoundReps:isolatedReps,
+      obs:ex.obs,
+      rest:isCompound?compoundRest:isolatedRest,
+      muscles:ex.muscles.slice()
+    };
+  }
+
+  // Build workouts based on split
+  const dayNames=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+  const dayIdxMap=[1,2,3,4,5,6,0]; // Mon=1..Sun=0
+  const generatedWorkouts=[];
+  const usedNames=new Set();
+  const corePool=pool.filter(ex=>ex.muscles[0]==='core');
+
+  function addCore(exercises,max){
+    const c=corePool.filter(ex=>!usedNames.has(ex.name)).slice(0,max||2);
+    c.forEach(ex=>{usedNames.add(ex.name);exercises.push(buildExercise(ex));});
+  }
+
+  if(splitType==='fullbody'){
+    // Full body — each day hits everything
+    const allMuscles=['peito','costas','ombros','quadriceps','gluteos','posteriores'];
+    for(let d=0;d<nDays;d++){
+      usedNames.clear();
+      const exercises=[];
+      // 1 compound per major muscle group
+      const majorPick=pickExercises(allMuscles,exPerSession-2,usedNames);
+      majorPick.forEach(ex=>exercises.push(buildExercise(ex)));
+      addCore(exercises,1);
+      // Add arms if space
+      if(exercises.length<exPerSession){
+        const arms=pickExercises(['biceps','triceps'],exPerSession-exercises.length,usedNames);
+        arms.forEach(ex=>exercises.push(buildExercise(ex)));
+      }
+      generatedWorkouts.push({
+        id:String.fromCharCode(65+d),name:`Treino ${String.fromCharCode(65+d)}`,
+        sub:'Full Body'+(d>0?' (variação '+(d+1)+')':''),
+        day:dayNames[d*Math.floor(7/nDays)],dayIdx:dayIdxMap[d*Math.floor(7/nDays)],
+        exercises
+      });
+    }
+  }else if(splitType==='abc'&&nDays===3){
+    // A: Peito + Tríceps + Ombros, B: Costas + Bíceps, C: Pernas
+    const splits=[
+      {sub:'Peito, Tríceps e Ombros',muscles:['peito','triceps','ombros'],dayOff:0},
+      {sub:'Costas e Bíceps',muscles:['costas','biceps'],dayOff:2},
+      {sub:'Pernas e Glúteos',muscles:['quadriceps','posteriores','gluteos','panturrilha'],dayOff:4},
+    ];
+    splits.forEach((sp,i)=>{
+      usedNames.clear();
+      const exercises=[];
+      const main=pickExercises(sp.muscles,exPerSession-2,usedNames);
+      main.forEach(ex=>exercises.push(buildExercise(ex)));
+      addCore(exercises,2);
+      generatedWorkouts.push({
+        id:String.fromCharCode(65+i),name:`Treino ${String.fromCharCode(65+i)}`,
+        sub:sp.sub,day:dayNames[sp.dayOff],dayIdx:dayIdxMap[sp.dayOff],
+        exercises
+      });
+    });
+  }else if(splitType==='abcd'||nDays===4){
+    // A: Peito+Triceps, B: Costas+Biceps, C: Quadriceps+Panturrilha, D: Posteriores+Gluteos+Ombros
+    const splits=[
+      {sub:'Peito e Tríceps',muscles:['peito','triceps'],dayOff:0},
+      {sub:'Costas e Bíceps',muscles:['costas','biceps'],dayOff:1},
+      {sub:'Quadríceps e Panturrilha',muscles:['quadriceps','panturrilha','core'],dayOff:3},
+      {sub:'Posteriores, Glúteos e Ombros',muscles:['posteriores','gluteos','ombros'],dayOff:4},
+    ];
+    splits.forEach((sp,i)=>{
+      usedNames.clear();
+      const exercises=[];
+      const main=pickExercises(sp.muscles,exPerSession-1,usedNames);
+      main.forEach(ex=>exercises.push(buildExercise(ex)));
+      if(!sp.muscles.includes('core'))addCore(exercises,1);
+      generatedWorkouts.push({
+        id:String.fromCharCode(65+i),name:`Treino ${String.fromCharCode(65+i)}`,
+        sub:sp.sub,day:dayNames[sp.dayOff],dayIdx:dayIdxMap[sp.dayOff],
+        exercises
+      });
+    });
+  }else if(splitType==='ppl'){
+    // Push/Pull/Legs — 3 or 6 days
+    const pplBase=[
+      {sub:'Push (Peito, Ombros, Tríceps)',muscles:['peito','ombros','triceps']},
+      {sub:'Pull (Costas, Bíceps)',muscles:['costas','biceps']},
+      {sub:'Legs (Pernas e Glúteos)',muscles:['quadriceps','posteriores','gluteos','panturrilha']},
+    ];
+    const reps=nDays>=6?2:1;
+    for(let r=0;r<reps;r++){
+      pplBase.forEach((sp,i)=>{
+        usedNames.clear();
+        const idx=r*3+i;
+        if(idx>=nDays)return;
+        const exercises=[];
+        const main=pickExercises(sp.muscles,exPerSession-1,usedNames);
+        main.forEach(ex=>exercises.push(buildExercise(ex)));
+        addCore(exercises,1);
+        generatedWorkouts.push({
+          id:String.fromCharCode(65+idx),name:`Treino ${String.fromCharCode(65+idx)}`,
+          sub:sp.sub+(r>0?' (II)':''),
+          day:dayNames[idx<7?idx:idx-1],dayIdx:dayIdxMap[idx<7?idx:idx-1],
+          exercises
+        });
+      });
+    }
+  }else{
+    // fallback: generic split
+    const allM=['peito','costas','ombros','biceps','triceps','quadriceps','posteriores','gluteos'];
+    const perDay=Math.ceil(allM.length/nDays);
+    for(let d=0;d<nDays;d++){
+      usedNames.clear();
+      const dayMuscles=allM.slice(d*perDay,(d+1)*perDay);
+      const exercises=[];
+      const main=pickExercises(dayMuscles,exPerSession-1,usedNames);
+      main.forEach(ex=>exercises.push(buildExercise(ex)));
+      addCore(exercises,1);
+      generatedWorkouts.push({
+        id:String.fromCharCode(65+d),name:`Treino ${String.fromCharCode(65+d)}`,
+        sub:dayMuscles.map(m=>MUSCLES[m]||m).join(', '),
+        day:dayNames[d],dayIdx:dayIdxMap[d],
+        exercises
+      });
+    }
+  }
+
+  // Assign proper days — spread across the week evenly
+  const spacing=Math.floor(7/nDays);
+  const strDayIdxs=[];
+  for(let i=0;i<nDays;i++){
+    strDayIdxs.push(i*spacing);
+  }
+  generatedWorkouts.forEach((w,i)=>{
+    const dayOff=strDayIdxs[i]||i;
+    w.day=dayNames[dayOff];
+    w.dayIdx=dayIdxMap[dayOff];
+  });
+
+  // Assign run days (fill gaps between strength days)
+  const runDayIdxs=[];
+  if(wantRun&&runDays>0){
+    const usedDays=new Set(strDayIdxs);
+    const available=[];
+    for(let i=0;i<7;i++)if(!usedDays.has(i))available.push(i);
+    const runSpacing=Math.max(1,Math.floor(available.length/runDays));
+    for(let i=0;i<runDays&&i<available.length;i++){
+      runDayIdxs.push(available[Math.min(i*runSpacing,available.length-1)]);
+    }
+  }
+
+  // Build DAY_TO_WORKOUT mapping
+  const newDayMap={};
+  generatedWorkouts.forEach((w,i)=>{newDayMap[w.dayIdx]=i;});
+
+  // Build run day set
+  const newRunDays=new Set(runDayIdxs.map(i=>dayIdxMap[i]));
+
+  // Show preview
+  showPlanPreview(generatedWorkouts,strDayIdxs,runDayIdxs,newDayMap,newRunDays,a);
+}
+
+function showPlanPreview(workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,answers){
+  const dayNames=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+
+  let previewHTML='<div class="plan-preview">';
+  workouts.forEach(w=>{
+    previewHTML+=`<div class="pp-day"><div class="pp-day-name">${w.name} — ${w.sub} (${w.day})</div>`;
+    w.exercises.forEach(ex=>{
+      previewHTML+=`<div class="pp-ex"><span class="pp-name">${ex.name}</span><span class="pp-sets">${ex.series}× ${ex.reps}</span></div>`;
+    });
+    previewHTML+='</div>';
+  });
+  if(runDayIdxs.length>0){
+    previewHTML+=`<div class="pp-day"><div class="pp-day-name">🏃 Corrida</div>`;
+    runDayIdxs.forEach(i=>{previewHTML+=`<div class="pp-ex"><span class="pp-name">${dayNames[i]}</span><span class="pp-sets">Dia de corrida</span></div>`;});
+    previewHTML+='</div>';
+  }
+  // Rest days
+  const allUsed=new Set([...strDayIdxs,...runDayIdxs]);
+  const restDays=[];
+  for(let i=0;i<7;i++)if(!allUsed.has(i))restDays.push(dayNames[i]);
+  if(restDays.length){
+    previewHTML+=`<div class="pp-day"><div class="pp-day-name">😎 Descanso</div><div class="pp-ex"><span class="pp-name">${restDays.join(', ')}</span></div></div>`;
+  }
+  previewHTML+='</div>';
+
+  // Summary
+  const exp=answers.experience||'';
+  const diffLabel=exp.includes('Nunca')?'Iniciante':exp.includes('menos de 6')?'Iniciante–Intermediário':exp.includes('6 meses')?'Intermediário':'Avançado';
+  const goalLabel=(answers.goal||'').split('(')[0].trim();
+
+  chatState.messages.push({type:'bot',text:
+    `Pronto! Aqui está seu plano personalizado:\n\n`+
+    `**Nível:** ${diffLabel}\n`+
+    `**Objetivo:** ${goalLabel}\n`+
+    `**Frequência:** ${workouts.length} dias de musculação${runDayIdxs.length?' + '+runDayIdxs.length+' dias de corrida':''}\n\n`+
+    `Confira os exercícios abaixo. Cada um foi escolhido com base no seu nível e equipamento. As séries, repetições e descanso estão ajustados para o seu objetivo.`
+  });
+  renderChat();
+
+  // Store for confirmation
+  chatState.generatedPlan={workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet};
+
+  const el=document.getElementById('chatInput');
+  el.innerHTML=previewHTML+`
+    <div class="chat-confirm" style="margin-top:14px">
+      <button class="btn btn-outline btn-full" onclick="openPlanChat(${chatState.editing})">🔄 Refazer</button>
+      <button class="btn btn-primary btn-full" onclick="confirmPlan()">✓ Aplicar plano</button>
+    </div>`;
+
+  document.getElementById('chatArea').scrollTop=999999;
+}
+
+function confirmPlan(){
+  const plan=chatState.generatedPlan;
+  if(!plan){showToast('⚠ Nenhum plano gerado',false);return;}
+
+  // Save custom plan to state
+  state.customWorkouts=plan.workouts;
+  state.customDayMap=plan.dayMap;
+  state.customRunDays=Array.from(plan.runDaySet);
+  state.customPlanMeta={
+    createdAt:new Date().toISOString(),
+    answers:{...chatState.answers}
+  };
+
+  // Activate custom plan
+  state.useCustomPlan=true;
+  state.currentWorkout=0;
+  state.sessionSets=null;
+  state.sessionPlan=null;
+  state.sessionStart=null;
+  state.programStart=new Date().toISOString();
+  state.planEnd=suggestPlanEnd(fmtDateISO(new Date()));
+  state.switchDismissed=false;
+
+  save();
+  showToast('✓ Plano aplicado com sucesso!',true);
+  setTimeout(()=>location.reload(),600);
+}
+
+// ═══════════════════════════════════════════════
+// CUSTOM PLAN INTEGRATION — override WORKOUTS when custom plan is active
+// ═══════════════════════════════════════════════
+function getActiveWorkouts(){
+  if(state.useCustomPlan&&state.customWorkouts&&state.customWorkouts.length>0){
+    return state.customWorkouts;
+  }
+  return WORKOUTS;
+}
+function getActiveDayMap(){
+  if(state.useCustomPlan&&state.customDayMap){
+    // customDayMap keys are strings from JSON, convert
+    const m={};
+    Object.keys(state.customDayMap).forEach(k=>{m[parseInt(k)]=state.customDayMap[k];});
+    return m;
+  }
+  return DAY_TO_WORKOUT;
+}
+function isRunDayActive(dow){
+  if(state.useCustomPlan&&state.customRunDays){
+    return state.customRunDays.includes(dow);
+  }
+  return isRunDay(dow);
 }
 
 // INIT
