@@ -325,6 +325,31 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .chat-multi .chat-opt{font-size:12px;padding:7px 12px;}
 .chat-multi .chat-opt.on{background:var(--accent);color:#000;border-color:var(--accent);}
 .chat-multi .chat-opt.off{background:transparent;color:var(--muted2);border-color:var(--border);}
+.run-timer-overlay{position:fixed;inset:0;background:var(--bg);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:12px;}
+.rt-header{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:400px;}
+.rt-session{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);letter-spacing:1px;}
+.rt-progress-bar{width:100%;max-width:400px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.rt-progress-fill{height:100%;background:var(--accent);transition:width .3s;}
+.rt-segment-info{text-align:center;margin:8px 0;}
+.rt-label{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin-top:8px;}
+.rt-effort{font-size:14px;color:var(--muted2);margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
+.rt-time{font-family:'Bebas Neue',sans-serif;font-size:96px;color:var(--text);line-height:1;letter-spacing:4px;}
+.rt-total{font-size:13px;color:var(--muted2);}
+.rt-seg-count{font-size:12px;color:var(--muted);}
+.rt-next{font-size:13px;color:var(--muted2);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;margin-top:8px;}
+.rl-planned{margin-bottom:8px;}
+.rl-segments{display:flex;flex-direction:column;gap:4px;margin:6px 0;}
+.rl-seg{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
+.rl-seg:last-child{border-bottom:none;}
+.rl-seg-icon{font-size:16px;width:24px;text-align:center;}
+.rl-seg-label{flex:1;color:var(--text);}
+.rl-seg-time{color:var(--muted2);font-weight:500;white-space:nowrap;}
+.disclaimer-overlay,.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.disclaimer-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 22px;max-width:400px;width:100%;}
+.chat-free-input{display:flex;gap:8px;padding:4px 0;}
+.chat-free-input input{flex:1;padding:10px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;}
+.chat-free-input input:focus{border-color:var(--accent);}
+.chat-free-input button{padding:10px 18px;border-radius:20px;font-size:13px;}
 .chat-confirm{display:flex;gap:8px;margin-top:6px;}
 .chat-confirm button{flex:1;}
 .plan-preview{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:8px 0;font-size:13px;}
@@ -500,6 +525,35 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <div class="sub-modal" id="subModal" style="display:none"></div>
 <div class="toast" id="toast"></div>
 
+<!-- Disclaimer modal -->
+<div id="disclaimerModal" class="disclaimer-overlay" style="display:none">
+  <div class="disclaimer-box">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent);letter-spacing:2px;margin-bottom:14px">TREINO DO PAI</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--text);margin-bottom:18px">
+      <p style="margin-bottom:10px"><strong>Aviso importante antes de começar:</strong></p>
+      <p style="margin-bottom:8px">Este aplicativo gera planos de treino com base nas suas respostas, mas <strong>não substitui a orientação de um profissional de educação física ou médico</strong>.</p>
+      <p style="margin-bottom:8px">Ao utilizar o app, você assume total responsabilidade pela execução dos exercícios e sessões de corrida. Se você tem qualquer condição de saúde, lesão ou dúvida, <strong>consulte um profissional antes de iniciar</strong>.</p>
+      <p style="margin-bottom:8px">O app é uma ferramenta de apoio — a responsabilidade pela prática segura é sempre sua.</p>
+      <p style="color:var(--muted2);font-size:12px">Ao continuar, você declara que leu e concorda com este aviso.</p>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="acceptDisclaimer()" style="font-size:15px;padding:14px">Entendi e aceito</button>
+  </div>
+</div>
+
+<!-- Onboarding alert -->
+<div id="onboardingAlert" class="onboarding-overlay" style="display:none">
+  <div class="disclaimer-box">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:2px;margin-bottom:10px">Bem-vindo!</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--text);margin-bottom:18px">
+      <p style="margin-bottom:8px">Parece que você ainda não tem um plano de treino configurado.</p>
+      <p style="margin-bottom:8px">Vamos montar um plano personalizado? O assistente vai te fazer algumas perguntas rápidas sobre seus objetivos, experiência e condições de saúde.</p>
+      <p style="color:var(--muted2);font-size:12px">Leva menos de 2 minutos.</p>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="startOnboarding()" style="font-size:15px;padding:14px;margin-bottom:8px">Criar meu plano de treino</button>
+    <button class="btn btn-outline btn-full" onclick="dismissOnboarding()" style="font-size:13px">Agora não</button>
+  </div>
+</div>
+
 <script>
 const MUSCLES={peito:'Peito',costas:'Costas',ombros:'Ombros',biceps:'Bíceps',triceps:'Tríceps',quadriceps:'Quadríceps',posteriores:'Posteriores',gluteos:'Glúteos',core:'Core',panturrilha:'Panturrilha'};
 const AB=[
@@ -554,6 +608,9 @@ function ensureStateDefaults(s){
   if(!s.customDayMap)s.customDayMap=null;
   if(!s.customRunDays)s.customRunDays=null;
   if(!s.customPlanMeta)s.customPlanMeta=null;
+  if(!s.customRunPlan)s.customRunPlan=null;
+  if(s.customRunHasOwnPlan===undefined)s.customRunHasOwnPlan=false;
+  if(s.disclaimerAccepted===undefined)s.disclaimerAccepted=false;
   s.editMode=false;
   return s;
 }
@@ -1005,7 +1062,7 @@ function startSession(){
   document.getElementById('startBtn').classList.add('hidden');
   document.getElementById('progBlock').style.display='';
   document.getElementById('finishRow').style.display='';
-  startClock();updateActiveBanner();
+  startClock();updateActiveBanner();requestWakeLock();
   renderTreino();
   showToast('▶ Treino iniciado!',true);
 }
@@ -1039,6 +1096,7 @@ function finishSession(){
   document.getElementById('startBtn').classList.remove('hidden');
   document.getElementById('progBlock').style.display='none';
   document.getElementById('finishRow').style.display='none';
+  releaseWakeLock();
   save();showToast(`✓ Treino salvo! ${fmtMin(durMin)}`,true);
   setTimeout(()=>{renderTreino();renderHistory();renderDesempenho();renderPlano();},300);
 }
@@ -1053,6 +1111,7 @@ function resetSession(){
   document.getElementById('startBtn').classList.remove('hidden');
   document.getElementById('progBlock').style.display='none';
   document.getElementById('finishRow').style.display='none';
+  releaseWakeLock();
   save();renderTreino();
 }
 
@@ -1209,8 +1268,28 @@ function renderTreino(){
       const card=document.createElement('div');
       card.id='runLogCard';
       card.className='run-log-card';
-      card.innerHTML=`
-        <div class="rl-title">🏃 Registrar corrida</div>
+      // Show planned session if available
+      const plannedSess=getRunPlanForToday();
+      let plannedHTML='';
+      if(plannedSess&&plannedSess.segments){
+        const mode=state.quickMode||'off';
+        const segs=applyRunQuickMode(plannedSess.segments,mode);
+        const totalSec=segs.reduce((a,s)=>a+s.sec,0);
+        const totalMin=Math.ceil(totalSec/60);
+        const fmtSeg=s=>{const m=Math.floor(s.sec/60);const ss=s.sec%60;return m>0?(m+'min'+(ss>0?' '+ss+'s':'')):(ss+'s');};
+        plannedHTML=`<div class="rl-planned">
+          <div class="rl-title">Treino de hoje: ${plannedSess.name}</div>
+          <div style="font-size:12px;color:var(--muted2);margin-bottom:8px">${plannedSess.obs}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Duração total: ~${totalMin} min | ${segs.length} segmentos</div>
+          <div class="rl-segments">${segs.map(s=>
+            `<div class="rl-seg"><span class="rl-seg-icon">${s.icon||'🏃'}</span><span class="rl-seg-label">${s.label}</span><span class="rl-seg-time">${fmtSeg(s)}</span></div>`
+          ).join('')}</div>
+          <button class="btn btn-primary btn-full" onclick="startRunTimer()" style="font-size:15px;padding:14px;margin-top:10px">▶ Iniciar treino guiado</button>
+        </div>
+        <div style="border-top:1px solid var(--border);margin:14px 0;"></div>`;
+      }
+      card.innerHTML=plannedHTML+`
+        <div class="rl-title">📝 Registrar corrida manualmente</div>
         <div class="rl-grid">
           <div class="rl-row"><label>Distância (km)</label><input type="text" inputmode="decimal" id="rl-km" placeholder="559 ou 5,59" maxlength="5"></div>
           <div class="rl-row"><label>Duração</label><input type="text" inputmode="numeric" id="rl-dur" placeholder="5215 ou 52:15" maxlength="7"></div>
@@ -2548,17 +2627,71 @@ function closePlanChat(){switchPage('plano');}
 
 const CHAT_STEPS=[
   {id:'welcome',bot:()=>chatState.editing
-    ?'Vamos ajustar o seu plano de treino! Vou fazer algumas perguntas para entender melhor o que você quer mudar. 💪'
-    :'Olá! Vou criar um plano de treino personalizado para você. Vamos conversar sobre seus objetivos, experiência e rotina. São perguntas rápidas! 💪',
+    ?'Vamos ajustar o seu plano! Vou fazer algumas perguntas rápidas. Você pode mudar qualquer coisa: adicionar corrida, trocar divisão muscular, reduzir dias — é só responder. 💪'
+    :'Olá! Vou criar um plano de treino personalizado para você. Vou te fazer algumas perguntas sobre seu corpo, seus objetivos e sua rotina. São rápidas — vamos lá! 💪',
    auto:true},
+  // ── Perfil: nome ──
+  {id:'userName',
+   bot:()=>'Primeiro, como posso te chamar?',
+   key:'userName',freeText:true,placeholder:'Seu nome ou apelido',
+   condition:()=>!chatState.editing&&!state.profile.name},
+  // ── Perfil: sexo ──
+  {id:'userSex',
+   bot:()=>{const n=chatState.answers.userName||state.profile.name||'';return n?`Prazer, ${n}! Qual o seu **sexo biológico**? (Isso influencia o cálculo de metabolismo basal e gasto calórico.)`:'Qual o seu **sexo biológico**? (Para cálculos de metabolismo.)';},
+   options:['Masculino','Feminino'],
+   key:'userSex',
+   condition:()=>!chatState.editing&&!state.profile.sex},
+  // ── Perfil: idade ──
+  {id:'userAge',
+   bot:()=>'Qual a sua **idade**?',
+   key:'userAge',freeText:true,placeholder:'Ex: 35',inputMode:'numeric',
+   condition:()=>!chatState.editing&&!state.profile.age},
+  // ── Perfil: peso ──
+  {id:'userWeight',
+   bot:()=>'Qual o seu **peso atual** (em kg)?',
+   key:'userWeight',freeText:true,placeholder:'Ex: 82',inputMode:'decimal',
+   condition:()=>!chatState.editing&&!state.profile.weightKg},
+  // ── Perfil: altura ──
+  {id:'userHeight',
+   bot:()=>'E a sua **altura** (em cm)?',
+   key:'userHeight',freeText:true,placeholder:'Ex: 175',inputMode:'numeric',
+   condition:()=>!chatState.editing&&!state.profile.heightCm},
+  // ── Perfil: como se sente ──
+  {id:'userFeeling',
+   bot:()=>'Como você se sente **hoje em relação ao seu corpo e disposição**?',
+   options:['Estou sedentário e quero mudar','Tenho energia mas estou acima do peso','Me sinto bem mas quero melhorar','Estou ativo mas sem direção','Estou recomeçando após uma pausa'],
+   key:'userFeeling',
+   condition:()=>!chatState.editing},
+  // ── Perfil: estilo de vida ──
+  {id:'userLifestyle',
+   bot:()=>'Como é a sua **rotina no dia a dia**?',
+   options:['Trabalho sentado o dia todo','Trabalho em pé / ando bastante','Trabalho é físico / pesado','Sou bastante ativo fora do treino'],
+   key:'userLifestyle',
+   condition:()=>!chatState.editing},
+  // ── O que treinar ──
+  {id:'planType',
+   bot:()=>'O que você quer treinar?',
+   options:['🏋️ Só musculação','🏃 Só corrida','🏋️+🏃 Musculação e corrida'],
+   key:'planType'},
+  // ── Objetivo ──
   {id:'goal',
-   bot:()=>'Qual é o seu **objetivo principal** com o treino?',
-   options:['Ganhar massa muscular (hipertrofia)','Emagrecer / queimar gordura','Condicionamento e resistência','Saúde geral e qualidade de vida','Ganhar força máxima'],
+   bot:()=>{
+     const t=chatState.answers.planType||'';
+     if(t.includes('Só corrida'))return 'Qual é o seu **objetivo principal** com a corrida?';
+     return 'Qual é o seu **objetivo principal**?';
+   },
+   options:()=>{
+     const t=chatState.answers.planType||'';
+     if(t.includes('Só corrida'))return['Começar a correr (sair do sedentarismo)','Melhorar ritmo e resistência','Preparar para uma prova (5k, 10k, meia, maratona)','Emagrecer correndo','Manter condicionamento'];
+     return['Ganhar massa muscular (hipertrofia)','Emagrecer / queimar gordura','Condicionamento e resistência','Saúde geral e qualidade de vida','Ganhar força máxima'];
+   },
    key:'goal'},
+  // ── Experiência musculação ──
   {id:'experience',
    bot:()=>'Qual é a sua **experiência** com musculação?',
    options:['Nunca treinei (iniciante)','Treinei menos de 6 meses','Treino há 6 meses a 2 anos','Treino há mais de 2 anos'],
-   key:'experience'},
+   key:'experience',
+   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
   {id:'familiarity',
    bot:()=>{
      const exp=chatState.answers.experience||'';
@@ -2572,36 +2705,108 @@ const CHAT_STEPS=[
      if(exp.includes('menos de 6'))return['Ainda não, prefiro máquinas','Sim, mas preciso aprimorar','Sim, me sinto seguro'];
      return['Pode incluir os avançados','Prefiro ficar nos intermediários'];
    },
-   key:'familiarity'},
+   key:'familiarity',
+   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+  // ── Dias musculação ──
   {id:'days',
    bot:()=>'Quantos **dias por semana** você pode treinar musculação?',
    options:['2 dias','3 dias','4 dias','5 dias','6 dias'],
-   key:'days'},
-  {id:'runInclude',
-   bot:()=>'Deseja incluir **treinos de corrida** no plano?',
-   options:['Sim, quero correr também','Não, só musculação'],
-   key:'runInclude'},
+   key:'days',
+   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+  // ── Divisão muscular ──
+  {id:'preference',
+   bot:()=>{
+     const d=parseInt(chatState.answers.days)||3;
+     let txt='Qual **divisão muscular** você prefere?\n\n';
+     if(d<=2)txt+='Com '+d+' dias, as melhores opções são **Full Body** ou **AB (Superior/Inferior)**.';
+     else if(d===3)txt+='Com 3 dias, as opções mais comuns são **ABC**, **Full Body** ou **Push/Pull/Legs**.';
+     else if(d===4)txt+='Com 4 dias, as opções mais populares são **ABCD**, **Upper/Lower (2×)** ou **Push/Pull/Legs + extra**.';
+     else txt+='Com '+d+' dias, você pode usar **Push/Pull/Legs (2×)**, **ABCDE** ou repetir ciclos.';
+     return txt;
+   },
+   options:()=>{
+     const d=parseInt(chatState.answers.days)||3;
+     const opts=['Deixo você decidir o melhor!'];
+     if(d<=2){opts.unshift('AB (Superior + Inferior)','Full Body');}
+     else if(d===3){opts.unshift('ABC (3 divisões)','Full Body','Push / Pull / Legs');}
+     else if(d===4){opts.unshift('ABCD (4 divisões)','Upper / Lower (2×)','Push / Pull / Legs');}
+     else if(d===5){opts.unshift('ABCDE (5 divisões)','Push / Pull / Legs + Upper + Lower');}
+     else{opts.unshift('Push / Pull / Legs (2×)','ABCDE + Extra','Full Body (6×)');}
+     return opts;
+   },
+   key:'preference',
+   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+  // ── Experiência corrida ──
+  {id:'runExp',
+   bot:()=>'Qual é a sua **experiência com corrida**?',
+   options:['Nunca corri / muito sedentário','Corro eventualmente (1–2× mês)','Corro regularmente há menos de 6 meses','Corro regularmente há mais de 6 meses'],
+   key:'runExp',
+   condition:()=>(chatState.answers.planType||'').includes('corrida')||(chatState.answers.planType||'').includes('🏃')},
+  // ── Tem relógio/app de corrida? ──
+  {id:'runWatch',
+   bot:()=>'Você tem um **relógio com GPS/pace** ou usa algum app de corrida (Strava, Nike Run, etc)?',
+   options:['Sim, tenho relógio/app','Não, vou usar só o celular','Não tenho nada, vou só pelo tempo'],
+   key:'runWatch',
+   condition:()=>(chatState.answers.planType||'').includes('corrida')||(chatState.answers.planType||'').includes('🏃')},
+  // ── Já tem plano de corrida? ──
+  {id:'runHasOwnPlan',
+   bot:()=>'Você **já tem um plano de corrida** definido (de um treinador, app, ou planilha)?',
+   options:['Sim, já tenho meu plano','Não, quero que o app monte para mim'],
+   key:'runHasOwnPlan',
+   condition:()=>(chatState.answers.planType||'').includes('corrida')||(chatState.answers.planType||'').includes('🏃')},
+  // ── Dias de corrida ──
   {id:'runDays',
-   bot:()=>'Quantos dias de corrida por semana?',
-   options:['1 dia','2 dias','3 dias'],
+   bot:()=>{
+     const re=chatState.answers.runExp||'';
+     if(re.includes('Nunca'))return 'Para quem está começando, recomendo **2 a 3 dias** por semana com descanso entre eles. Quantos dias você quer dedicar à corrida?';
+     return 'Quantos **dias de corrida** por semana?';
+   },
+   options:()=>{
+     const re=chatState.answers.runExp||'';
+     if(re.includes('Nunca'))return['2 dias','3 dias'];
+     return['2 dias','3 dias','4 dias','5 dias'];
+   },
    key:'runDays',
-   condition:()=>(chatState.answers.runInclude||'').includes('Sim')},
+   condition:()=>(chatState.answers.planType||'').includes('corrida')||(chatState.answers.planType||'').includes('🏃')},
+  // ── Meta de prova ──
+  {id:'runGoalType',
+   bot:()=>'Tem alguma **meta de distância ou prova** em mente?',
+   options:()=>{
+     const re=chatState.answers.runExp||'';
+     const opts=['Não, quero só manter a frequência'];
+     if(re.includes('Nunca'))opts.unshift('Quero conseguir correr 5 km sem parar','Quero completar uma prova de 5 km');
+     else{opts.unshift('Prova de 5 km','Prova de 10 km','Meia maratona (21 km)','Maratona (42 km)');}
+     return opts;
+   },
+   key:'runGoalType',
+   condition:()=>{const t=chatState.answers.planType||'';const hasRun=t.includes('corrida')||t.includes('🏃');return hasRun&&!(chatState.answers.runHasOwnPlan||'').includes('já tenho');}},
+  // ── Duração ──
   {id:'duration',
-   bot:()=>'Quanto **tempo** você tem por sessão de treino?',
+   bot:()=>{
+     const t=chatState.answers.planType||'';
+     if(t.includes('Só corrida'))return 'Quanto **tempo** você tem por sessão de corrida?';
+     return 'Quanto **tempo** você tem por sessão de treino (musculação)?';
+   },
    options:['30 minutos','45 minutos','60 minutos','90 minutos ou mais'],
    key:'duration'},
+  // ── Equipamento (só se tem musculação) ──
   {id:'equipment',
    bot:()=>'Que **equipamento** você tem disponível?',
    options:['Academia completa','Home gym (halteres + barra + banco)','Só halteres','Só peso corporal (sem equipamento)'],
-   key:'equipment'},
+   key:'equipment',
+   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+  // ── Limitações expandidas ──
   {id:'limitations',
-   bot:()=>'Possui alguma **limitação ou lesão** que eu deva considerar?',
-   options:['Nenhuma limitação','Problema no joelho','Problema no ombro','Problema na lombar','Tenho outra limitação'],
+   bot:()=>'Possui alguma **limitação, lesão ou condição de saúde** que eu deva considerar?',
+   options:['Nenhuma limitação','Problema no joelho','Problema no ombro','Problema na lombar / hérnia de disco','Problema no quadril','Tendinite (cotovelo ou punho)','Problema no tornozelo / pé','Hipertensão (pressão alta)','Problema cardíaco','Asma ou problema respiratório','Obesidade (IMC acima de 35)','Diabetes','Artrite / artrose','Pós-operatório recente','Gestante ou pós-parto','Tenho mais de uma condição'],
    key:'limitations'},
-  {id:'preference',
-   bot:()=>'Última pergunta! Tem alguma **preferência** de estilo de treino?',
-   options:['Clássico (ABC, séries tradicionais)','Full body (corpo todo em cada treino)','Push / Pull / Legs','Deixo você decidir o melhor!'],
-   key:'preference'},
+  // ── Segunda limitação (se mais de uma) ──
+  {id:'limitations2',
+   bot:()=>'Selecione a **segunda condição**:',
+   options:['Problema no joelho','Problema no ombro','Problema na lombar / hérnia de disco','Problema no quadril','Tendinite (cotovelo ou punho)','Problema no tornozelo / pé','Hipertensão (pressão alta)','Problema cardíaco','Asma ou problema respiratório','Obesidade (IMC acima de 35)','Diabetes','Artrite / artrose','Pós-operatório recente','Gestante ou pós-parto'],
+   key:'limitations2',
+   condition:()=>(chatState.answers.limitations||'').includes('mais de uma')},
+  // ── Gerar ──
   {id:'generating',
    bot:()=>'Perfeito! Analisando suas respostas e montando o plano ideal... 🧠',
    auto:true,action:'generate'},
@@ -2612,7 +2817,6 @@ function advanceChat(){
   while(chatState.step<steps.length){
     const s=steps[chatState.step];
     if(s.condition&&!s.condition()){chatState.step++;continue;}
-    // Add bot message
     const botMsg=typeof s.bot==='function'?s.bot():s.bot;
     chatState.messages.push({type:'bot',text:botMsg});
     renderChat();
@@ -2625,9 +2829,12 @@ function advanceChat(){
       }
       return;
     }
-    // Show options
-    const opts=typeof s.options==='function'?s.options():s.options;
-    renderChatOptions(opts,s.key);
+    if(s.freeText){
+      renderChatFreeText(s.key,s.placeholder||'',s.inputMode||'text');
+    }else{
+      const opts=typeof s.options==='function'?s.options():s.options;
+      renderChatOptions(opts,s.key);
+    }
     return;
   }
 }
@@ -2638,6 +2845,13 @@ function selectChatOption(key,value){
   chatState.step++;
   renderChat();
   setTimeout(()=>advanceChat(),350);
+}
+
+function submitChatFreeText(key){
+  const input=document.getElementById('chatFreeInput');
+  const val=(input?input.value:'').trim();
+  if(!val)return;
+  selectChatOption(key,val);
 }
 
 function renderChat(){
@@ -2655,278 +2869,534 @@ function renderChatOptions(opts,key){
   ).join('')}</div>`;
 }
 
+function renderChatFreeText(key,placeholder,inputMode){
+  const el=document.getElementById('chatInput');
+  el.innerHTML=`<div class="chat-free-input">
+    <input type="text" id="chatFreeInput" inputmode="${inputMode}" placeholder="${placeholder}" autocomplete="off"
+     onkeydown="if(event.key==='Enter'){event.preventDefault();submitChatFreeText('${key}');}">
+    <button class="btn btn-primary" onclick="submitChatFreeText('${key}')">Enviar</button>
+  </div>`;
+  setTimeout(()=>{const i=document.getElementById('chatFreeInput');if(i)i.focus();},100);
+}
+
+// ═══════════════════════════════════════════════
+// RUNNING PLAN DATABASE — structured sessions with didactic explanations
+// ═══════════════════════════════════════════════
+const RUN_SESSIONS={
+beginner:[
+  {name:'Caminhada + trote alternados',duration:'25 min',
+   obs:'Alterne caminhada rápida com trote leve. O objetivo é acostumar o corpo ao impacto, não velocidade. Se ficar ofegante, caminhe mais.',
+   segments:[
+     {label:'Caminhada rápida (aquecimento)',sec:120,effort:'leve',icon:'🚶'},
+     {label:'Trote leve',sec:60,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada rápida',sec:120,effort:'leve',icon:'🚶'},
+     {label:'Trote leve',sec:60,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada rápida',sec:120,effort:'leve',icon:'🚶'},
+     {label:'Trote leve',sec:90,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada rápida',sec:120,effort:'leve',icon:'🚶'},
+     {label:'Trote leve',sec:90,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada rápida',sec:120,effort:'leve',icon:'🚶'},
+     {label:'Trote leve',sec:60,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:180,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Trote contínuo leve',duration:'20 min',
+   obs:'Corra no "ritmo de conversa" — se não consegue falar uma frase inteira, diminua. Não se preocupe com velocidade.',
+   segments:[
+     {label:'Caminhada (aquecimento)',sec:180,effort:'leve',icon:'🚶'},
+     {label:'Trote contínuo leve',sec:900,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada rápida',sec:120,effort:'leve',icon:'🚶'},
+     {label:'Caminhada (desaquecimento)',sec:120,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Caminhada rápida',duration:'30 min',
+   obs:'Caminhe com passos longos e ritmo forte. Ótimo para recuperação. Mova os braços para aumentar o gasto calórico.',
+   segments:[
+     {label:'Caminhada normal (aquecimento)',sec:180,effort:'leve',icon:'🚶'},
+     {label:'Caminhada rápida',sec:600,effort:'moderado',icon:'🚶‍♂️'},
+     {label:'Caminhada muito rápida',sec:300,effort:'forte',icon:'🚶‍♂️'},
+     {label:'Caminhada rápida',sec:420,effort:'moderado',icon:'🚶‍♂️'},
+     {label:'Caminhada normal (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Trote + educativos',duration:'25 min',
+   obs:'Trote leve seguido de exercícios educativos (elevação de joelho, skipping). Melhora a técnica da passada.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Trote leve',sec:300,effort:'moderado',icon:'🏃'},
+     {label:'Skipping (elevação de joelhos)',sec:30,effort:'forte',icon:'⚡'},
+     {label:'Trote leve',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Skipping (elevação de joelhos)',sec:30,effort:'forte',icon:'⚡'},
+     {label:'Trote leve',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Skipping (elevação de joelhos)',sec:30,effort:'forte',icon:'⚡'},
+     {label:'Trote leve',sec:180,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:180,effort:'leve',icon:'🚶'},
+   ]},
+],
+intermediate:[
+  {name:'Corrida contínua (Z2)',duration:'35 min',
+   obs:'Zona 2 = ritmo confortável, respira com facilidade. Fortalece o coração e ensina o corpo a queimar gordura. O treino mais importante.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida Z2 (confortável)',sec:1500,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Corrida progressiva',duration:'35 min',
+   obs:'Comece leve e vá aumentando o ritmo. Os últimos minutos devem ser no seu ritmo "moderado". Ensina o corpo a acelerar com controle.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida ritmo fácil',sec:600,effort:'moderado',icon:'🏃'},
+     {label:'Corrida ritmo moderado',sec:600,effort:'forte',icon:'🏃💨'},
+     {label:'Corrida ritmo forte',sec:300,effort:'muito forte',icon:'🔥'},
+     {label:'Trote leve (desaquecimento)',sec:300,effort:'leve',icon:'🏃'},
+   ]},
+  {name:'Intervalado curto',duration:'30 min',
+   obs:'Intervalados melhoram velocidade e capacidade pulmonar. Corra forte por 1 min, depois descanse trotando por 2 min.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE',sec:60,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE',sec:60,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE',sec:60,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE',sec:60,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE',sec:60,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE',sec:60,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Longão (corrida longa)',duration:'50 min',
+   obs:'Corra em ritmo leve (Z2) por mais tempo que o habitual. Não precisa ser rápido — o objetivo é resistência. Leve água.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida contínua Z2',sec:2400,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Corrida em ladeira',duration:'30 min',
+   obs:'Subidas fortalecem músculos da perna e melhoram potência. Corra forte subindo, desça caminhando.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Subida FORTE',sec:45,effort:'muito forte',icon:'⛰️'},{label:'Descida caminhando',sec:90,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:45,effort:'muito forte',icon:'⛰️'},{label:'Descida caminhando',sec:90,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:45,effort:'muito forte',icon:'⛰️'},{label:'Descida caminhando',sec:90,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:45,effort:'muito forte',icon:'⛰️'},{label:'Descida caminhando',sec:90,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:45,effort:'muito forte',icon:'⛰️'},{label:'Descida caminhando',sec:90,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:45,effort:'muito forte',icon:'⛰️'},{label:'Descida caminhando',sec:90,effort:'leve',icon:'🚶'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Trote regenerativo',duration:'20 min',
+   obs:'Corrida BEM leve. Se as pernas estiverem pesadas, caminhe trechos. Ajuda na recuperação muscular.',
+   segments:[
+     {label:'Caminhada (aquecimento)',sec:180,effort:'leve',icon:'🚶'},
+     {label:'Trote muito leve',sec:900,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:180,effort:'leve',icon:'🚶'},
+   ]},
+],
+advanced:[
+  {name:'Corrida contínua (Z2)',duration:'50 min',
+   obs:'Base aeróbica em zona 2. 80% do volume semanal deveria ser neste ritmo. Construa resistência sem fadiga acumulada.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida Z2',sec:2400,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Tempo run (limiar)',duration:'40 min',
+   obs:'Ritmo "confortavelmente desconfortável" — rápido o suficiente para sentir esforço, mas sustentável. Melhora o limiar anaeróbico.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:600,effort:'leve',icon:'🏃'},
+     {label:'Corrida ritmo de limiar',sec:1200,effort:'forte',icon:'🔥'},
+     {label:'Trote leve (desaquecimento)',sec:600,effort:'leve',icon:'🏃'},
+   ]},
+  {name:'Fartlek (variação de ritmo)',duration:'40 min',
+   obs:'Fartlek = "brincadeira de velocidade" em sueco. Alterne trechos rápidos com lentos. Treina o corpo a mudar de ritmo.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte',sec:90,effort:'muito forte',icon:'🔥'},{label:'Trote leve',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte',sec:60,effort:'muito forte',icon:'🔥'},{label:'Trote leve',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte',sec:120,effort:'muito forte',icon:'🔥'},{label:'Trote leve',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte',sec:45,effort:'muito forte',icon:'🔥'},{label:'Trote leve',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte',sec:180,effort:'forte',icon:'🔥'},{label:'Trote leve',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte',sec:60,effort:'muito forte',icon:'🔥'},{label:'Trote leve',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte',sec:90,effort:'muito forte',icon:'🔥'},{label:'Trote leve',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Intervalado longo',duration:'45 min',
+   obs:'4–6 repetições de corrida forte (ritmo de prova) com recuperação. Desenvolve velocidade específica para provas.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:600,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE (rep 1)',sec:240,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE (rep 2)',sec:240,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE (rep 3)',sec:240,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE (rep 4)',sec:240,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Corrida FORTE (rep 5)',sec:240,effort:'muito forte',icon:'🔥'},{label:'Trote leve (recuperação)',sec:120,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Intervalado curto (velocidade)',duration:'30 min',
+   obs:'8–10 repetições curtas e intensas. Melhora economia de corrida e velocidade máxima.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Sprint FORTE',sec:45,effort:'máximo',icon:'⚡'},{label:'Trote leve (recuperação)',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Sprint FORTE',sec:45,effort:'máximo',icon:'⚡'},{label:'Trote leve (recuperação)',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Sprint FORTE',sec:45,effort:'máximo',icon:'⚡'},{label:'Trote leve (recuperação)',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Sprint FORTE',sec:45,effort:'máximo',icon:'⚡'},{label:'Trote leve (recuperação)',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Sprint FORTE',sec:45,effort:'máximo',icon:'⚡'},{label:'Trote leve (recuperação)',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Sprint FORTE',sec:45,effort:'máximo',icon:'⚡'},{label:'Trote leve (recuperação)',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Sprint FORTE',sec:45,effort:'máximo',icon:'⚡'},{label:'Trote leve (recuperação)',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Sprint FORTE',sec:45,effort:'máximo',icon:'⚡'},{label:'Trote leve (recuperação)',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Longão',duration:'70 min',
+   obs:'Corrida longa em Z2. Aumente gradualmente (máx. 10%/semana). Desenvolve resistência para provas.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida contínua Z2',sec:3600,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Trote regenerativo',duration:'25 min',
+   obs:'Corrida muito leve para recuperação ativa. Essencial após treinos intensos.',
+   segments:[
+     {label:'Caminhada (aquecimento)',sec:180,effort:'leve',icon:'🚶'},
+     {label:'Trote muito leve',sec:1080,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:240,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Corrida em ladeira',duration:'35 min',
+   obs:'Subidas fortalecem posterior, panturrilha e glúteo. Melhora potência da passada.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
+     {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+]};
+
+function buildRunPlan(runDays,runExp,runGoal){
+  const re=runExp||'';
+  const rg=runGoal||'';
+  const isBegin=re.includes('Nunca')||re.includes('eventualmente');
+  const isAdv=re.includes('mais de 6');
+  const level=isBegin?'beginner':isAdv?'advanced':'intermediate';
+  const sessPool=RUN_SESSIONS[level];
+  const plan=[];
+
+  if(isBegin){
+    // Beginner: structured walk/run progression
+    if(runDays>=1)plan.push({...sessPool[0]});// caminhada+trote
+    if(runDays>=2)plan.push({...sessPool[1]});// trote contínuo
+    if(runDays>=3)plan.push({...sessPool[2]});// caminhada rápida
+  }else if(isAdv){
+    // Advanced: mix of tempo, intervals, long runs
+    if(runDays>=2){plan.push({...sessPool[0]});plan.push({...sessPool[2]});}// Z2 + fartlek
+    if(runDays>=3)plan.push({...sessPool[5]});// longão
+    if(runDays>=4)plan.push({...sessPool[4]});// intervalado curto
+    if(runDays>=5)plan.push({...sessPool[6]});// regenerativo
+    // If training for race, replace one session
+    if(rg.includes('Maratona')||rg.includes('21 km')){
+      if(plan.length>1)plan[1]={...sessPool[1]};// tempo run
+    }
+  }else{
+    // Intermediate
+    if(runDays>=2){plan.push({...sessPool[0]});plan.push({...sessPool[2]});}// Z2 + intervalado
+    if(runDays>=3)plan.push({...sessPool[3]});// longão
+    if(runDays>=4)plan.push({...sessPool[4]});// ladeira
+    if(runDays>=5)plan.push({...sessPool[5]});// regenerativo
+  }
+  return{level,sessions:plan};
+}
+
 // ═══════════════════════════════════════════════
 // PLAN GENERATION ALGORITHM
 // ═══════════════════════════════════════════════
 function generatePlan(){
   const a=chatState.answers;
-  const nDays=parseInt(a.days)||3;
+  const planType=a.planType||'';
+  const wantStr=!planType.includes('Só corrida');
+  const wantRun=planType.includes('corrida')||planType.includes('🏃');
+  const nDays=wantStr?(parseInt(a.days)||3):0;
+  const runDays=wantRun?(parseInt(a.runDays)||2):0;
   const exp=a.experience||'';
   const goal=a.goal||'';
   const equip=a.equipment||'Academia completa';
   const fam=a.familiarity||'';
   const dur=a.duration||'60 minutos';
   const limit=a.limitations||'Nenhuma';
+  const limit2=a.limitations2||'';
+  const allLimits=limit+' '+limit2;
   const pref=a.preference||'Deixo você decidir';
-  const wantRun=(a.runInclude||'').includes('Sim');
-  const runDays=wantRun?parseInt(a.runDays)||2:0;
+  const hasOwnRunPlan=!!(a.runHasOwnPlan||'').includes('já tenho');
 
-  // Determine difficulty level
-  let maxDiff=2;
-  if(exp.includes('Nunca')||fam.includes('Não sei'))maxDiff=1;
-  else if(exp.includes('mais de 2')&&(fam.includes('avançados')||fam.includes('seguro')))maxDiff=3;
-
-  // Filter equipment
-  const equipMap={'Academia completa':null,'Home gym (halteres + barra + banco)':['halteres','barra','corpo','acessório'],
-    'Só halteres':['halteres','corpo','acessório'],'Só peso corporal (sem equipamento)':['corpo']};
-  const allowedEquip=equipMap[equip]||null;
-
-  // Filter limitations
-  const limitMuscles=new Set();
-  if(limit.includes('joelho')){limitMuscles.add('quadriceps');}
-  if(limit.includes('ombro')){limitMuscles.add('ombros');}
-  if(limit.includes('lombar')){limitMuscles.add('costas');limitMuscles.add('posteriores');}
-
-  // Filter exercise pool
-  let pool=EXDB.filter(ex=>{
-    if(ex.diff>maxDiff)return false;
-    if(allowedEquip&&!allowedEquip.includes(ex.equip))return false;
-    if(limitMuscles.size>0&&ex.muscles.some(m=>limitMuscles.has(m))&&ex.type==='isolado')return false;
-    return true;
-  });
-
-  // Determine split type
-  let splitType;
-  if(pref.includes('Full body'))splitType='fullbody';
-  else if(pref.includes('Push'))splitType='ppl';
-  else if(pref.includes('Clássico')||pref.includes('ABC'))splitType='abc';
-  else{
-    // Auto-decide based on days and experience
-    if(nDays<=2)splitType='fullbody';
-    else if(nDays===3)splitType=maxDiff>=2?'abc':'fullbody';
-    else if(nDays===4)splitType='abcd';
-    else splitType='ppl';
-  }
-
-  // Determine volume based on duration and goal
-  const durMin=parseInt(dur)||60;
-  let exPerSession=durMin<=30?4:durMin<=45?5:durMin<=60?7:9;
-  let baseSeries=goal.includes('força')?5:goal.includes('hipertrofia')?4:goal.includes('Emagrecer')?3:3;
-  let baseReps=goal.includes('força')?'4–6 reps':goal.includes('hipertrofia')?'8–12 reps':goal.includes('Emagrecer')?'12–15 reps':'10–12 reps';
-  let compoundSeries=goal.includes('força')?5:4;
-  let isolatedSeries=3;
-  let compoundReps=goal.includes('força')?'3–5 reps':goal.includes('hipertrofia')?'6–10 reps':'8–12 reps';
-  let isolatedReps=goal.includes('força')?'6–8 reps':goal.includes('hipertrofia')?'10–12 reps':'12–15 reps';
-  let compoundRest=goal.includes('força')?180:goal.includes('hipertrofia')?120:90;
-  let isolatedRest=goal.includes('força')?120:goal.includes('hipertrofia')?90:60;
-
-  // Helper: pick best exercises for target muscles
-  function pickExercises(targetMuscles,count,usedNames){
-    const tSet=new Set(targetMuscles);
-    const candidates=pool.filter(ex=>{
-      if(usedNames.has(ex.name))return false;
-      // Primary muscle (first in array) must match target, OR majority of muscles match
-      const matchCount=ex.muscles.filter(m=>tSet.has(m)).length;
-      const primaryMatch=tSet.has(ex.muscles[0]);
-      return primaryMatch||matchCount>=ex.muscles.length*0.5;
-    });
-    // Score: primary match + match count - penalty for unrelated muscles + compound bonus
-    candidates.sort((a,b)=>{
-      const aPrimary=tSet.has(a.muscles[0])?20:0;
-      const bPrimary=tSet.has(b.muscles[0])?20:0;
-      const aMatch=a.muscles.filter(m=>tSet.has(m)).length*3;
-      const bMatch=b.muscles.filter(m=>tSet.has(m)).length*3;
-      const aUnmatch=(a.muscles.length-a.muscles.filter(m=>tSet.has(m)).length)*2;
-      const bUnmatch=(b.muscles.length-b.muscles.filter(m=>tSet.has(m)).length)*2;
-      const aComp=a.type==='composto'?5:0;
-      const bComp=b.type==='composto'?5:0;
-      return(bPrimary+bMatch+bComp-bUnmatch)-(aPrimary+aMatch+aComp-aUnmatch);
-    });
-    const picked=[];
-    // Ensure variety: track picked primary muscles to spread coverage
-    const pickedPrimaries={};
-    for(const ex of candidates){
-      if(picked.length>=count)break;
-      const primary=ex.muscles[0];
-      const sameCount=pickedPrimaries[primary]||0;
-      // Allow max 4 exercises per primary muscle to ensure variety
-      if(sameCount>=4&&picked.length>=Math.ceil(count*0.6))continue;
-      picked.push(ex);
-      usedNames.add(ex.name);
-      pickedPrimaries[primary]=(sameCount||0)+1;
-    }
-    return picked;
-  }
-
-  function buildExercise(ex){
-    const isCompound=ex.type==='composto';
-    return{
-      name:ex.name,
-      series:isCompound?compoundSeries:isolatedSeries,
-      reps:isCompound?compoundReps:isolatedReps,
-      obs:ex.obs,
-      rest:isCompound?compoundRest:isolatedRest,
-      muscles:ex.muscles.slice()
-    };
-  }
-
-  // Build workouts based on split
   const dayNames=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
-  const dayIdxMap=[1,2,3,4,5,6,0]; // Mon=1..Sun=0
+  const dayIdxMap=[1,2,3,4,5,6,0];
   const generatedWorkouts=[];
-  const usedNames=new Set();
-  const corePool=pool.filter(ex=>ex.muscles[0]==='core');
+  let strDayIdxs=[];
+  let runDayIdxs=[];
+  let runPlanData=null;
 
-  function addCore(exercises,max){
-    const c=corePool.filter(ex=>!usedNames.has(ex.name)).slice(0,max||2);
-    c.forEach(ex=>{usedNames.add(ex.name);exercises.push(buildExercise(ex));});
-  }
+  // Health condition flags
+  const hasHypertension=allLimits.includes('Hipertensão');
+  const hasCardiac=allLimits.includes('cardíaco');
+  const hasAsthma=allLimits.includes('Asma')||allLimits.includes('respiratório');
+  const hasObesity=allLimits.includes('Obesidade');
+  const hasArthritis=allLimits.includes('Artrite')||allLimits.includes('artrose');
+  const hasPostOp=allLimits.includes('operatório');
+  const hasPregnancy=allLimits.includes('Gestante')||allLimits.includes('pós-parto');
+  const hasDiabetes=allLimits.includes('Diabetes');
+  const hasTendinitis=allLimits.includes('Tendinite');
 
-  if(splitType==='fullbody'){
-    // Full body — each day hits everything
-    const allMuscles=['peito','costas','ombros','quadriceps','gluteos','posteriores'];
-    for(let d=0;d<nDays;d++){
-      usedNames.clear();
-      const exercises=[];
-      // 1 compound per major muscle group
-      const majorPick=pickExercises(allMuscles,exPerSession-2,usedNames);
-      majorPick.forEach(ex=>exercises.push(buildExercise(ex)));
-      addCore(exercises,1);
-      // Add arms if space
-      if(exercises.length<exPerSession){
-        const arms=pickExercises(['biceps','triceps'],exPerSession-exercises.length,usedNames);
-        arms.forEach(ex=>exercises.push(buildExercise(ex)));
+  // ── STRENGTH PLAN ──
+  if(wantStr){
+    // Determine difficulty level
+    let maxDiff=2;
+    if(exp.includes('Nunca')||fam.includes('Não sei'))maxDiff=1;
+    else if(exp.includes('mais de 2')&&(fam.includes('avançados')||fam.includes('seguro')))maxDiff=3;
+    // Reduce difficulty for health conditions
+    if(hasCardiac||hasPostOp||hasPregnancy)maxDiff=Math.min(maxDiff,1);
+    else if(hasHypertension||hasObesity||hasArthritis)maxDiff=Math.min(maxDiff,2);
+
+    const equipMap={'Academia completa':null,'Home gym (halteres + barra + banco)':['halteres','barra','corpo','acessório'],
+      'Só halteres':['halteres','corpo','acessório'],'Só peso corporal (sem equipamento)':['corpo']};
+    const allowedEquip=equipMap[equip]||null;
+
+    const limitMuscles=new Set();
+    if(allLimits.includes('joelho')){limitMuscles.add('quadriceps');limitMuscles.add('panturrilha');}
+    if(allLimits.includes('ombro'))limitMuscles.add('ombros');
+    if(allLimits.includes('lombar')||allLimits.includes('hérnia')){limitMuscles.add('costas');limitMuscles.add('posteriores');}
+    if(allLimits.includes('quadril')){limitMuscles.add('gluteos');limitMuscles.add('posteriores');}
+    if(allLimits.includes('tornozelo')||allLimits.includes('pé'))limitMuscles.add('panturrilha');
+    if(hasTendinitis){limitMuscles.add('biceps');limitMuscles.add('triceps');}
+
+    let pool=EXDB.filter(ex=>{
+      if(ex.diff>maxDiff)return false;
+      if(allowedEquip&&!allowedEquip.includes(ex.equip))return false;
+      if(limitMuscles.size>0&&ex.muscles.some(m=>limitMuscles.has(m))&&ex.type==='isolado')return false;
+      // Avoid high-impact for joint/obesity issues
+      if((hasObesity||hasArthritis||allLimits.includes('joelho'))&&ex.name.includes('Pliométrico'))return false;
+      if(hasPregnancy&&(ex.muscles.includes('core')||ex.name.includes('terra')||ex.name.includes('Terra')))return false;
+      return true;
+    });
+
+    // Determine split type
+    let splitType;
+    if(pref.includes('Full body')||pref.includes('Full Body'))splitType='fullbody';
+    else if(pref.includes('Push'))splitType='ppl';
+    else if(pref.includes('ABC')&&!pref.includes('ABCD')&&!pref.includes('ABCDE'))splitType='abc';
+    else if(pref.includes('ABCDE'))splitType='abcde';
+    else if(pref.includes('ABCD'))splitType='abcd';
+    else if(pref.includes('AB '))splitType='ab';
+    else if(pref.includes('Upper'))splitType='upperlower';
+    else{
+      if(nDays<=2)splitType='fullbody';
+      else if(nDays===3)splitType=maxDiff>=2?'abc':'fullbody';
+      else if(nDays===4)splitType='abcd';
+      else if(nDays===5)splitType='abcde';
+      else splitType='ppl';
+    }
+
+    // Volume — adjusted for health conditions
+    const durMin=parseInt(dur)||60;
+    let exPerSession=durMin<=30?4:durMin<=45?5:durMin<=60?7:9;
+    let compoundSeries=goal.includes('força')?5:4;
+    let isolatedSeries=3;
+    let compoundReps=goal.includes('força')?'3–5 reps':goal.includes('hipertrofia')?'6–10 reps':'8–12 reps';
+    let isolatedReps=goal.includes('força')?'6–8 reps':goal.includes('hipertrofia')?'10–12 reps':'12–15 reps';
+    let compoundRest=goal.includes('força')?180:goal.includes('hipertrofia')?120:90;
+    let isolatedRest=goal.includes('força')?120:goal.includes('hipertrofia')?90:60;
+    // Reduce volume for health conditions
+    if(hasCardiac||hasPostOp||hasPregnancy){
+      exPerSession=Math.min(exPerSession,5);compoundSeries=3;isolatedSeries=2;
+      compoundReps='8–12 reps';isolatedReps='12–15 reps';
+      compoundRest=Math.max(compoundRest,120);isolatedRest=Math.max(isolatedRest,90);
+    }else if(hasHypertension){
+      compoundSeries=Math.min(compoundSeries,4);compoundReps='10–12 reps';
+      compoundRest=Math.max(compoundRest,120);
+    }else if(hasObesity||hasArthritis){
+      exPerSession=Math.min(exPerSession,6);
+      compoundReps='10–15 reps';isolatedReps='12–15 reps';
+    }
+
+    function pickExercises(targetMuscles,count,usedNames){
+      const tSet=new Set(targetMuscles);
+      const candidates=pool.filter(ex=>{
+        if(usedNames.has(ex.name))return false;
+        const matchCount=ex.muscles.filter(m=>tSet.has(m)).length;
+        const primaryMatch=tSet.has(ex.muscles[0]);
+        return primaryMatch||matchCount>=ex.muscles.length*0.5;
+      });
+      candidates.sort((a,b)=>{
+        const aPrimary=tSet.has(a.muscles[0])?20:0;
+        const bPrimary=tSet.has(b.muscles[0])?20:0;
+        const aMatch=a.muscles.filter(m=>tSet.has(m)).length*3;
+        const bMatch=b.muscles.filter(m=>tSet.has(m)).length*3;
+        const aUnmatch=(a.muscles.length-a.muscles.filter(m=>tSet.has(m)).length)*2;
+        const bUnmatch=(b.muscles.length-b.muscles.filter(m=>tSet.has(m)).length)*2;
+        const aComp=a.type==='composto'?5:0;
+        const bComp=b.type==='composto'?5:0;
+        return(bPrimary+bMatch+bComp-bUnmatch)-(aPrimary+aMatch+aComp-aUnmatch);
+      });
+      const picked=[];
+      const pickedPrimaries={};
+      for(const ex of candidates){
+        if(picked.length>=count)break;
+        const primary=ex.muscles[0];
+        const sameCount=pickedPrimaries[primary]||0;
+        if(sameCount>=4&&picked.length>=Math.ceil(count*0.6))continue;
+        picked.push(ex);
+        usedNames.add(ex.name);
+        pickedPrimaries[primary]=(sameCount||0)+1;
       }
-      generatedWorkouts.push({
-        id:String.fromCharCode(65+d),name:`Treino ${String.fromCharCode(65+d)}`,
-        sub:'Full Body'+(d>0?' (variação '+(d+1)+')':''),
-        day:dayNames[d*Math.floor(7/nDays)],dayIdx:dayIdxMap[d*Math.floor(7/nDays)],
-        exercises
-      });
+      return picked;
     }
-  }else if(splitType==='abc'&&nDays===3){
-    // A: Peito + Tríceps + Ombros, B: Costas + Bíceps, C: Pernas
-    const splits=[
-      {sub:'Peito, Tríceps e Ombros',muscles:['peito','triceps','ombros'],dayOff:0},
-      {sub:'Costas e Bíceps',muscles:['costas','biceps'],dayOff:2},
-      {sub:'Pernas e Glúteos',muscles:['quadriceps','posteriores','gluteos','panturrilha'],dayOff:4},
-    ];
-    splits.forEach((sp,i)=>{
-      usedNames.clear();
-      const exercises=[];
-      const main=pickExercises(sp.muscles,exPerSession-2,usedNames);
-      main.forEach(ex=>exercises.push(buildExercise(ex)));
-      addCore(exercises,2);
-      generatedWorkouts.push({
-        id:String.fromCharCode(65+i),name:`Treino ${String.fromCharCode(65+i)}`,
-        sub:sp.sub,day:dayNames[sp.dayOff],dayIdx:dayIdxMap[sp.dayOff],
-        exercises
-      });
-    });
-  }else if(splitType==='abcd'||nDays===4){
-    // A: Peito+Triceps, B: Costas+Biceps, C: Quadriceps+Panturrilha, D: Posteriores+Gluteos+Ombros
-    const splits=[
-      {sub:'Peito e Tríceps',muscles:['peito','triceps'],dayOff:0},
-      {sub:'Costas e Bíceps',muscles:['costas','biceps'],dayOff:1},
-      {sub:'Quadríceps e Panturrilha',muscles:['quadriceps','panturrilha','core'],dayOff:3},
-      {sub:'Posteriores, Glúteos e Ombros',muscles:['posteriores','gluteos','ombros'],dayOff:4},
-    ];
-    splits.forEach((sp,i)=>{
-      usedNames.clear();
-      const exercises=[];
-      const main=pickExercises(sp.muscles,exPerSession-1,usedNames);
-      main.forEach(ex=>exercises.push(buildExercise(ex)));
-      if(!sp.muscles.includes('core'))addCore(exercises,1);
-      generatedWorkouts.push({
-        id:String.fromCharCode(65+i),name:`Treino ${String.fromCharCode(65+i)}`,
-        sub:sp.sub,day:dayNames[sp.dayOff],dayIdx:dayIdxMap[sp.dayOff],
-        exercises
-      });
-    });
-  }else if(splitType==='ppl'){
-    // Push/Pull/Legs — 3 or 6 days
-    const pplBase=[
-      {sub:'Push (Peito, Ombros, Tríceps)',muscles:['peito','ombros','triceps']},
-      {sub:'Pull (Costas, Bíceps)',muscles:['costas','biceps']},
-      {sub:'Legs (Pernas e Glúteos)',muscles:['quadriceps','posteriores','gluteos','panturrilha']},
-    ];
-    const reps=nDays>=6?2:1;
-    for(let r=0;r<reps;r++){
-      pplBase.forEach((sp,i)=>{
+    function buildExercise(ex){
+      const isC=ex.type==='composto';
+      return{name:ex.name,series:isC?compoundSeries:isolatedSeries,reps:isC?compoundReps:isolatedReps,obs:ex.obs,rest:isC?compoundRest:isolatedRest,muscles:ex.muscles.slice()};
+    }
+    const usedNames=new Set();
+    const corePool=pool.filter(ex=>ex.muscles[0]==='core');
+    function addCore(exercises,max){
+      const c=corePool.filter(ex=>!usedNames.has(ex.name)).slice(0,max||2);
+      c.forEach(ex=>{usedNames.add(ex.name);exercises.push(buildExercise(ex));});
+    }
+    function makeSplit(splits){
+      splits.forEach((sp,i)=>{
         usedNames.clear();
-        const idx=r*3+i;
-        if(idx>=nDays)return;
         const exercises=[];
-        const main=pickExercises(sp.muscles,exPerSession-1,usedNames);
+        const main=pickExercises(sp.muscles,exPerSession-(sp.noCore?0:1),usedNames);
         main.forEach(ex=>exercises.push(buildExercise(ex)));
+        if(!sp.noCore)addCore(exercises,1);
+        generatedWorkouts.push({id:String.fromCharCode(65+i),name:`Treino ${String.fromCharCode(65+i)}`,sub:sp.sub,day:dayNames[0],dayIdx:1,exercises});
+      });
+    }
+
+    // ── Split definitions ──
+    if(splitType==='ab'){
+      makeSplit([
+        {sub:'Superior (Peito, Costas, Ombros, Braços)',muscles:['peito','costas','ombros','triceps','biceps']},
+        {sub:'Inferior (Pernas e Glúteos)',muscles:['quadriceps','posteriores','gluteos','panturrilha']},
+      ]);
+    }else if(splitType==='fullbody'){
+      const allM=['peito','costas','ombros','quadriceps','gluteos','posteriores'];
+      for(let d=0;d<nDays;d++){
+        usedNames.clear();
+        const exercises=[];
+        const majorPick=pickExercises(allM,exPerSession-2,usedNames);
+        majorPick.forEach(ex=>exercises.push(buildExercise(ex)));
         addCore(exercises,1);
-        generatedWorkouts.push({
-          id:String.fromCharCode(65+idx),name:`Treino ${String.fromCharCode(65+idx)}`,
-          sub:sp.sub+(r>0?' (II)':''),
-          day:dayNames[idx<7?idx:idx-1],dayIdx:dayIdxMap[idx<7?idx:idx-1],
-          exercises
+        if(exercises.length<exPerSession){
+          const arms=pickExercises(['biceps','triceps'],exPerSession-exercises.length,usedNames);
+          arms.forEach(ex=>exercises.push(buildExercise(ex)));
+        }
+        generatedWorkouts.push({id:String.fromCharCode(65+d),name:`Treino ${String.fromCharCode(65+d)}`,sub:'Full Body'+(d>0?' (variação '+(d+1)+')':''),day:dayNames[0],dayIdx:1,exercises});
+      }
+    }else if(splitType==='abc'){
+      makeSplit([
+        {sub:'Peito, Tríceps e Ombros',muscles:['peito','triceps','ombros']},
+        {sub:'Costas e Bíceps',muscles:['costas','biceps']},
+        {sub:'Pernas e Glúteos',muscles:['quadriceps','posteriores','gluteos','panturrilha']},
+      ]);
+    }else if(splitType==='abcd'){
+      makeSplit([
+        {sub:'Peito e Tríceps',muscles:['peito','triceps']},
+        {sub:'Costas e Bíceps',muscles:['costas','biceps']},
+        {sub:'Quadríceps e Panturrilha',muscles:['quadriceps','panturrilha']},
+        {sub:'Posteriores, Glúteos e Ombros',muscles:['posteriores','gluteos','ombros']},
+      ]);
+    }else if(splitType==='abcde'){
+      makeSplit([
+        {sub:'Peito',muscles:['peito']},
+        {sub:'Costas',muscles:['costas']},
+        {sub:'Ombros e Trapézio',muscles:['ombros']},
+        {sub:'Braços (Bíceps e Tríceps)',muscles:['biceps','triceps']},
+        {sub:'Pernas e Glúteos',muscles:['quadriceps','posteriores','gluteos','panturrilha'],noCore:true},
+      ]);
+    }else if(splitType==='upperlower'){
+      makeSplit([
+        {sub:'Upper A (Peito, Ombros, Tríceps)',muscles:['peito','ombros','triceps']},
+        {sub:'Lower A (Quadríceps, Glúteos)',muscles:['quadriceps','gluteos','panturrilha']},
+        {sub:'Upper B (Costas, Bíceps)',muscles:['costas','biceps','ombros']},
+        {sub:'Lower B (Posteriores, Glúteos)',muscles:['posteriores','gluteos','panturrilha']},
+      ]);
+    }else if(splitType==='ppl'){
+      const pplBase=[
+        {sub:'Push (Peito, Ombros, Tríceps)',muscles:['peito','ombros','triceps']},
+        {sub:'Pull (Costas, Bíceps)',muscles:['costas','biceps']},
+        {sub:'Legs (Pernas e Glúteos)',muscles:['quadriceps','posteriores','gluteos','panturrilha']},
+      ];
+      const reps=nDays>=6?2:1;
+      for(let r=0;r<reps;r++){
+        pplBase.forEach((sp,i)=>{
+          usedNames.clear();
+          const idx=r*3+i;
+          if(idx>=nDays)return;
+          const exercises=[];
+          const main=pickExercises(sp.muscles,exPerSession-1,usedNames);
+          main.forEach(ex=>exercises.push(buildExercise(ex)));
+          addCore(exercises,1);
+          generatedWorkouts.push({id:String.fromCharCode(65+idx),name:`Treino ${String.fromCharCode(65+idx)}`,sub:sp.sub+(r>0?' (II)':''),day:dayNames[0],dayIdx:1,exercises});
         });
-      });
+      }
     }
-  }else{
-    // fallback: generic split
-    const allM=['peito','costas','ombros','biceps','triceps','quadriceps','posteriores','gluteos'];
-    const perDay=Math.ceil(allM.length/nDays);
-    for(let d=0;d<nDays;d++){
-      usedNames.clear();
-      const dayMuscles=allM.slice(d*perDay,(d+1)*perDay);
-      const exercises=[];
-      const main=pickExercises(dayMuscles,exPerSession-1,usedNames);
-      main.forEach(ex=>exercises.push(buildExercise(ex)));
-      addCore(exercises,1);
-      generatedWorkouts.push({
-        id:String.fromCharCode(65+d),name:`Treino ${String.fromCharCode(65+d)}`,
-        sub:dayMuscles.map(m=>MUSCLES[m]||m).join(', '),
-        day:dayNames[d],dayIdx:dayIdxMap[d],
-        exercises
-      });
+
+    // Assign strength days
+    const totalDays=nDays+runDays;
+    const spacing=Math.max(1,Math.floor(7/Math.max(1,nDays)));
+    for(let i=0;i<nDays;i++)strDayIdxs.push(Math.min(i*spacing,6));
+    // Remove duplicates
+    strDayIdxs=[...new Set(strDayIdxs)];
+    while(strDayIdxs.length<nDays&&strDayIdxs.length<7){
+      for(let d=0;d<7&&strDayIdxs.length<nDays;d++){
+        if(!strDayIdxs.includes(d))strDayIdxs.push(d);
+      }
     }
+    strDayIdxs.sort((a,b)=>a-b);
+    generatedWorkouts.forEach((w,i)=>{
+      const dayOff=strDayIdxs[i%strDayIdxs.length]||i;
+      w.day=dayNames[dayOff];
+      w.dayIdx=dayIdxMap[dayOff];
+    });
   }
 
-  // Assign proper days — spread across the week evenly
-  const spacing=Math.floor(7/nDays);
-  const strDayIdxs=[];
-  for(let i=0;i<nDays;i++){
-    strDayIdxs.push(i*spacing);
-  }
-  generatedWorkouts.forEach((w,i)=>{
-    const dayOff=strDayIdxs[i]||i;
-    w.day=dayNames[dayOff];
-    w.dayIdx=dayIdxMap[dayOff];
-  });
-
-  // Assign run days (fill gaps between strength days)
-  const runDayIdxs=[];
+  // ── RUNNING PLAN ──
   if(wantRun&&runDays>0){
+    if(!hasOwnRunPlan){
+      runPlanData=buildRunPlan(runDays,a.runExp,a.runGoalType);
+      // Adjust for health conditions
+      if(hasCardiac||hasAsthma||hasPregnancy){
+        // Force beginner level for these conditions
+        runPlanData=buildRunPlan(runDays,'Nunca corri',a.runGoalType);
+      }
+    }
+    // Assign run days in gaps
     const usedDays=new Set(strDayIdxs);
     const available=[];
     for(let i=0;i<7;i++)if(!usedDays.has(i))available.push(i);
-    const runSpacing=Math.max(1,Math.floor(available.length/runDays));
-    for(let i=0;i<runDays&&i<available.length;i++){
-      runDayIdxs.push(available[Math.min(i*runSpacing,available.length-1)]);
+    // If running only, spread across the week
+    if(!wantStr){
+      const sp2=Math.max(1,Math.floor(7/runDays));
+      for(let i=0;i<runDays;i++)runDayIdxs.push(Math.min(i*sp2,6));
+      runDayIdxs=[...new Set(runDayIdxs)];
+    }else{
+      const runSpacing=Math.max(1,Math.floor(available.length/runDays));
+      for(let i=0;i<runDays&&i<available.length;i++){
+        runDayIdxs.push(available[Math.min(i*runSpacing,available.length-1)]);
+      }
     }
   }
 
-  // Build DAY_TO_WORKOUT mapping
+  // Build mappings
   const newDayMap={};
   generatedWorkouts.forEach((w,i)=>{newDayMap[w.dayIdx]=i;});
-
-  // Build run day set
   const newRunDays=new Set(runDayIdxs.map(i=>dayIdxMap[i]));
 
-  // Show preview
-  showPlanPreview(generatedWorkouts,strDayIdxs,runDayIdxs,newDayMap,newRunDays,a);
+  showPlanPreview(generatedWorkouts,strDayIdxs,runDayIdxs,newDayMap,newRunDays,a,runPlanData);
 }
 
-function showPlanPreview(workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,answers){
+function showPlanPreview(workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,answers,runPlanData){
   const dayNames=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const planType=answers.planType||'';
+  const wantStr=!planType.includes('Só corrida');
+  const wantRun=planType.includes('corrida')||planType.includes('🏃');
 
   let previewHTML='<div class="plan-preview">';
+  // Strength workouts
   workouts.forEach(w=>{
     previewHTML+=`<div class="pp-day"><div class="pp-day-name">${w.name} — ${w.sub} (${w.day})</div>`;
     w.exercises.forEach(ex=>{
@@ -2934,9 +3404,26 @@ function showPlanPreview(workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,answers
     });
     previewHTML+='</div>';
   });
-  if(runDayIdxs.length>0){
-    previewHTML+=`<div class="pp-day"><div class="pp-day-name">🏃 Corrida</div>`;
-    runDayIdxs.forEach(i=>{previewHTML+=`<div class="pp-ex"><span class="pp-name">${dayNames[i]}</span><span class="pp-sets">Dia de corrida</span></div>`;});
+  // Running sessions
+  const hasOwnRunPlan=!!(answers.runHasOwnPlan||'').includes('já tenho');
+  if(runPlanData&&runPlanData.sessions.length>0){
+    runPlanData.sessions.forEach((sess,i)=>{
+      const dayIdx=runDayIdxs[i];
+      const dayLabel=dayIdx!==undefined?dayNames[dayIdx]:'';
+      previewHTML+=`<div class="pp-day"><div class="pp-day-name">🏃 ${sess.name} ${dayLabel?'('+dayLabel+')':''}</div>`;
+      previewHTML+=`<div class="pp-ex"><span class="pp-name">Duração: ${sess.duration}</span></div>`;
+      if(sess.segments){
+        const totalSec=sess.segments.reduce((a,s)=>a+s.sec,0);
+        previewHTML+=`<div class="pp-ex" style="color:var(--accent3);font-size:11px"><span class="pp-name">⏱ ${sess.segments.length} segmentos com cronômetro guiado (~${Math.ceil(totalSec/60)} min)</span></div>`;
+      }
+      previewHTML+=`<div class="pp-ex" style="color:var(--muted);font-size:12px;line-height:1.5;padding:4px 0"><span class="pp-name">${sess.obs}</span></div>`;
+      previewHTML+='</div>';
+    });
+  }else if(wantRun&&hasOwnRunPlan&&runDayIdxs.length>0){
+    const runDayLabels=runDayIdxs.map(i=>dayNames[i]).join(', ');
+    previewHTML+=`<div class="pp-day"><div class="pp-day-name">🏃 Corrida (plano próprio)</div>`;
+    previewHTML+=`<div class="pp-ex"><span class="pp-name">Dias: ${runDayLabels}</span></div>`;
+    previewHTML+=`<div class="pp-ex" style="color:var(--muted);font-size:12px"><span class="pp-name">Você poderá registrar suas corridas manualmente nesses dias.</span></div>`;
     previewHTML+='</div>';
   }
   // Rest days
@@ -2950,20 +3437,30 @@ function showPlanPreview(workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,answers
 
   // Summary
   const exp=answers.experience||'';
-  const diffLabel=exp.includes('Nunca')?'Iniciante':exp.includes('menos de 6')?'Iniciante–Intermediário':exp.includes('6 meses')?'Intermediário':'Avançado';
+  const runExp=answers.runExp||'';
+  let diffLabel;
+  if(wantStr){
+    diffLabel=exp.includes('Nunca')?'Iniciante':exp.includes('menos de 6')?'Iniciante–Intermediário':exp.includes('6 meses')?'Intermediário':'Avançado';
+  }else{
+    diffLabel=runExp.includes('Nunca')?'Iniciante':runExp.includes('eventualmente')?'Iniciante':runExp.includes('menos de 6')?'Intermediário':'Avançado';
+  }
   const goalLabel=(answers.goal||'').split('(')[0].trim();
+  let freqLabel='';
+  if(wantStr&&wantRun)freqLabel=`${workouts.length} dias de musculação + ${runDayIdxs.length} dias de corrida`;
+  else if(wantStr)freqLabel=`${workouts.length} dias de musculação`;
+  else freqLabel=`${runDayIdxs.length} dias de corrida`;
 
   chatState.messages.push({type:'bot',text:
     `Pronto! Aqui está seu plano personalizado:\n\n`+
     `**Nível:** ${diffLabel}\n`+
     `**Objetivo:** ${goalLabel}\n`+
-    `**Frequência:** ${workouts.length} dias de musculação${runDayIdxs.length?' + '+runDayIdxs.length+' dias de corrida':''}\n\n`+
-    `Confira os exercícios abaixo. Cada um foi escolhido com base no seu nível e equipamento. As séries, repetições e descanso estão ajustados para o seu objetivo.`
+    `**Frequência:** ${freqLabel}\n\n`+
+    `Confira abaixo. Cada exercício e sessão de corrida foi escolhido com base no seu nível e objetivo.`+
+    (runPlanData?'\n\nAs sessões de corrida incluem explicações detalhadas para você entender o propósito de cada tipo de treino.':'')
   });
   renderChat();
 
-  // Store for confirmation
-  chatState.generatedPlan={workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet};
+  chatState.generatedPlan={workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,runPlanData};
 
   const el=document.getElementById('chatInput');
   el.innerHTML=previewHTML+`
@@ -2979,16 +3476,34 @@ function confirmPlan(){
   const plan=chatState.generatedPlan;
   if(!plan){showToast('⚠ Nenhum plano gerado',false);return;}
 
-  // Save custom plan to state
-  state.customWorkouts=plan.workouts;
-  state.customDayMap=plan.dayMap;
+  // Auto-fill profile from questionnaire if first time
+  const a=chatState.answers;
+  if(a.userName&&!state.profile.name)state.profile.name=a.userName;
+  if(a.userSex)state.profile.sex=a.userSex==='Masculino'?'M':'F';
+  if(a.userAge&&!state.profile.age)state.profile.age=parseInt(a.userAge)||null;
+  if(a.userWeight&&!state.profile.weightKg)state.profile.weightKg=parseFloat(String(a.userWeight).replace(',','.'))||null;
+  if(a.userHeight&&!state.profile.heightCm)state.profile.heightCm=parseInt(a.userHeight)||null;
+
+  // Fill runGoals from questionnaire
+  const runGoal=a.runGoalType||'';
+  if(runGoal&&!runGoal.includes('manter a frequência')){
+    if(!state.runGoals)state.runGoals=[];
+    const goalText=runGoal.replace(/^(Prova de |Quero |Quero conseguir |Quero completar uma )/,'').trim();
+    if(!state.runGoals.some(g=>g.label===goalText)){
+      state.runGoals.push({label:goalText,addedAt:new Date().toISOString(),done:false});
+    }
+  }
+
+  state.customWorkouts=plan.workouts.length>0?plan.workouts:null;
+  state.customDayMap=plan.workouts.length>0?plan.dayMap:null;
   state.customRunDays=Array.from(plan.runDaySet);
+  state.customRunPlan=plan.runPlanData||null;
+  state.customRunHasOwnPlan=!!(a.runHasOwnPlan||'').includes('já tenho');
   state.customPlanMeta={
     createdAt:new Date().toISOString(),
-    answers:{...chatState.answers}
+    answers:{...a}
   };
 
-  // Activate custom plan
   state.useCustomPlan=true;
   state.currentWorkout=0;
   state.sessionSets=null;
@@ -3028,13 +3543,180 @@ function isRunDayActive(dow){
   return isRunDay(dow);
 }
 
+// ═══════════════════════════════════════════════
+// RUNNING TIMER WITH AUDIO BEEPS
+// ═══════════════════════════════════════════════
+let runTimer={active:false,segments:[],segIdx:0,segElapsed:0,totalElapsed:0,interval:null,sessionName:''};
+
+function beep(freq,duration,count){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    let t=ctx.currentTime;
+    for(let i=0;i<(count||1);i++){
+      const osc=ctx.createOscillator();const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=freq||880;
+      gain.gain.setValueAtTime(0.5,t);
+      gain.gain.exponentialRampToValueAtTime(0.01,t+(duration||0.15));
+      osc.start(t);osc.stop(t+(duration||0.15));
+      t+=(duration||0.15)+0.08;
+    }
+  }catch(e){}
+}
+
+function getRunPlanForToday(){
+  if(!state.customRunPlan||!state.customRunPlan.sessions)return null;
+  if(state.customRunHasOwnPlan)return null;
+  const dow=new Date().getDay();
+  if(!isRunDayActive(dow))return null;
+  // Find which run day index this is
+  const runDays=(state.customRunDays||[]).sort((a,b)=>a-b);
+  const idx=runDays.indexOf(dow);
+  if(idx<0)return null;
+  const sess=state.customRunPlan.sessions[idx%state.customRunPlan.sessions.length];
+  return sess||null;
+}
+
+function applyRunQuickMode(segments,mode){
+  if(!mode||mode==='off')return segments;
+  if(mode==='pressa'){
+    return segments.map(s=>({...s,sec:Math.max(10,Math.round(s.sec*0.6))}));
+  }
+  if(mode==='preguica'){
+    return segments.filter(s=>s.effort!=='máximo'&&s.effort!=='muito forte')
+      .map(s=>({...s,sec:Math.max(10,Math.round(s.sec*0.75))}));
+  }
+  return segments;
+}
+
+function startRunTimer(sessOverride){
+  const sess=sessOverride||getRunPlanForToday();
+  if(!sess||!sess.segments||sess.segments.length===0){showToast('⚠ Nenhuma sessão com cronômetro disponível',false);return;}
+  const mode=state.quickMode||'off';
+  const segs=applyRunQuickMode(sess.segments,mode);
+  runTimer={active:true,segments:segs,segIdx:0,segElapsed:0,totalElapsed:0,interval:null,sessionName:sess.name};
+  requestWakeLock();
+  renderRunTimerUI();
+  beep(660,0.2,2);
+  runTimer.interval=setInterval(()=>{
+    runTimer.segElapsed++;
+    runTimer.totalElapsed++;
+    const seg=runTimer.segments[runTimer.segIdx];
+    // 3-second countdown beeps
+    const remaining=seg.sec-runTimer.segElapsed;
+    if(remaining===3)beep(440,0.1,1);
+    if(remaining===2)beep(440,0.1,1);
+    if(remaining===1)beep(440,0.1,1);
+    if(runTimer.segElapsed>=seg.sec){
+      runTimer.segIdx++;
+      runTimer.segElapsed=0;
+      if(runTimer.segIdx>=runTimer.segments.length){
+        stopRunTimer(true);
+        return;
+      }
+      const next=runTimer.segments[runTimer.segIdx];
+      if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')beep(880,0.15,3);
+      else beep(660,0.2,2);
+    }
+    updateRunTimerDisplay();
+  },1000);
+}
+
+function stopRunTimer(finished){
+  if(runTimer.interval)clearInterval(runTimer.interval);
+  runTimer.active=false;
+  releaseWakeLock();
+  if(finished){
+    beep(880,0.3,4);
+    showToast('✓ Sessão de corrida concluída!',true);
+  }
+  renderTreino();
+}
+
+function renderRunTimerUI(){
+  const container=document.getElementById('runTimerOverlay');
+  if(!container){
+    const div=document.createElement('div');
+    div.id='runTimerOverlay';
+    div.className='run-timer-overlay';
+    document.body.appendChild(div);
+  }
+  updateRunTimerDisplay();
+}
+
+function updateRunTimerDisplay(){
+  const el=document.getElementById('runTimerOverlay');
+  if(!el)return;
+  const seg=runTimer.segments[runTimer.segIdx];
+  const remaining=seg.sec-runTimer.segElapsed;
+  const totalSec=runTimer.segments.reduce((a,s)=>a+s.sec,0);
+  const progress=Math.round(runTimer.totalElapsed/totalSec*100);
+  const effortColor=seg.effort==='máximo'?'#ff4545':seg.effort==='muito forte'?'#ff6b35':seg.effort==='forte'?'#ffaa00':seg.effort==='moderado'?'#47b8ff':'#72b800';
+  const nextSeg=runTimer.segIdx+1<runTimer.segments.length?runTimer.segments[runTimer.segIdx+1]:null;
+  const fmtT=s=>{const m=Math.floor(s/60);const ss=s%60;return m+':'+String(ss).padStart(2,'0');};
+  el.style.display='flex';
+  el.innerHTML=`
+    <div class="rt-header">
+      <div class="rt-session">${runTimer.sessionName}</div>
+      <button class="btn btn-danger btn-small" onclick="stopRunTimer(false)" style="font-size:12px">✕ Parar</button>
+    </div>
+    <div class="rt-progress-bar"><div class="rt-progress-fill" style="width:${progress}%"></div></div>
+    <div class="rt-segment-info">
+      <div class="rt-icon" style="font-size:48px">${seg.icon||'🏃'}</div>
+      <div class="rt-label" style="color:${effortColor}">${seg.label}</div>
+      <div class="rt-effort">Esforço: ${seg.effort}</div>
+    </div>
+    <div class="rt-time">${fmtT(remaining)}</div>
+    <div class="rt-total">Total: ${fmtT(runTimer.totalElapsed)} / ${fmtT(totalSec)}</div>
+    <div class="rt-seg-count">Segmento ${runTimer.segIdx+1} de ${runTimer.segments.length}</div>
+    ${nextSeg?`<div class="rt-next">Próximo: ${nextSeg.icon||''} ${nextSeg.label} (${fmtT(nextSeg.sec)})</div>`:'<div class="rt-next">Último segmento!</div>'}
+  `;
+}
+
+// DISCLAIMER & ONBOARDING
+function acceptDisclaimer(){
+  state.disclaimerAccepted=true;save();
+  document.getElementById('disclaimerModal').style.display='none';
+  checkOnboarding();
+}
+function checkOnboarding(){
+  if(!state.useCustomPlan&&!state.profile.name&&state.history.length===0){
+    document.getElementById('onboardingAlert').style.display='flex';
+  }
+}
+function startOnboarding(){
+  document.getElementById('onboardingAlert').style.display='none';
+  switchPage('plano');
+  setTimeout(()=>openPlanChat(),200);
+}
+function dismissOnboarding(){
+  document.getElementById('onboardingAlert').style.display='none';
+}
+
+// WAKE LOCK — keep screen on during active workouts/timers
+let wakeLock=null;
+async function requestWakeLock(){
+  try{
+    if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');}
+  }catch(e){}
+}
+function releaseWakeLock(){
+  if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null;}
+}
+
 // INIT
 const dn=new Date();
 const dayN=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],monN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 document.getElementById('dateDisplay').textContent=`${dayN[dn.getDay()]}, ${dn.getDate()} ${monN[dn.getMonth()]}`;
 renderTreino();
 renderDesempenho();
-if(state.sessionStart){startClock();updateActiveBanner();}
+if(state.sessionStart){startClock();updateActiveBanner();requestWakeLock();}
+// Disclaimer check
+if(!state.disclaimerAccepted){
+  document.getElementById('disclaimerModal').style.display='flex';
+}else{
+  checkOnboarding();
+}
 </script>
 </body>
 </html>
