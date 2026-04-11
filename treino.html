@@ -944,7 +944,7 @@ function finishSession(){
   document.getElementById('progBlock').style.display='none';
   document.getElementById('finishRow').style.display='none';
   save();showToast(`✓ Treino salvo! ${fmtMin(durMin)}`,true);
-  setTimeout(()=>{renderTreino();renderHistory();renderDesempenho();renderPlano();updateAlertBadge();},300);
+  setTimeout(()=>{renderTreino();renderHistory();renderDesempenho();renderPlano();},300);
 }
 function resetSession(){
   if(!confirm('Reiniciar este treino e descartar o progresso atual?'))return;
@@ -1567,7 +1567,7 @@ function renderDesempenho(){
   const quickSub=strengths.length>0&&quickCount>0?`<div class="stat-sub">${quickCount}/${strengths.length} em modo rápido</div>`:'';
   document.getElementById('statsGrid').innerHTML=`
     <div class="stat-card"><div class="stat-val">${n}</div><div class="stat-label">Treinos totais</div><div class="stat-sub">${strengths.length} musculação · ${runs.length} corrida</div></div>
-    <div class="stat-card"><div class="stat-val">${Math.round(totalMin)}min</div><div class="stat-label">Tempo total</div></div>
+    <div class="stat-card"><div class="stat-val">${totalMin>=60?Math.floor(totalMin/60)+'h'+(totalMin%60>0?String(Math.round(totalMin%60)).padStart(2,'0')+'min':''):Math.round(totalMin)+'min'}</div><div class="stat-label">Tempo total</div></div>
     <div class="stat-card"><div class="stat-val">${totalSets}</div><div class="stat-label">Séries (musculação)</div><div class="stat-sub">${avgComp}% conclusão média</div>${quickSub}</div>
     <div class="stat-card"><div class="stat-val">${totalKm.toFixed(1).replace('.',',')}km</div><div class="stat-label">Distância (corrida)</div>${avgPace>0?`<div class="stat-sub">Pace médio ${fmtPace(avgPace)}</div>`:''}</div>`;
   // Grupos musculares — semana atual
@@ -1614,7 +1614,12 @@ function renderDesempenho(){
     else alerts.push({type:'success',title:'✓ Aderência satisfatória',body:`${adh}% geral — excelente consistência.`});
     if(pStr>0&&adhStr<60)alerts.push({type:'warn',title:'🏋️ Musculação em baixa',body:`Aderência de ${adhStr}% (${nStr}/${pStr}). Priorize os treinos de força.`});
     if(pRun>0&&adhRun<60)alerts.push({type:'warn',title:'🏃 Corrida em baixa',body:`Aderência de ${adhRun}% (${nRun}/${pRun}). Mantenha a regularidade aeróbica.`});
-    const defM=Object.entries(mc).filter(([m,c])=>epw[m]*weeks>0&&c<epw[m]*weeks*0.5&&weeks>=2).map(([m])=>MUSCLES[m]);
+    // Defasagem usa dados acumulados (não semanais)
+    const mcAll={};Object.keys(MUSCLES).forEach(m=>mcAll[m]=0);
+    state.history.filter(s=>s.type!=='cardio'&&s.workoutId!=='RUN').forEach(s=>(s.exercisesDone||[]).forEach(name=>{
+      (exMapD[name]||[]).forEach(m=>{if(mcAll[m]!==undefined)mcAll[m]++;});
+    }));
+    const defM=Object.entries(mcAll).filter(([m,c])=>epw[m]*weeks>0&&c<epw[m]*weeks*0.5&&weeks>=2).map(([m])=>MUSCLES[m]);
     if(defM.length)alerts.push({type:'warn',title:'💪 Grupos em defasagem',body:`${defM.join(', ')} abaixo de 50% do esperado. Priorize os treinos correspondentes.`});
   }
   if(state.programStart){
@@ -2252,7 +2257,7 @@ const dn=new Date();
 const dayN=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],monN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 document.getElementById('dateDisplay').textContent=`${dayN[dn.getDay()]}, ${dn.getDate()} ${monN[dn.getMonth()]}`;
 renderTreino();
-updateAlertBadge();
+renderDesempenho();
 if(state.sessionStart){startClock();updateActiveBanner();}
 </script>
 </body>
