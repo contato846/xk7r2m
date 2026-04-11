@@ -182,6 +182,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .comp-val.good{color:var(--done-border);}
 .comp-val.warn{color:var(--warn);}
 .comp-val.bad{color:var(--danger);}
+.compliance-section-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--muted);padding:6px 0 2px;}
 
 /* HISTORY */
 .hist-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
@@ -1432,36 +1433,46 @@ function renderSilhouette(){
 
 // DASHBOARD
 function getCompData(){
-  if(!state.programStart)return{planned:0,n:0,missed:0,adh:100,weeks:0};
+  if(!state.programStart)return{planned:0,n:0,missed:0,adh:100,weeks:0,pStr:0,nStr:0,adhStr:100,pRun:0,nRun:0,adhRun:100};
   const start=new Date(state.programStart);start.setHours(0,0,0,0);
   const today=new Date();today.setHours(23,59,59,999);
   const days=Math.floor((today-start)/86400000)+1;
   const weeks=Math.max(1,Math.ceil(days/7));
-  // Conta apenas dias planejados que JÁ passaram (incluindo hoje)
-  let planned=0;
+  let pStr=0,pRun=0;
   for(let i=0;i<days;i++){
     const d=new Date(start);d.setDate(start.getDate()+i);
-    if(DAY_TO_WORKOUT[d.getDay()]!==undefined)planned++;
+    const dow=d.getDay();
+    if(DAY_TO_WORKOUT[dow]!==undefined)pStr++;
+    if(isRunDay(dow))pRun++;
   }
+  const planned=pStr+pRun;
+  const nStr=state.history.filter(s=>s.type!=='cardio'&&s.workoutId!=='RUN').length;
+  const nRun=state.history.filter(s=>s.type==='cardio'||s.workoutId==='RUN').length;
   const n=state.history.length;
   const missed=Math.max(0,planned-n);
   const adh=planned>0?Math.min(100,Math.round(n/planned*100)):100;
-  return{planned,n,missed,adh,weeks};
+  const adhStr=pStr>0?Math.min(100,Math.round(nStr/pStr*100)):100;
+  const adhRun=pRun>0?Math.min(100,Math.round(nRun/pRun*100)):100;
+  return{planned,n,missed,adh,weeks,pStr,nStr,adhStr,pRun,nRun,adhRun};
 }
 function renderDashboard(){
   renderSilhouette();
   const n=state.history.length;
+  const runs=state.history.filter(s=>s.type==='cardio'||s.workoutId==='RUN');
+  const strengths=state.history.filter(s=>s.type!=='cardio'&&s.workoutId!=='RUN');
   const totalMin=state.history.reduce((a,s)=>a+s.durationMin,0);
-  const totalSets=state.history.reduce((a,s)=>a+s.doneSets,0);
-  // Conclusão média usa fullCompletion (vs plano completo) quando disponível, penalizando sessões em modo rápido
-  const avgComp=n>0?Math.round(state.history.reduce((a,s)=>a+(s.fullCompletion!=null?s.fullCompletion:s.completion),0)/n):0;
-  const quickCount=state.history.filter(s=>s.quickMode&&s.quickMode!=='off').length;
-  const quickSub=n>0&&quickCount>0?`<div class="stat-sub">${quickCount}/${n} em modo rápido</div>`:'';
+  const totalSets=strengths.reduce((a,s)=>a+s.doneSets,0);
+  const totalKm=runs.reduce((a,s)=>a+(s.distanceKm||0),0);
+  const avgPace=runs.length>0&&totalKm>0?runs.reduce((a,s)=>a+(s.durationSec||s.durationMin*60),0)/totalKm:0;
+  // Conclusão média usa fullCompletion (vs plano completo) quando disponível
+  const avgComp=strengths.length>0?Math.round(strengths.reduce((a,s)=>a+(s.fullCompletion!=null?s.fullCompletion:s.completion),0)/strengths.length):0;
+  const quickCount=strengths.filter(s=>s.quickMode&&s.quickMode!=='off').length;
+  const quickSub=strengths.length>0&&quickCount>0?`<div class="stat-sub">${quickCount}/${strengths.length} em modo rápido</div>`:'';
   document.getElementById('statsGrid').innerHTML=`
-    <div class="stat-card"><div class="stat-val">${n}</div><div class="stat-label">Treinos realizados</div></div>
-    <div class="stat-card"><div class="stat-val">${totalMin}min</div><div class="stat-label">Tempo total</div></div>
-    <div class="stat-card"><div class="stat-val">${totalSets}</div><div class="stat-label">Séries totais</div></div>
-    <div class="stat-card"><div class="stat-val">${avgComp}%</div><div class="stat-label">Conclusão média</div>${quickSub}</div>`;
+    <div class="stat-card"><div class="stat-val">${n}</div><div class="stat-label">Treinos totais</div><div class="stat-sub">${strengths.length} musculação · ${runs.length} corrida</div></div>
+    <div class="stat-card"><div class="stat-val">${Math.round(totalMin)}min</div><div class="stat-label">Tempo total</div></div>
+    <div class="stat-card"><div class="stat-val">${totalSets}</div><div class="stat-label">Séries (musculação)</div><div class="stat-sub">${avgComp}% conclusão média</div>${quickSub}</div>
+    <div class="stat-card"><div class="stat-val">${totalKm.toFixed(1).replace('.',',')}km</div><div class="stat-label">Distância (corrida)</div>${avgPace>0?`<div class="stat-sub">Pace médio ${fmtPace(avgPace)}</div>`:''}</div>`;
   const mc={};Object.keys(MUSCLES).forEach(m=>mc[m]=0);
   state.history.forEach(s=>s.muscles.forEach(m=>{if(mc[m]!==undefined)mc[m]++;}));
   const maxC=Math.max(...Object.values(mc),1);
@@ -1473,19 +1484,33 @@ function renderDashboard(){
     const bc=n===0?'var(--border)':c===0?'var(--danger)':def?'var(--warn)':'var(--done-border)';
     return `<div class="muscle-row"><div class="muscle-name">${MUSCLES[m]}</div><div class="muscle-bar-track"><div class="muscle-bar-fill" style="width:${pct}%;background:${bc}"></div></div><div class="muscle-count">${c}×</div></div>`;
   }).join('');
-  const{planned,missed,adh}=getCompData();
+  const{planned,missed,adh,pStr,nStr,adhStr,pRun,nRun,adhRun}=getCompData();
   const gc=v=>v>=80?'good':v>=60?'warn':'bad';
+  const missedStr=Math.max(0,pStr-nStr),missedRun=Math.max(0,pRun-nRun);
   document.getElementById('complianceBlock').innerHTML=n===0?`<div class="compliance-row"><span class="comp-label">Sem dados ainda</span></div>`:`
-    <div class="compliance-row"><span class="comp-label">Treinos planejados</span><span class="comp-val">${planned}</span></div>
-    <div class="compliance-row"><span class="comp-label">Treinos realizados</span><span class="comp-val ${gc(adh)}">${n}</span></div>
-    <div class="compliance-row"><span class="comp-label">Treinos faltados</span><span class="comp-val ${missed>0?'bad':'good'}">${missed}</span></div>
-    <div class="compliance-row"><span class="comp-label">Aderência geral</span><span class="comp-val ${gc(adh)}">${adh}%</span></div>`;
+    <div class="compliance-section-title">📊 GERAL</div>
+    <div class="compliance-row"><span class="comp-label">Planejados</span><span class="comp-val">${planned}</span></div>
+    <div class="compliance-row"><span class="comp-label">Realizados</span><span class="comp-val ${gc(adh)}">${n}</span></div>
+    <div class="compliance-row"><span class="comp-label">Faltados</span><span class="comp-val ${missed>0?'bad':'good'}">${missed}</span></div>
+    <div class="compliance-row"><span class="comp-label">Aderência</span><span class="comp-val ${gc(adh)}">${adh}%</span></div>
+    <div class="compliance-section-title" style="margin-top:12px">🏋️ MUSCULAÇÃO</div>
+    <div class="compliance-row"><span class="comp-label">Planejados</span><span class="comp-val">${pStr}</span></div>
+    <div class="compliance-row"><span class="comp-label">Realizados</span><span class="comp-val ${gc(adhStr)}">${nStr}</span></div>
+    <div class="compliance-row"><span class="comp-label">Faltados</span><span class="comp-val ${missedStr>0?'bad':'good'}">${missedStr}</span></div>
+    <div class="compliance-row"><span class="comp-label">Aderência</span><span class="comp-val ${gc(adhStr)}">${adhStr}%</span></div>
+    <div class="compliance-section-title" style="margin-top:12px">🏃 CORRIDA</div>
+    <div class="compliance-row"><span class="comp-label">Planejados</span><span class="comp-val">${pRun}</span></div>
+    <div class="compliance-row"><span class="comp-label">Realizados</span><span class="comp-val ${gc(adhRun)}">${nRun}</span></div>
+    <div class="compliance-row"><span class="comp-label">Faltados</span><span class="comp-val ${missedRun>0?'bad':'good'}">${missedRun}</span></div>
+    <div class="compliance-row"><span class="comp-label">Aderência</span><span class="comp-val ${gc(adhRun)}">${adhRun}%</span></div>`;
   const alerts=[];
   if(n===0)alerts.push({type:'info',title:'👋 Nenhum treino ainda',body:'Complete sua primeira sessão para ver análises.'});
   else{
     if(adh<60)alerts.push({type:'danger',title:'⚠ Aderência crítica',body:`Apenas ${adh}% dos treinos planejados foram realizados. Avalie a compatibilidade entre agenda e programa.`});
-    else if(adh<80)alerts.push({type:'warn',title:'⚠ Aderência abaixo do ideal',body:`${adh}% de aderência. Alvo é ≥80%.`});
-    else alerts.push({type:'success',title:'✓ Aderência satisfatória',body:`${adh}% — excelente consistência.`});
+    else if(adh<80)alerts.push({type:'warn',title:'⚠ Aderência abaixo do ideal',body:`${adh}% de aderência geral. Alvo é ≥80%.`});
+    else alerts.push({type:'success',title:'✓ Aderência satisfatória',body:`${adh}% geral — excelente consistência.`});
+    if(pStr>0&&adhStr<60)alerts.push({type:'warn',title:'🏋️ Musculação em baixa',body:`Aderência de ${adhStr}% (${nStr}/${pStr}). Priorize os treinos de força.`});
+    if(pRun>0&&adhRun<60)alerts.push({type:'warn',title:'🏃 Corrida em baixa',body:`Aderência de ${adhRun}% (${nRun}/${pRun}). Mantenha a regularidade aeróbica.`});
     const defM=Object.entries(mc).filter(([m,c])=>epw[m]*weeks>0&&c<epw[m]*weeks*0.5&&weeks>=2).map(([m])=>MUSCLES[m]);
     if(defM.length)alerts.push({type:'warn',title:'💪 Grupos em defasagem',body:`${defM.join(', ')} abaixo de 50% do esperado. Priorize os treinos correspondentes.`});
   }
