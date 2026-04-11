@@ -343,6 +343,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .rt-total{font-size:13px;color:var(--muted2);}
 .rt-seg-count{font-size:12px;color:var(--muted);}
 .rt-next{font-size:13px;color:var(--muted2);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;margin-top:8px;}
+.rt-controls{display:flex;gap:10px;margin-top:18px;width:100%;max-width:400px;justify-content:center;}
+.rt-controls .btn{flex:1;padding:10px 6px;}
 .rl-planned{margin-bottom:8px;}
 .rl-segments{display:flex;flex-direction:column;gap:4px;margin:6px 0;}
 .rl-seg{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
@@ -1810,7 +1812,7 @@ function renderDesempenho(){
     const bc=weekStrHist.length===0?'var(--border)':c===0?'var(--danger)':c<expected?'var(--warn)':'var(--done-border)';
     return `<div class="muscle-row"><div class="muscle-name">${MUSCLES[m]}</div><div class="muscle-bar-track"><div class="muscle-bar-fill" style="width:${pct}%;background:${bc}"></div></div><div class="muscle-count">${c}×</div></div>`;
   }).join('');
-  const{planned,missed,adh,pStr,nStr,adhStr,pRun,nRun,adhRun}=getCompData();
+  const{planned,missed,adh,weeks,pStr,nStr,adhStr,pRun,nRun,adhRun}=getCompData();
   const gc=v=>v>=80?'good':v>=60?'warn':'bad';
   const missedStr=Math.max(0,pStr-nStr),missedRun=Math.max(0,pRun-nRun);
   document.getElementById('complianceBlock').innerHTML=n===0?`<div class="compliance-row"><span class="comp-label">Sem dados ainda</span></div>`:`
@@ -3642,15 +3644,17 @@ function startRunTimer(sessOverride){
   if(!sess||!sess.segments||sess.segments.length===0){showToast('⚠ Nenhuma sessão com cronômetro disponível',false);return;}
   const mode=state.quickMode||'off';
   const segs=applyRunQuickMode(sess.segments,mode);
-  runTimer={active:true,segments:segs,segIdx:0,segElapsed:0,totalElapsed:0,interval:null,sessionName:sess.name};
+  runTimer={active:true,paused:false,segments:segs,segIdx:0,segElapsed:0,totalElapsed:0,interval:null,sessionName:sess.name,startTime:new Date()};
   requestWakeLock();
   renderRunTimerUI();
   beep(660,0.2,2);
+  _startRunInterval();
+}
+function _startRunInterval(){
   runTimer.interval=setInterval(()=>{
     runTimer.segElapsed++;
     runTimer.totalElapsed++;
     const seg=runTimer.segments[runTimer.segIdx];
-    // 3-second countdown beeps
     const remaining=seg.sec-runTimer.segElapsed;
     if(remaining===3)beep(440,0.1,1);
     if(remaining===2)beep(440,0.1,1);
@@ -3669,16 +3673,69 @@ function startRunTimer(sessOverride){
     updateRunTimerDisplay();
   },1000);
 }
-
+function pauseRunTimer(){
+  if(!runTimer.active)return;
+  if(runTimer.paused){
+    runTimer.paused=false;
+    _startRunInterval();
+    beep(660,0.2,1);
+  }else{
+    runTimer.paused=true;
+    if(runTimer.interval)clearInterval(runTimer.interval);
+    runTimer.interval=null;
+  }
+  updateRunTimerDisplay();
+}
+function skipRunSegment(){
+  if(!runTimer.active||runTimer.paused)return;
+  runTimer.segIdx++;
+  runTimer.segElapsed=0;
+  if(runTimer.segIdx>=runTimer.segments.length){
+    stopRunTimer(true);
+    return;
+  }
+  const next=runTimer.segments[runTimer.segIdx];
+  if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')beep(880,0.15,3);
+  else beep(660,0.2,2);
+  updateRunTimerDisplay();
+}
+function _saveRunTimerHistory(completed){
+  const segsExecuted=completed?runTimer.segments.length:runTimer.segIdx+(runTimer.segElapsed>0?1:0);
+  if(runTimer.totalElapsed<5)return; // ignore if < 5s
+  const end=new Date();
+  const start=runTimer.startTime||new Date(end.getTime()-runTimer.totalElapsed*1000);
+  const durMin=Math.round(runTimer.totalElapsed/60*100)/100;
+  const pct=Math.round(segsExecuted/runTimer.segments.length*100);
+  const durLabel=fmtDuration(runTimer.totalElapsed);
+  state.history.unshift({
+    id:Date.now(),type:'cardio',workoutId:'RUN_TIMER',
+    workoutName:`🏃 ${runTimer.sessionName}`,
+    workoutSub:completed?`Completo — ${durLabel}`:`Parcial (${segsExecuted}/${runTimer.segments.length} etapas) — ${durLabel}`,
+    startISO:start.toISOString(),endISO:end.toISOString(),durationMin:durMin,
+    durationSec:runTimer.totalElapsed,
+    totalSets:runTimer.segments.length,doneSets:segsExecuted,
+    completion:pct,fullCompletion:pct,
+    muscles:[],exercisesDone:[],weights:{},notes:{},
+    quickMode:state.quickMode||'off',plan:[]
+  });
+  save();
+}
 function stopRunTimer(finished){
   if(runTimer.interval)clearInterval(runTimer.interval);
+  _saveRunTimerHistory(finished);
   runTimer.active=false;
+  runTimer.paused=false;
   releaseWakeLock();
   if(finished){
     beep(880,0.3,4);
     showToast(rnd(HUMOR.runTimerDone[isFem()?'F':'M']),true);
+  }else{
+    const segs=runTimer.segIdx+(runTimer.segElapsed>0?1:0);
+    showToast(`Corrida encerrada — ${segs}/${runTimer.segments.length} etapas registradas`,true);
   }
-  renderTreino();
+  const overlay=document.getElementById('runTimerOverlay');
+  if(overlay)overlay.style.display='none';
+  renderTreino();renderHistory();renderDesempenho();
 }
 
 function renderRunTimerUI(){
@@ -3703,10 +3760,10 @@ function updateRunTimerDisplay(){
   const nextSeg=runTimer.segIdx+1<runTimer.segments.length?runTimer.segments[runTimer.segIdx+1]:null;
   const fmtT=s=>{const m=Math.floor(s/60);const ss=s%60;return m+':'+String(ss).padStart(2,'0');};
   el.style.display='flex';
+  const paused=runTimer.paused;
   el.innerHTML=`
     <div class="rt-header">
       <div class="rt-session">${runTimer.sessionName}</div>
-      <button class="btn btn-danger btn-small" onclick="stopRunTimer(false)" style="font-size:12px">✕ Parar</button>
     </div>
     <div class="rt-progress-bar"><div class="rt-progress-fill" style="width:${progress}%"></div></div>
     <div class="rt-segment-info">
@@ -3714,10 +3771,15 @@ function updateRunTimerDisplay(){
       <div class="rt-label" style="color:${effortColor}">${seg.label}</div>
       <div class="rt-effort">Esforço: ${seg.effort}</div>
     </div>
-    <div class="rt-time">${fmtT(remaining)}</div>
+    <div class="rt-time" style="${paused?'opacity:0.4':''}">${paused?'⏸ ':''}<span>${fmtT(remaining)}</span></div>
     <div class="rt-total">Total: ${fmtT(runTimer.totalElapsed)} / ${fmtT(totalSec)}</div>
     <div class="rt-seg-count">Segmento ${runTimer.segIdx+1} de ${runTimer.segments.length}</div>
     ${nextSeg?`<div class="rt-next">Próximo: ${nextSeg.icon||''} ${nextSeg.label} (${fmtT(nextSeg.sec)})</div>`:'<div class="rt-next">Último segmento!</div>'}
+    <div class="rt-controls">
+      <button class="btn btn-outline btn-small" onclick="skipRunSegment()" ${paused?'disabled':''} style="font-size:13px">⏭ Avançar</button>
+      <button class="btn ${paused?'btn-primary':'btn-outline'} btn-small" onclick="pauseRunTimer()" style="font-size:13px">${paused?'▶ Retomar':'⏸ Pausar'}</button>
+      <button class="btn btn-danger btn-small" onclick="stopRunTimer(false)" style="font-size:13px">⏹ Encerrar</button>
+    </div>
   `;
 }
 
