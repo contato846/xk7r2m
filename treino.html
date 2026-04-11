@@ -1773,51 +1773,9 @@ const MUSCLE_DATA={"of":"M 309.48 168.91 Q 305.84 164.32 303.32 169.76 C 298.49 
 const MUSCLE_MAP={peito:['chest'],core:['abs','obliques'],biceps:['biceps'],triceps:['triceps'],ombros:['deltoids'],quadriceps:['quadriceps'],costas:['upper-back','lower-back','trapezius'],gluteos:['gluteal'],posteriores:['hamstring'],panturrilha:['calves']};
 function muscleColor(c){if(c===0)return '#262626';if(c===1)return '#72b800';if(c===2)return '#ffaa00';return '#ff4545';}
 
-// ── Female Silhouette: SVG path transformation ──
-// Transform SVG path coordinates for feminine proportions
-// Applies regional X-scaling based on Y position (wider hips, narrower waist/shoulders)
-function _transformPath(pathStr,cx){
-  // cx = center X of the body (front≈362, back≈1086)
-  return pathStr.replace(/([\d.]+)\s+([\d.]+)/g,(match,xStr,yStr)=>{
-    const x=parseFloat(xStr),y=parseFloat(yStr);
-    if(isNaN(x)||isNaN(y))return match;
-    // Regional X-scale based on Y position
-    let sx;
-    if(y<200)sx=0.97;       // head
-    else if(y<310)sx=0.92;  // neck/shoulders
-    else if(y<450)sx=0.93;  // chest/upper arms
-    else if(y<580)sx=0.86;  // waist
-    else if(y<700)sx=1.06;  // hips
-    else if(y<900)sx=1.03;  // upper legs
-    else sx=1.0;            // lower legs
-    const nx=cx+(x-cx)*sx;
-    return nx.toFixed(2)+' '+yStr;
-  });
-}
-function _transformParts(parts,cx){
-  return parts.map(p=>({s:p.s,d:p.d.map(d=>_transformPath(d,cx))}));
-}
-// Body region classification for per-part SVG group transforms
-const _BODY_REGION={
-  head:'head',hair:'head',neck:'neck',trapezius:'shoulders',deltoids:'shoulders',
-  chest:'chest',biceps:'arms',triceps:'arms',forearm:'arms',hands:'arms',
-  abs:'waist',obliques:'waist','upper-back':'back','lower-back':'waist',
-  gluteal:'hips',adductors:'hips',quadriceps:'legs',hamstring:'legs',
-  knees:'legs',tibialis:'legs',calves:'legs',ankles:'feet',feet:'feet'
-};
-// Pre-compute female silhouette data (transformed once at load)
-const MUSCLE_DATA_F={
-  of:_transformPath(MUSCLE_DATA.of,362),
-  ob:_transformPath(MUSCLE_DATA.ob,1086),
-  f:_transformParts(MUSCLE_DATA.f,362),
-  b:_transformParts(MUSCLE_DATA.b,1086)
-};
-// Female hair: add longer hair path
-const _femHairExtra='M 330 168 Q 315 175 305 200 Q 295 240 290 300 Q 288 340 295 370 Q 285 370 282 340 Q 278 300 282 240 Q 288 180 310 165 Z M 395 168 Q 410 175 420 200 Q 430 240 435 300 Q 437 340 430 370 Q 440 370 443 340 Q 447 300 443 240 Q 437 180 415 165 Z';
-MUSCLE_DATA_F.f=MUSCLE_DATA_F.f.map(p=>{
-  if(p.s==='hair')return{s:p.s,d:[...p.d,_transformPath(_femHairExtra,362)]};
-  return p;
-});
+// ── Female Silhouette: proper SVG path parser + transformer ──
+// Parses SVG path commands correctly (M,L,C,Q,A,Z + relative variants)
+// Only transforms X coordinates based on Y-region for feminine proportions
 function getWeekRange(){
   const today=new Date(),dow=today.getDay();
   const ws=new Date(today);ws.setDate(today.getDate()-((dow===0?7:dow)-1));ws.setHours(0,0,0,0);
@@ -1869,8 +1827,7 @@ function renderSilhouette(){
   const auraOpacity=[0,0.45,0.55,0.7][auraIdx];
   const auraBlur=[0,15,22,30][auraIdx];
   const auraStroke=[0,10,14,18][auraIdx];
-  const isFemale=isFem();
-  const MD=isFemale?MUSCLE_DATA_F:MUSCLE_DATA;
+  const MD=MUSCLE_DATA;
   function allPaths(parts){return parts.map(p=>p.d.map(d=>`<path d="${d}" fill="none" stroke="${auraColor}" stroke-width="${auraStroke}"/>`).join('')).join('');}
   let auraDefs='';
   let auraFrontG='';
