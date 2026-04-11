@@ -331,20 +331,33 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .chat-multi .chat-opt{font-size:12px;padding:7px 12px;}
 .chat-multi .chat-opt.on{background:var(--accent);color:#000;border-color:var(--accent);}
 .chat-multi .chat-opt.off{background:transparent;color:var(--muted2);border-color:var(--border);}
-.run-timer-overlay{position:fixed;inset:0;background:var(--bg);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:12px;}
-.rt-header{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:400px;}
-.rt-session{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);letter-spacing:1px;}
-.rt-progress-bar{width:100%;max-width:400px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.run-timer-overlay{position:fixed;inset:0;background:var(--bg);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:30px 24px 40px;}
+.rt-header{text-align:center;width:100%;}
+.rt-session{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;}
+.rt-progress-bar{width:100%;max-width:400px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:10px auto 0;}
 .rt-progress-fill{height:100%;background:var(--accent);transition:width .3s;}
-.rt-segment-info{text-align:center;margin:8px 0;}
-.rt-label{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin-top:8px;}
-.rt-effort{font-size:14px;color:var(--muted2);margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
-.rt-time{font-family:'Bebas Neue',sans-serif;font-size:96px;color:var(--text);line-height:1;letter-spacing:4px;}
-.rt-total{font-size:13px;color:var(--muted2);}
-.rt-seg-count{font-size:12px;color:var(--muted);}
-.rt-next{font-size:13px;color:var(--muted2);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;margin-top:8px;}
-.rt-controls{display:flex;gap:10px;margin-top:18px;width:100%;max-width:400px;justify-content:center;}
-.rt-controls .btn{flex:1;padding:10px 6px;}
+.rt-center{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:4px;}
+.rt-time{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,20vw,120px);color:var(--text);line-height:1;letter-spacing:6px;border-bottom:3px solid var(--border);padding-bottom:6px;}
+.rt-time.paused{opacity:0.35;}
+.rt-time-label{font-size:12px;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin-top:6px;}
+.rt-segment-info{text-align:center;margin-top:16px;}
+.rt-icon-big{font-size:56px;margin-bottom:4px;filter:drop-shadow(0 0 10px rgba(255,255,255,0.1));}
+.rt-label{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-top:4px;}
+.rt-effort{font-size:13px;color:var(--muted2);margin-top:2px;text-transform:uppercase;letter-spacing:1px;}
+.rt-total{font-size:13px;color:var(--muted2);margin-top:8px;}
+.rt-seg-count{font-size:12px;color:var(--muted);margin-top:2px;}
+.rt-next{font-size:12px;color:var(--muted2);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 18px;margin-top:10px;}
+.rt-bottom{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;}
+.rt-main-btn{width:clamp(90px,24vw,120px);height:clamp(90px,24vw,120px);border-radius:50%;border:none;font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,5vw,24px);letter-spacing:2px;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 24px rgba(0,0,0,0.4);}
+.rt-main-btn:active{transform:scale(0.93);}
+.rt-main-btn.pause{background:var(--accent);color:#000;}
+.rt-main-btn.resume{background:var(--done-border);color:#fff;}
+.rt-aux-row{display:flex;gap:14px;justify-content:center;width:100%;max-width:360px;}
+.rt-aux-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;cursor:pointer;color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;transition:background .15s;}
+.rt-aux-btn:active{background:var(--surface);}
+.rt-aux-btn .rt-aux-icon{font-size:22px;}
+.rt-aux-btn.danger{border-color:#ff454544;color:#ff6b6b;}
+.rt-laps-box{width:100%;max-width:360px;margin-top:6px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:10px;max-height:100px;overflow-y:auto;}
 .no-plan-cta{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 18px;text-align:center;margin-top:12px;}
 .npc-icon{font-size:48px;margin-bottom:8px;}
 .npc-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1px;margin-bottom:10px;}
@@ -619,9 +632,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.9.2';
+const APP_VERSION='0.10.0';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.10.0',d:'2026-04-11',items:['Melhorias no visual do cronômetro de corrida','Botão central circular para pausar/retomar','Botões auxiliares redesenhados (volta, estímulo, encerrar)','Layout responsivo com timer grande e legível']},
   {v:'0.9.2',d:'2026-04-11',items:['Adicionado histórico de atualizações na aba Sobre']},
   {v:'0.9.1',d:'2026-04-11',items:['Ajuste de texto do rodapé na aba Sobre']},
   {v:'0.9.0',d:'2026-04-11',items:['Nova aba Sobre com versão, data e disclaimer','Silhueta muscular unificada para ambos os gêneros','Correção das cores dos músculos na silhueta (integração completa com base de exercícios)']},
@@ -4594,21 +4608,30 @@ function updateRunTimerDisplay(){
   el.innerHTML=`
     <div class="rt-header">
       <div class="rt-session">${runTimer.sessionName}</div>
+      <div class="rt-progress-bar"><div class="rt-progress-fill" style="width:${progress}%"></div></div>
     </div>
-    <div class="rt-progress-bar"><div class="rt-progress-fill" style="width:${progress}%"></div></div>
-    <div class="rt-segment-info">
-      <div class="rt-icon" style="font-size:48px">${seg.icon||'🏃'}</div>
-      <div class="rt-label" style="color:${effortColor}">${seg.label}</div>
-      <div class="rt-effort">Esforço: ${seg.effort}</div>
+    <div class="rt-center">
+      <div class="rt-time${paused?' paused':''}">${fmtT(remaining)}</div>
+      <div class="rt-time-label">min : seg</div>
+      <div class="rt-segment-info">
+        <div class="rt-icon-big">${seg.icon||'🏃'}</div>
+        <div class="rt-label" style="color:${effortColor}">${seg.label}</div>
+        <div class="rt-effort">Esforço: ${seg.effort}</div>
+      </div>
+      <div class="rt-total">Total: ${fmtT(runTimer.totalElapsed)} / ${fmtT(totalSec)}</div>
+      <div class="rt-seg-count">Segmento ${runTimer.segIdx+1} de ${runTimer.segments.length}</div>
+      ${nextSeg?`<div class="rt-next">Próximo: ${nextSeg.icon||''} ${nextSeg.label} (${fmtT(nextSeg.sec)})</div>`:'<div class="rt-next">Último segmento!</div>'}
     </div>
-    <div class="rt-time" style="${paused?'opacity:0.4':''}">${paused?'⏸ ':''}<span>${fmtT(remaining)}</span></div>
-    <div class="rt-total">Total: ${fmtT(runTimer.totalElapsed)} / ${fmtT(totalSec)}</div>
-    <div class="rt-seg-count">Segmento ${runTimer.segIdx+1} de ${runTimer.segments.length}</div>
-    ${nextSeg?`<div class="rt-next">Próximo: ${nextSeg.icon||''} ${nextSeg.label} (${fmtT(nextSeg.sec)})</div>`:'<div class="rt-next">Último segmento!</div>'}
-    <div class="rt-controls">
-      <button class="btn btn-outline btn-small" onclick="skipRunSegment()" ${paused?'disabled':''} style="font-size:13px">⏭ Avançar</button>
-      <button class="btn ${paused?'btn-primary':'btn-outline'} btn-small" onclick="pauseRunTimer()" style="font-size:13px">${paused?'▶ Retomar':'⏸ Pausar'}</button>
-      <button class="btn btn-danger btn-small" onclick="stopRunTimer(false)" style="font-size:13px">⏹ Encerrar</button>
+    <div class="rt-bottom">
+      <button class="rt-main-btn ${paused?'resume':'pause'}" onclick="pauseRunTimer()">${paused?'RETOMAR':'PAUSAR'}</button>
+      <div class="rt-aux-row">
+        <div class="rt-aux-btn" onclick="skipRunSegment()" ${paused?'style="pointer-events:none;opacity:0.3"':''}>
+          <span class="rt-aux-icon">⏭</span>Avançar
+        </div>
+        <div class="rt-aux-btn danger" onclick="stopRunTimer(false)">
+          <span class="rt-aux-icon">⏹</span>Encerrar
+        </div>
+      </div>
     </div>
   `;
 }
@@ -4695,19 +4718,31 @@ function updateFreeRunDisplay(){
   const paused=freeRun.paused;
   el.innerHTML=`
     <div class="rt-header"><div class="rt-session">Corrida livre</div></div>
-    <div class="rt-segment-info">
-      <div class="rt-icon" style="font-size:48px">🏃</div>
-      <div class="rt-label" style="color:${color};cursor:pointer" onclick="freeRunChangeStimulus()">${freeRun.currentStimulus}</div>
-      <div class="rt-effort" style="font-size:11px;cursor:pointer" onclick="freeRunChangeStimulus()">Toque para trocar estímulo ↻</div>
+    <div class="rt-center">
+      <div class="rt-time${paused?' paused':''}">${fmtT(freeRun.elapsed)}</div>
+      <div class="rt-time-label">min : seg</div>
+      <div class="rt-segment-info">
+        <div class="rt-icon-big">🏃</div>
+        <div class="rt-label" style="color:${color};cursor:pointer" onclick="freeRunChangeStimulus()">${freeRun.currentStimulus}</div>
+        <div class="rt-effort" style="cursor:pointer" onclick="freeRunChangeStimulus()">Toque para trocar estímulo ↻</div>
+      </div>
+      <div class="rt-total">Volta atual: ${fmtT(lastLapTime)}</div>
+      <div class="rt-seg-count">${freeRun.laps.length} volta${freeRun.laps.length!==1?'s':''} registrada${freeRun.laps.length!==1?'s':''}</div>
+      ${lapsHTML?`<div class="rt-laps-box">${lapsHTML}</div>`:''}
     </div>
-    <div class="rt-time" style="${paused?'opacity:0.4':''}">${paused?'⏸ ':''}<span>${fmtT(freeRun.elapsed)}</span></div>
-    <div class="rt-total">Volta atual: ${fmtT(lastLapTime)}</div>
-    <div class="rt-seg-count">${freeRun.laps.length} volta${freeRun.laps.length!==1?'s':''} registrada${freeRun.laps.length!==1?'s':''}</div>
-    ${lapsHTML?`<div style="margin:10px 20px;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px">${lapsHTML}</div>`:''}
-    <div class="rt-controls">
-      <button class="btn btn-outline btn-small" onclick="freeRunLap()" ${paused?'disabled':''} style="font-size:13px">🔄 Volta</button>
-      <button class="btn ${paused?'btn-primary':'btn-outline'} btn-small" onclick="pauseFreeRun()" style="font-size:13px">${paused?'▶ Retomar':'⏸ Pausar'}</button>
-      <button class="btn btn-danger btn-small" onclick="stopFreeRun()" style="font-size:13px">⏹ Encerrar</button>
+    <div class="rt-bottom">
+      <button class="rt-main-btn ${paused?'resume':'pause'}" onclick="pauseFreeRun()">${paused?'RETOMAR':'PAUSAR'}</button>
+      <div class="rt-aux-row">
+        <div class="rt-aux-btn" onclick="freeRunLap()" ${paused?'style="pointer-events:none;opacity:0.3"':''}>
+          <span class="rt-aux-icon">🔄</span>Volta
+        </div>
+        <div class="rt-aux-btn" onclick="freeRunChangeStimulus()">
+          <span class="rt-aux-icon">⚡</span>Estímulo
+        </div>
+        <div class="rt-aux-btn danger" onclick="stopFreeRun()">
+          <span class="rt-aux-icon">⏹</span>Encerrar
+        </div>
+      </div>
     </div>
   `;
 }
