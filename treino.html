@@ -637,7 +637,7 @@ function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.se
 function ensureStateDefaults(s){
   if(!s.history)s.history=[];
   if(!s.weights)s.weights={};
-  if(!s.profile)s.profile={name:'',age:null,sex:'M',weightKg:null,heightCm:null,goalKg:null};
+  if(!s.profile)s.profile={name:'',age:null,sex:'',weightKg:null,heightCm:null,goalKg:null};
   if(s.sessionPlan===undefined)s.sessionPlan=null;
   if(!s.quickMode)s.quickMode='off';
   if(!s.planEnd)s.planEnd=null;
