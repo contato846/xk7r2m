@@ -1477,33 +1477,41 @@ function renderSilhouette(){
   }
   // Aura cardio: gradação por número de corridas na semana
   // 0=sem aura, 1=azul suave, 2=ciano, 3+=verde elétrico
-  const auraColors=['','#1a4a7a','#0a8a9a','#00cc88'];
+  const auraColors=['','#2266cc','#00bbcc','#00ee88'];
   const auraIdx=Math.min(weekRuns,3);
   const auraColor=auraColors[auraIdx];
-  const auraOpacity=auraIdx===0?0:0.15+auraIdx*0.1;
-  const auraBlur=8+auraIdx*6;
+  const auraOpacity=[0,0.45,0.55,0.7][auraIdx];
+  const auraBlur=[0,15,22,30][auraIdx];
+  const auraStroke=[0,10,14,18][auraIdx];
+  function allPaths(parts){return parts.map(p=>p.d.map(d=>`<path d="${d}" fill="none" stroke="${auraColor}" stroke-width="${auraStroke}"/>`).join('')).join('');}
   let auraDefs='';
-  let auraFront='';
-  let auraBack='';
+  let auraFrontG='';
+  let auraBackG='';
   if(auraIdx>0){
     auraDefs=`<defs>
-      <filter id="auraGlow" x="-30%" y="-30%" width="160%" height="160%">
-        <feGaussianBlur stdDeviation="${auraBlur}" result="blur"/>
-        <feFlood flood-color="${auraColor}" flood-opacity="${auraOpacity}" result="color"/>
-        <feComposite in="color" in2="blur" operator="in" result="glow"/>
-        <feMerge><feMergeNode in="glow"/><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+      <filter id="auraF" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="${auraBlur}" result="b"/>
+        <feFlood flood-color="${auraColor}" flood-opacity="${auraOpacity}" result="c"/>
+        <feComposite in="c" in2="b" operator="in" result="g"/>
+        <feMerge><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="auraB" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="${auraBlur}" result="b"/>
+        <feFlood flood-color="${auraColor}" flood-opacity="${auraOpacity}" result="c"/>
+        <feComposite in="c" in2="b" operator="in" result="g"/>
+        <feMerge><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
     </defs>`;
-    auraFront=`<path d="${MUSCLE_DATA.of}" fill="none" stroke="${auraColor}" stroke-width="${4+auraIdx*3}" filter="url(#auraGlow)" opacity="${auraOpacity+0.2}" vector-effect="non-scaling-stroke"/>`;
-    auraBack=`<path d="${MUSCLE_DATA.ob}" fill="none" stroke="${auraColor}" stroke-width="${4+auraIdx*3}" filter="url(#auraGlow)" opacity="${auraOpacity+0.2}" vector-effect="non-scaling-stroke"/>`;
+    auraFrontG=`<g filter="url(#auraF)" opacity="${auraOpacity}"><path d="${MUSCLE_DATA.of}" fill="none" stroke="${auraColor}" stroke-width="${auraStroke}"/>${allPaths(MUSCLE_DATA.f)}</g>`;
+    auraBackG=`<g filter="url(#auraB)" opacity="${auraOpacity}"><path d="${MUSCLE_DATA.ob}" fill="none" stroke="${auraColor}" stroke-width="${auraStroke}"/>${allPaths(MUSCLE_DATA.b)}</g>`;
   }
   const svg='<svg viewBox="0 0 1448 1500" class="body-svg" xmlns="http://www.w3.org/2000/svg">'
     +auraDefs
-    +auraFront
+    +auraFrontG
     +'<path d="'+MUSCLE_DATA.of+'" fill="#1a1a1a" stroke="#404040" stroke-width="2" vector-effect="non-scaling-stroke"/>'
     +renderGroup(MUSCLE_DATA.f)
     +'<path d="'+MUSCLE_DATA.of+'" fill="none" stroke="#505050" stroke-width="2" vector-effect="non-scaling-stroke"/>'
-    +auraBack
+    +auraBackG
     +'<path d="'+MUSCLE_DATA.ob+'" fill="#1a1a1a" stroke="#404040" stroke-width="2" vector-effect="non-scaling-stroke"/>'
     +renderGroup(MUSCLE_DATA.b)
     +'<path d="'+MUSCLE_DATA.ob+'" fill="none" stroke="#505050" stroke-width="2" vector-effect="non-scaling-stroke"/>'
