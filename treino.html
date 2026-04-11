@@ -632,9 +632,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.10.0';
+const APP_VERSION='0.11.0';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.11.0',d:'2026-04-11',items:['Sons diferenciados para cada ação do treino (iniciar, pausar, retomar, encerrar)','Alerta sonoro ao iniciar e finalizar treino de musculação','Tons ascendentes para início, descendentes para pausa, fanfarra para conclusão','Sistema de áudio leve via Web Audio API (zero download)']},
   {v:'0.10.0',d:'2026-04-11',items:['Melhorias no visual do cronômetro de corrida','Botão central circular para pausar/retomar','Botões auxiliares redesenhados (volta, estímulo, encerrar)','Layout responsivo com timer grande e legível']},
   {v:'0.9.2',d:'2026-04-11',items:['Adicionado histórico de atualizações na aba Sobre']},
   {v:'0.9.1',d:'2026-04-11',items:['Ajuste de texto do rodapé na aba Sobre']},
@@ -1214,6 +1215,7 @@ function startSession(){
   document.getElementById('progBlock').style.display='';
   document.getElementById('finishRow').style.display='';
   startClock();updateActiveBanner();requestWakeLock();
+  sfx('start');
   renderTreino();
   showToast(rnd(HUMOR.sessionStart[isFem()?'F':'M']),true);
 }
@@ -1255,6 +1257,7 @@ function finishSession(){
   releaseWakeLock();
   save();
   // Check for combined running session
+  sfx('finish');
   const cw=origW.combinedRun;
   if(cw&&cw.segments&&cw.segments.length>0){
     showToast(`Musculação concluída! (${fmtMin(durMin)})`,true);
@@ -4444,6 +4447,25 @@ function beep(freq,duration,count){
     }
   }catch(e){}
 }
+function sfx(type){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const n=ctx.currentTime;
+    const p=(f,s,d,v=0.4)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.01,s+d);o.start(s);o.stop(s+d);};
+    switch(type){
+      case 'start':p(523,n,0.14);p(659,n+0.12,0.14);p(784,n+0.24,0.2,0.5);break;
+      case 'pause':p(587,n,0.18,0.35);p(392,n+0.15,0.25,0.3);break;
+      case 'resume':p(523,n,0.12,0.35);p(659,n+0.1,0.15,0.4);break;
+      case 'finish':p(523,n,0.14);p(659,n+0.12,0.14);p(784,n+0.24,0.14);p(1047,n+0.36,0.3,0.5);break;
+      case 'stop':p(349,n,0.22,0.3);p(294,n+0.18,0.28,0.25);break;
+      case 'lap':p(784,n,0.09,0.3);p(784,n+0.12,0.09,0.3);break;
+      case 'tick':p(440,n,0.07,0.25);break;
+      case 'switch':p(523,n,0.06,0.2);p(587,n+0.07,0.06,0.2);break;
+      case 'segment':p(660,n,0.12,0.35);p(660,n+0.14,0.12,0.35);break;
+      case 'segmentHigh':p(880,n,0.1,0.4);p(880,n+0.12,0.1,0.4);p(880,n+0.24,0.1,0.4);break;
+    }
+  }catch(e){}
+}
 
 function getCurrentRunWeek(){
   if(!state.programStart)return 1;
@@ -4491,7 +4513,7 @@ function startRunTimer(sessOverride){
   runTimer={active:true,paused:false,segments:segs,segIdx:0,segElapsed:0,totalElapsed:0,interval:null,sessionName:sess.name,startTime:new Date()};
   requestWakeLock();
   renderRunTimerUI();
-  beep(660,0.2,2);
+  sfx('start');
   _startRunInterval();
 }
 function _startRunInterval(){
@@ -4500,9 +4522,9 @@ function _startRunInterval(){
     runTimer.totalElapsed++;
     const seg=runTimer.segments[runTimer.segIdx];
     const remaining=seg.sec-runTimer.segElapsed;
-    if(remaining===3)beep(440,0.1,1);
-    if(remaining===2)beep(440,0.1,1);
-    if(remaining===1)beep(440,0.1,1);
+    if(remaining===3)sfx('tick');
+    if(remaining===2)sfx('tick');
+    if(remaining===1)sfx('tick');
     if(runTimer.segElapsed>=seg.sec){
       runTimer.segIdx++;
       runTimer.segElapsed=0;
@@ -4511,8 +4533,8 @@ function _startRunInterval(){
         return;
       }
       const next=runTimer.segments[runTimer.segIdx];
-      if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')beep(880,0.15,3);
-      else beep(660,0.2,2);
+      if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')sfx('segmentHigh');
+      else sfx('segment');
     }
     updateRunTimerDisplay();
   },1000);
@@ -4522,11 +4544,12 @@ function pauseRunTimer(){
   if(runTimer.paused){
     runTimer.paused=false;
     _startRunInterval();
-    beep(660,0.2,1);
+    sfx('resume');
   }else{
     runTimer.paused=true;
     if(runTimer.interval)clearInterval(runTimer.interval);
     runTimer.interval=null;
+    sfx('pause');
   }
   updateRunTimerDisplay();
 }
@@ -4539,8 +4562,8 @@ function skipRunSegment(){
     return;
   }
   const next=runTimer.segments[runTimer.segIdx];
-  if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')beep(880,0.15,3);
-  else beep(660,0.2,2);
+  if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')sfx('segmentHigh');
+  else sfx('segment');
   updateRunTimerDisplay();
 }
 function _saveRunTimerHistory(completed){
@@ -4571,9 +4594,10 @@ function stopRunTimer(finished){
   runTimer.paused=false;
   releaseWakeLock();
   if(finished){
-    beep(880,0.3,4);
+    sfx('finish');
     showToast(rnd(HUMOR.runTimerDone[isFem()?'F':'M']),true);
   }else{
+    sfx('stop');
     const segs=runTimer.segIdx+(runTimer.segElapsed>0?1:0);
     showToast(`Corrida encerrada — ${segs}/${runTimer.segments.length} etapas registradas`,true);
   }
@@ -4643,7 +4667,7 @@ function startFreeRun(){
   freeRun={active:true,paused:false,elapsed:0,interval:null,laps:[],startTime:new Date(),currentStimulus:'Z2 (leve)'};
   requestWakeLock();
   renderFreeRunUI();
-  beep(660,0.2,2);
+  sfx('start');
   freeRun.interval=setInterval(()=>{
     freeRun.elapsed++;
     updateFreeRunDisplay();
@@ -4653,13 +4677,13 @@ function freeRunLap(){
   if(!freeRun.active)return;
   const prevLap=freeRun.laps.length>0?freeRun.laps[freeRun.laps.length-1].elapsed:0;
   freeRun.laps.push({elapsed:freeRun.elapsed,lapTime:freeRun.elapsed-prevLap,stimulus:freeRun.currentStimulus});
-  beep(660,0.15,2);
+  sfx('lap');
   updateFreeRunDisplay();
 }
 function freeRunChangeStimulus(){
   const idx=FREE_RUN_STIMULI.indexOf(freeRun.currentStimulus);
   freeRun.currentStimulus=FREE_RUN_STIMULI[(idx+1)%FREE_RUN_STIMULI.length];
-  beep(440,0.1,1);
+  sfx('switch');
   updateFreeRunDisplay();
 }
 function pauseFreeRun(){
@@ -4667,16 +4691,18 @@ function pauseFreeRun(){
   if(freeRun.paused){
     freeRun.paused=false;
     freeRun.interval=setInterval(()=>{freeRun.elapsed++;updateFreeRunDisplay();},1000);
-    beep(660,0.2,1);
+    sfx('resume');
   }else{
     freeRun.paused=true;
     if(freeRun.interval)clearInterval(freeRun.interval);
     freeRun.interval=null;
+    sfx('pause');
   }
   updateFreeRunDisplay();
 }
 function stopFreeRun(){
   if(freeRun.interval)clearInterval(freeRun.interval);
+  sfx(freeRun.elapsed>=10?'finish':'stop');
   if(freeRun.elapsed>=10){
     const end=new Date();
     const durMin=Math.round(freeRun.elapsed/60*100)/100;
