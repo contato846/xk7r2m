@@ -352,6 +352,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .rl-seg-time{color:var(--muted2);font-weight:500;white-space:nowrap;}
 .disclaimer-overlay,.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
 .disclaimer-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 22px;max-width:400px;width:100%;}
+.disclaimer-brand{font-family:'Bebas Neue',sans-serif;line-height:1;margin-bottom:20px;}
+.disclaimer-brand-top{display:block;font-size:14px;color:var(--muted2);letter-spacing:4px;}
+.disclaimer-brand-main{display:block;font-size:28px;letter-spacing:2px;margin-top:2px;}
 .chat-free-input{display:flex;gap:8px;padding:4px 0;}
 .chat-free-input input{flex:1;padding:10px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;}
 .chat-free-input input:focus{border-color:var(--accent);}
@@ -535,16 +538,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <!-- Disclaimer modal -->
 <div id="disclaimerModal" class="disclaimer-overlay" style="display:none">
-  <div class="disclaimer-box">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent);letter-spacing:2px;margin-bottom:14px" id="disclaimerTitle">TREINO DO PAI</div>
-    <div style="font-size:13px;line-height:1.7;color:var(--text);margin-bottom:18px">
+  <div class="disclaimer-box" style="text-align:center">
+    <div class="disclaimer-brand">
+      <span class="disclaimer-brand-top">TREINO</span>
+      <span class="disclaimer-brand-main"><span style="color:#ff69b4">DA MÃE</span> <span style="color:#909090">&</span> <span style="color:#e8ff47">DO PAI</span></span>
+    </div>
+    <div style="font-size:13px;line-height:1.7;color:var(--text);margin-bottom:18px;text-align:left">
       <p style="margin-bottom:10px"><strong>Aviso importante antes de começar:</strong></p>
       <p style="margin-bottom:8px">Este aplicativo gera planos de treino com base nas suas respostas, mas <strong>não substitui a orientação de um profissional de educação física ou médico</strong>.</p>
       <p style="margin-bottom:8px">Ao utilizar o app, você assume total responsabilidade pela execução dos exercícios e sessões de corrida. Se você tem qualquer condição de saúde, lesão ou dúvida, <strong>consulte um profissional antes de iniciar</strong>.</p>
       <p style="margin-bottom:8px">O app é uma ferramenta de apoio — a responsabilidade pela prática segura é sempre sua.</p>
       <p style="color:var(--muted2);font-size:12px">Ao continuar, você declara que leu e concorda com este aviso.</p>
     </div>
-    <button class="btn btn-primary btn-full" onclick="acceptDisclaimer()" style="font-size:15px;padding:14px">Entendi e aceito</button>
+    <button class="btn btn-full" onclick="acceptDisclaimer()" style="font-size:15px;padding:14px;background:linear-gradient(135deg,#e8ff47,#ff69b4);color:#000;border:none;font-weight:600;border-radius:10px;">Entendi e aceito</button>
   </div>
 </div>
 
@@ -3694,8 +3700,6 @@ function applyTheme(){
   const brandMain=document.getElementById('appBrandMain');
   if(brandMain)brandMain.innerHTML=isFem?'<span class="brand-highlight">DA</span> MÃE':'<span class="brand-highlight">DO</span> PAI';
   document.title=getAppName();
-  const dt=document.getElementById('disclaimerTitle');
-  if(dt)dt.textContent=getAppName();
 }
 
 // DISCLAIMER & ONBOARDING
