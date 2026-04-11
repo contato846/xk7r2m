@@ -172,6 +172,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .body-svg .body-fill{fill:#161616;stroke:#3a3a3a;stroke-width:1;}
 .body-svg .m{stroke:#0d0d0d;stroke-width:0.6;transition:fill .3s;}
 .body-svg text{font-family:'DM Sans',sans-serif;font-size:9px;fill:var(--muted2);}
+.body-svg-fem{transform:scaleX(0.96);transform-origin:center center;}
 .body-legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:12px;font-size:11px;color:var(--muted2);}
 .body-legend span{display:flex;align-items:center;gap:6px;}
 .body-legend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
@@ -351,6 +352,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .npc-msg{font-size:13px;line-height:1.7;color:var(--text);margin-bottom:4px;}
 .npc-divider{border-top:1px solid var(--border);margin:18px 0;}
 .npc-alt-title{font-size:12px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;}
+.save-perm-bar{background:var(--card);border:1px solid var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--text);}
+.sp-btns{display:flex;gap:6px;flex-shrink:0;}
 .rl-planned{margin-bottom:8px;}
 .rl-segments{display:flex;flex-direction:column;gap:4px;margin:6px 0;}
 .rl-seg{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
@@ -517,7 +520,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <button class="btn btn-secondary btn-small" onclick="closeProfileEdit()">✕ Fechar</button>
   </div>
   <div class="profile-form">
-    <div class="pf-row"><label>Nome</label><input type="text" id="pf-name" placeholder="Bruno"></div>
+    <div class="pf-row"><label>Nome</label><input type="text" id="pf-name" placeholder="Seu nome ou apelido"></div>
     <div class="pf-row"><label>Idade</label><input type="number" id="pf-age" min="10" max="120" placeholder="40"></div>
     <div class="pf-row"><label>Sexo</label><select id="pf-sex"><option value="M">Masculino</option><option value="F">Feminino</option></select></div>
     <div class="pf-row"><label>Peso atual (kg)</label><input type="number" id="pf-weight" step="0.1" min="20" max="300" placeholder="80"></div>
@@ -604,40 +607,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <script>
 const MUSCLES={peito:'Peito',costas:'Costas',ombros:'Ombros',biceps:'Bíceps',triceps:'Tríceps',quadriceps:'Quadríceps',posteriores:'Posteriores',gluteos:'Glúteos',core:'Core',panturrilha:'Panturrilha'};
-const AB=[
-  {name:"Prancha frontal",series:3,reps:"40–60 seg",obs:"Estabilização do core — quadril alinhado.",rest:60,muscles:['core']},
-  {name:"Ab wheel",series:3,reps:"8–12 reps",obs:"Flexão de tronco — lento e controlado.",rest:60,muscles:['core']},
-  {name:"Elevação de pernas suspenso",series:3,reps:"10–15 reps",obs:"Foco em iliopsoas e reto abdominal inferior.",rest:60,muscles:['core']},
-];
+// Placeholder workout for users without a plan (fallback only — not shown as selectable)
 const WORKOUTS=[
-  {id:'A',name:'Treino A',sub:'Força Superior',day:'Segunda',dayIdx:1,exercises:[
-    {name:"Supino reto com barra",series:5,reps:"3–5 reps",obs:"85–90% 1RM. Escápulas retraídas, arco lombar controlado.",rest:210,muscles:['peito','triceps','ombros']},
-    {name:"Remada curvada com barra",series:5,reps:"3–5 reps",obs:"85–90% 1RM. Tronco a ~45°, puxar até o abdômen.",rest:210,muscles:['costas','biceps','ombros','core']},
-    {name:"Press militar com barra",series:4,reps:"4–6 reps",obs:"80–85% 1RM. Core contraído durante todo o movimento.",rest:180,muscles:['ombros','triceps','core']},
-    {name:"Pull-up com carga",series:4,reps:"4–6 reps",obs:"Carga no cinto. Extensão completa na descida.",rest:180,muscles:['costas','biceps','ombros','core']},
-    {name:"Rosca direta barra",series:3,reps:"6–8 reps",obs:"Excêntrica controlada (3 seg descendo).",rest:120,muscles:['biceps']},
-    {name:"Tríceps mergulho com carga",series:3,reps:"6–8 reps",obs:"Carga no cinto. Desça até 90° no cotovelo.",rest:120,muscles:['triceps','peito','ombros']},
-    ...AB
-  ]},
-  {id:'B',name:'Treino B',sub:'Força Inferior',day:'Quarta',dayIdx:3,exercises:[
-    {name:"Agachamento livre",series:5,reps:"3–5 reps",obs:"85–90% 1RM. Profundidade: coxa paralela ou abaixo.",rest:270,muscles:['quadriceps','gluteos','core','posteriores']},
-    {name:"Levantamento terra",series:4,reps:"3–5 reps",obs:"85–90% 1RM. Barra rente à perna, coluna neutra.",rest:270,muscles:['posteriores','gluteos','costas','core','quadriceps']},
-    {name:"Agachamento búlgaro",series:3,reps:"6–8 reps",obs:"Pé traseiro elevado. Execute cada lado antes de trocar.",rest:150,muscles:['quadriceps','gluteos','core','posteriores']},
-    {name:"Leg curl (mesa flexora)",series:3,reps:"6–8 reps",obs:"Excêntrica lenta (3 seg) para máximo recrutamento.",rest:120,muscles:['posteriores']},
-    {name:"Panturrilha em pé com carga",series:4,reps:"8–10 reps",obs:"Pausa de 1 seg no topo. Amplitude máxima.",rest:90,muscles:['panturrilha']},
-    ...AB
-  ]},
-  {id:'C',name:'Treino C',sub:'Potência / Full Body',day:'Sexta',dayIdx:5,exercises:[
-    {name:"Leg press explosivo",series:5,reps:"5 reps",obs:"70% da carga máxima. Concêntrica em velocidade máxima.",rest:210,muscles:['quadriceps','gluteos','posteriores']},
-    {name:"Supino com barra — velocidade",series:4,reps:"3 reps",obs:"60–65% 1RM. Intenção máxima de velocidade na subida.",rest:180,muscles:['peito','triceps','ombros']},
-    {name:"Agachamento com salto lastrado",series:4,reps:"5 reps",obs:"20–30 kg. Descida controlada, subida explosiva.",rest:180,muscles:['quadriceps','gluteos','posteriores']},
-    {name:"Kettlebell swing",series:4,reps:"10 reps",obs:"Hip hinge explosivo. Força vem do quadril, não dos braços.",rest:120,muscles:['gluteos','posteriores','core','costas','ombros']},
-    {name:"Burpee com salto explosivo",series:3,reps:"10 reps",obs:"Cadeia cinética completa. Salto máximo a cada rep.",rest:90,muscles:['quadriceps','peito','ombros','core','triceps','gluteos']},
-    ...AB
-  ]}
+  {id:'—',name:'Sem plano',sub:'Crie seu plano personalizado',day:'—',dayIdx:0,exercises:[]}
 ];
 const SWITCH_WEEKS=8;
-const DAY_TO_WORKOUT={1:0,3:1,5:2};
+const DAY_TO_WORKOUT={};
 
 // STATE
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
@@ -718,6 +693,7 @@ function removeExercise(ei){
   state.sessionSets.splice(ei,1);
   TD={};Object.values(TI).forEach(clearInterval);TI={};
   save();renderTreino();
+  if(state.useCustomPlan)askSavePermanent();
 }
 function substituteExercise(ei,poolIdx){
   const pool=getSubstitutionPool();
@@ -730,6 +706,7 @@ function substituteExercise(ei,poolIdx){
   closeSubstituteModal();
   save();renderTreino();
   showToast('✓ Exercício substituído',true);
+  if(state.useCustomPlan)askSavePermanent();
 }
 function addExercise(poolIdx){
   const pool=getSubstitutionPool();
@@ -741,6 +718,34 @@ function addExercise(poolIdx){
   closeSubstituteModal();
   save();renderTreino();
   showToast('✓ Exercício adicionado',true);
+  if(state.useCustomPlan)askSavePermanent();
+}
+function askSavePermanent(){
+  const wi=state.currentWorkout;
+  const w=getActiveWorkouts()[wi];
+  if(!w||!state.sessionPlan)return;
+  // Show toast with save permanent option
+  const el=document.getElementById('savePermanentBar');
+  if(el)el.remove();
+  const bar=document.createElement('div');
+  bar.id='savePermanentBar';
+  bar.className='save-perm-bar';
+  bar.innerHTML=`<span>Salvar alteração no plano <strong>${w.name}</strong>?</span>
+    <div class="sp-btns">
+      <button class="btn btn-primary btn-small" onclick="savePermanent()">Salvar no plano</button>
+      <button class="btn btn-outline btn-small" onclick="this.parentElement.parentElement.remove()">Só hoje</button>
+    </div>`;
+  document.getElementById('exerciseList').prepend(bar);
+}
+function savePermanent(){
+  const wi=state.currentWorkout;
+  if(!state.customWorkouts||!state.customWorkouts[wi]||!state.sessionPlan)return;
+  state.customWorkouts[wi].exercises=state.sessionPlan.map(e=>({...e,muscles:[...e.muscles]}));
+  _POOL_CACHE=null;
+  save();
+  const el=document.getElementById('savePermanentBar');
+  if(el)el.remove();
+  showToast('✓ Plano atualizado permanentemente',true);
 }
 function resetSessionPlan(){
   if(!state.sessionPlan)return;
@@ -1172,8 +1177,34 @@ function finishSession(){
   document.getElementById('progBlock').style.display='none';
   document.getElementById('finishRow').style.display='none';
   releaseWakeLock();
-  save();showToast(rnd(HUMOR.sessionFinish[isFem()?'F':'M'])+` (${fmtMin(durMin)})`,true);
-  setTimeout(()=>{renderTreino();renderHistory();renderDesempenho();renderPlano();},300);
+  save();
+  // Check for combined running session
+  const cw=origW.combinedRun;
+  if(cw&&cw.segments&&cw.segments.length>0){
+    showToast(`Musculação concluída! (${fmtMin(durMin)})`,true);
+    setTimeout(()=>{
+      renderTreino();renderHistory();renderDesempenho();renderPlano();
+      showCombinedRunPrompt(cw);
+    },300);
+  }else{
+    showToast(rnd(HUMOR.sessionFinish[isFem()?'F':'M'])+` (${fmtMin(durMin)})`,true);
+    setTimeout(()=>{renderTreino();renderHistory();renderDesempenho();renderPlano();},300);
+  }
+}
+let _pendingCombinedRun=null;
+function showCombinedRunPrompt(runSess){
+  _pendingCombinedRun=runSess;
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.id='combinedRunModal';
+  overlay.innerHTML=`<div class="modal" style="text-align:center;max-width:340px">
+    <div style="font-size:40px;margin-bottom:12px">🏃</div>
+    <h3 style="margin:0 0 8px">Hora da corrida!</h3>
+    <p style="color:var(--muted);font-size:14px;margin:0 0 16px">Seu treino de hoje inclui <strong>${runSess.name}</strong> (${runSess.duration}). Bora?</p>
+    <button class="btn btn-primary btn-full" onclick="document.getElementById('combinedRunModal').remove();startRunTimer(_pendingCombinedRun)">Iniciar corrida</button>
+    <button class="btn btn-outline btn-full" style="margin-top:8px" onclick="document.getElementById('combinedRunModal').remove();showToast('Corrida pulada — descanse bem!',true)">Pular hoje</button>
+  </div>`;
+  document.body.appendChild(overlay);
 }
 function resetSession(){
   if(!confirm('Reiniciar este treino e descartar o progresso atual?'))return;
@@ -1786,7 +1817,8 @@ function renderSilhouette(){
     auraFrontG=`<g filter="url(#auraF)" opacity="${auraOpacity}"><path d="${MUSCLE_DATA.of}" fill="none" stroke="${auraColor}" stroke-width="${auraStroke}"/>${allPaths(MUSCLE_DATA.f)}</g>`;
     auraBackG=`<g filter="url(#auraB)" opacity="${auraOpacity}"><path d="${MUSCLE_DATA.ob}" fill="none" stroke="${auraColor}" stroke-width="${auraStroke}"/>${allPaths(MUSCLE_DATA.b)}</g>`;
   }
-  const svg='<svg viewBox="0 0 1448 1500" class="body-svg" xmlns="http://www.w3.org/2000/svg">'
+  const isFemale=isFem();
+  const svg='<svg viewBox="0 0 1448 1500" class="body-svg'+(isFemale?' body-svg-fem':'')+'" xmlns="http://www.w3.org/2000/svg">'
     +auraDefs
     +auraFrontG
     +'<path d="'+MUSCLE_DATA.of+'" fill="#1a1a1a" stroke="#404040" stroke-width="2" vector-effect="non-scaling-stroke"/>'
@@ -2545,164 +2577,214 @@ function restartProgram(){
 const EXDB=[
 // ─── PEITO ───
 {name:'Supino reto com barra',muscles:['peito','triceps','ombros'],equip:'barra',diff:2,type:'composto',
- obs:'Escápulas retraídas, arco lombar controlado. O exercício mais clássico para peito.'},
+ obs:'Deite no banco, pés firmes no chão. Segure a barra na largura dos ombros, desça até tocar o peito e empurre de volta. Mantenha as escápulas (ossinhos das costas) apertadas e um leve arco lombar. É o exercício mais clássico para peito.'},
 {name:'Supino inclinado com barra',muscles:['peito','triceps','ombros'],equip:'barra',diff:2,type:'composto',
- obs:'Inclinação 30–45°. Enfatiza a porção superior (clavicular) do peitoral.'},
+ obs:'Banco inclinado a 30–45°. Mesmo movimento do supino reto, mas enfatiza a parte de cima do peitoral. Desça a barra até a parte alta do peito.'},
 {name:'Supino reto com halteres',muscles:['peito','triceps','ombros'],equip:'halteres',diff:2,type:'composto',
- obs:'Maior amplitude que a barra. Cada braço trabalha de forma independente.'},
+ obs:'Um halter em cada mão. Desça abrindo os braços até sentir o peitoral alongar, depois empurre juntando os halteres no alto. Permite mais amplitude que a barra.'},
 {name:'Supino inclinado com halteres',muscles:['peito','triceps','ombros'],equip:'halteres',diff:2,type:'composto',
- obs:'Inclinação 30–45°. Foco na porção clavicular do peitoral.'},
-{name:'Crucifixo com halteres',muscles:['peito'],equip:'halteres',diff:1,type:'isolado',
- obs:'Braços levemente flexionados. Foco na abertura e contração do peitoral.'},
-{name:'Crucifixo na máquina (peck deck)',muscles:['peito'],equip:'máquina',diff:1,type:'isolado',
- obs:'Contração máxima no centro. Boa opção para iniciantes.'},
-{name:'Crossover no cabo (cruzamento de polias)',muscles:['peito','ombros'],equip:'cabo',diff:2,type:'isolado',
- obs:'Excelente para definição. Varie a altura das polias para diferentes ângulos.'},
-{name:'Flexão de braço (push-up)',muscles:['peito','triceps','ombros','core'],equip:'corpo',diff:1,type:'composto',
- obs:'Corpo alinhado da cabeça aos pés. Pode ser feito em qualquer lugar.'},
-{name:'Flexão de braço com pés elevados',muscles:['peito','triceps','ombros','core'],equip:'corpo',diff:2,type:'composto',
- obs:'Pés em banco ou step. Enfatiza peito superior. Mais difícil que a flexão normal.'},
+ obs:'Banco a 30–45°. Mesmo movimento do supino com halteres, focando na parte superior do peito.'},
 {name:'Supino declinado com barra',muscles:['peito','triceps'],equip:'barra',diff:2,type:'composto',
- obs:'Banco declinado 15–30°. Enfatiza a porção inferior do peitoral.'},
+ obs:'Banco declinado 15–30°. Enfatiza a porção inferior do peitoral. Desça a barra até a parte baixa do peito.'},
+{name:'Crucifixo com halteres',muscles:['peito'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Deitado no banco, braços quase esticados com leve flexão no cotovelo. Abra os braços como se fosse dar um abraço ao contrário, depois feche. Sinta o peitoral esticando e contraindo.'},
+{name:'Crucifixo na máquina (peck deck)',muscles:['peito'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Sentado na máquina, empurre as alças para frente até quase se tocarem. Contraia o peito no centro. Ótima para iniciantes — a máquina guia o movimento.'},
+{name:'Crossover no cabo (cruzamento de polias)',muscles:['peito','ombros'],equip:'cabo',diff:2,type:'isolado',
+ obs:'Em pé entre duas polias, puxe os cabos cruzando na frente do corpo. Varie a altura das polias: alta trabalha peito baixo, baixa trabalha peito alto. Excelente para definição.'},
+{name:'Flexão de braço (push-up)',muscles:['peito','triceps','ombros','core'],equip:'corpo',diff:1,type:'composto',
+ obs:'Mãos no chão na largura dos ombros, corpo reto da cabeça aos pés. Desça o peito até quase tocar o chão e empurre. Se for difícil, comece com os joelhos no chão.'},
+{name:'Flexão de braço com pés elevados',muscles:['peito','triceps','ombros','core'],equip:'corpo',diff:2,type:'composto',
+ obs:'Pés em cima de um banco ou step. Foca mais no peitoral superior. Mais difícil que a flexão normal.'},
+{name:'Flexão diamante',muscles:['peito','triceps'],equip:'corpo',diff:2,type:'composto',
+ obs:'Mãos juntas formando um losango (polegares e indicadores se tocam). Enfatiza tríceps e parte interna do peito. Mantenha o corpo reto.'},
+{name:'Supino na máquina (chest press)',muscles:['peito','triceps','ombros'],equip:'máquina',diff:1,type:'composto',
+ obs:'Sentado na máquina, empurre as alças para frente até quase estender os braços. Ótimo para iniciantes — o movimento é guiado.'},
 // ─── COSTAS ───
 {name:'Remada curvada com barra',muscles:['costas','biceps','ombros','core'],equip:'barra',diff:2,type:'composto',
- obs:'Tronco a ~45°, puxar até o abdômen. Um dos melhores exercícios para espessura das costas.'},
+ obs:'Em pé, incline o tronco a ~45° com joelhos flexionados. Puxe a barra até o abdômen, apertando as costas no topo. Desça devagar. Um dos melhores para espessura das costas.'},
 {name:'Puxada alta na polia (pulley frente)',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
- obs:'Pegada aberta. Puxe até o peito, escápulas retraídas. Simula o movimento do pull-up.'},
+ obs:'Sentado na máquina, segure a barra com pegada aberta (mais larga que os ombros). Puxe até o peito inclinando levemente o tronco para trás. Simula o pull-up.'},
 {name:'Remada sentada na máquina (pulley baixo)',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
- obs:'Tronco fixo, puxe cotovelos rente ao corpo. Foco na retração escapular.'},
+ obs:'Sentado com os pés apoiados, puxe a alça até o abdômen mantendo o tronco firme. Aperte as escápulas ao puxar. Foco na retração escapular.'},
 {name:'Remada unilateral com halter (serrote)',muscles:['costas','biceps','core'],equip:'halteres',diff:1,type:'composto',
- obs:'Apoiado no banco com uma mão, puxe o halter até a cintura. Corrige desequilíbrios.'},
+ obs:'Apoie um joelho e uma mão no banco. Com a outra mão, puxe o halter até a cintura como se estivesse puxando um serrote. Ótimo para corrigir desequilíbrios entre os lados.'},
 {name:'Remada cavalinho (T-bar row)',muscles:['costas','biceps','ombros'],equip:'barra',diff:2,type:'composto',
- obs:'Tronco a 45°, puxe até tocar o peito. Grande ativação do trapézio médio.'},
+ obs:'Barra presa em um canto ou suporte, puxe com as duas mãos até tocar o peito. Tronco a 45°. Grande ativação do trapézio médio e costas como um todo.'},
 {name:'Pull-up (barra fixa)',muscles:['costas','biceps','ombros','core'],equip:'corpo',diff:3,type:'composto',
- obs:'Pegada pronada. Extensão completa na descida. O rei dos exercícios de costas.'},
+ obs:'Pendurado na barra com pegada pronada (palmas para frente), puxe o corpo até o queixo passar da barra. Desça devagar com controle total. O rei dos exercícios de costas.'},
 {name:'Pull-up com carga',muscles:['costas','biceps','ombros','core'],equip:'corpo',diff:3,type:'composto',
- obs:'Carga no cinto. Extensão completa na descida. Para avançados.'},
+ obs:'Mesmo que o pull-up, mas com peso no cinto ou colete. Para avançados que já fazem 10+ repetições com o peso do corpo.'},
 {name:'Barra fixa assistida (gravitron)',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
- obs:'Alternativa ao pull-up livre. Ajuste o contrapeso conforme sua força.'},
+ obs:'Máquina com contrapeso que facilita o pull-up. Ideal para quem ainda não consegue subir sozinho. Ajuste o peso de ajuda conforme evolui.'},
 {name:'Puxada alta pegada fechada',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
- obs:'Pegada supinada ou neutra. Maior ativação do bíceps.'},
+ obs:'Pegada supinada (palmas viradas para você) ou neutra (palmas uma para a outra). Puxe até o peito. Trabalha mais o bíceps que a puxada aberta.'},
 {name:'Remada na máquina (row machine)',muscles:['costas','biceps'],equip:'máquina',diff:1,type:'composto',
- obs:'Boa opção para iniciantes. Movimento guiado reduz risco de lesão.'},
+ obs:'Sentado na máquina de remada, puxe as alças até o peito. Movimento guiado — ótimo para iniciantes que ainda estão aprendendo a controlar o corpo.'},
+{name:'Pullover na polia',muscles:['costas','peito','core'],equip:'cabo',diff:2,type:'isolado',
+ obs:'Em pé de frente para a polia alta, braços quase retos, puxe a barra em arco até as coxas. Trabalha a parte lateral das costas (latíssimo) e serrátil.'},
+{name:'Remada alta com barra (upright row)',muscles:['costas','ombros'],equip:'barra',diff:2,type:'composto',
+ obs:'Segure a barra com pegada fechada e puxe para cima ao longo do corpo até a altura do peito. Cotovelos apontam para fora. Trabalha trapézio e deltoides.'},
 // ─── OMBROS ───
 {name:'Press militar com barra',muscles:['ombros','triceps','core'],equip:'barra',diff:2,type:'composto',
- obs:'Em pé ou sentado. Core contraído durante todo o movimento. O principal exercício de ombro.'},
+ obs:'Em pé ou sentado, empurre a barra da altura dos ombros até acima da cabeça. Mantenha o core firme para não arquear a lombar. O principal exercício para ombros.'},
 {name:'Desenvolvimento com halteres',muscles:['ombros','triceps'],equip:'halteres',diff:2,type:'composto',
- obs:'Sentado ou em pé. Não trave os cotovelos no topo. Maior amplitude que a barra.'},
+ obs:'Sentado ou em pé, halteres na altura das orelhas. Empurre para cima até quase encostar os halteres no alto. Não trave os cotovelos. Maior amplitude que a barra.'},
 {name:'Elevação lateral com halteres',muscles:['ombros'],equip:'halteres',diff:1,type:'isolado',
- obs:'Cotovelos levemente flexionados. Sem balanço. Foco no deltoide médio (largura dos ombros).'},
+ obs:'Em pé, braços ao lado do corpo com halteres leves. Levante os braços para os lados até a altura dos ombros, cotovelos levemente flexionados. Sem balanço! É isso que dá largura aos ombros.'},
 {name:'Elevação frontal com halteres',muscles:['ombros'],equip:'halteres',diff:1,type:'isolado',
- obs:'Braços estendidos até a altura dos olhos. Trabalha o deltoide anterior.'},
+ obs:'Em pé, levante um halter de cada vez à frente até a altura dos olhos. Braços quase esticados. Trabalha a parte da frente do ombro (deltoide anterior).'},
 {name:'Crucifixo invertido na máquina',muscles:['ombros','costas'],equip:'máquina',diff:1,type:'isolado',
- obs:'Foco na retração escapular. Trabalha o deltoide posterior, frequentemente negligenciado.'},
+ obs:'Sentado de frente para o encosto, abra os braços para trás apertando as escápulas. Trabalha a parte de trás do ombro (deltoide posterior), frequentemente esquecida.'},
 {name:'Elevação lateral no cabo',muscles:['ombros'],equip:'cabo',diff:1,type:'isolado',
- obs:'Tensão constante em toda a amplitude. Excelente variação da elevação lateral.'},
+ obs:'De lado para a polia baixa, levante o braço até a altura do ombro. Tensão constante em toda a amplitude — mais eficaz que halter no final do movimento.'},
 {name:'Encolhimento com halteres (trapézio)',muscles:['costas','ombros'],equip:'halteres',diff:1,type:'isolado',
- obs:'Eleve os ombros em direção às orelhas. Sem rotação. Trabalha o trapézio superior.'},
+ obs:'Em pé com halteres nas mãos, eleve os ombros em direção às orelhas como se dissesse "não sei". Sem girar. Trabalha o trapézio superior.'},
 {name:'Arnold press',muscles:['ombros','triceps'],equip:'halteres',diff:2,type:'composto',
- obs:'Rotação dos punhos durante o movimento. Trabalha as 3 porções do deltoide.'},
+ obs:'Comece com halteres na frente do peito (palmas viradas para você) e gire os punhos enquanto empurra para cima. Trabalha as 3 partes do ombro num só movimento.'},
+{name:'Face pull no cabo',muscles:['ombros','costas'],equip:'cabo',diff:1,type:'isolado',
+ obs:'Com corda na polia alta, puxe em direção ao rosto abrindo os cotovelos. Excelente para saúde do ombro e postura. Faça em todo treino de ombro!'},
+{name:'Desenvolvimento na máquina (shoulder press)',muscles:['ombros','triceps'],equip:'máquina',diff:1,type:'composto',
+ obs:'Sentado na máquina, empurre as alças para cima. Movimento guiado, ótimo para iniciantes ou para ir à falha com segurança.'},
 // ─── BÍCEPS ───
 {name:'Rosca direta com barra',muscles:['biceps'],equip:'barra',diff:1,type:'isolado',
- obs:'Cotovelos fixos junto ao corpo. Excêntrica controlada (3 seg descendo).'},
+ obs:'Em pé, segure a barra com as palmas para cima. Flexione os cotovelos subindo a barra até os ombros. Cotovelos fixos junto ao corpo — não balance! Desça devagar (3 segundos).'},
 {name:'Rosca alternada com halteres',muscles:['biceps'],equip:'halteres',diff:1,type:'isolado',
- obs:'Alterne os braços. Supine o antebraço na subida. Permite foco individual.'},
+ obs:'Em pé, um halter em cada mão. Suba um braço de cada vez, girando a palma para cima durante a subida (supinação). Permite focar em cada braço individualmente.'},
 {name:'Rosca martelo com halteres',muscles:['biceps'],equip:'halteres',diff:1,type:'isolado',
- obs:'Pegada neutra. Foco no braquial e braquiorradial — dá "espessura" ao braço.'},
+ obs:'Pegada neutra (palmas viradas uma para a outra, como se segurasse um martelo). Foco no braquial e braquiorradial — dá "espessura" e largura ao braço.'},
 {name:'Rosca scott (banco preacher)',muscles:['biceps'],equip:'barra',diff:1,type:'isolado',
- obs:'Isola o bíceps removendo impulso. Excelente para o pico do bíceps.'},
+ obs:'Sentado no banco scott com os braços apoiados, suba a barra EZ. O apoio isola o bíceps removendo qualquer impulso do corpo. Excelente para o "pico" do bíceps.'},
 {name:'Rosca no cabo',muscles:['biceps'],equip:'cabo',diff:1,type:'isolado',
- obs:'Tensão constante. Pode usar barra reta, EZ ou corda.'},
+ obs:'De frente para a polia baixa, flexione os braços puxando a barra ou corda. Tensão constante durante todo o movimento — os cabos não deixam o bíceps "descansar".'},
 {name:'Rosca concentrada',muscles:['biceps'],equip:'halteres',diff:1,type:'isolado',
- obs:'Sentado, cotovelo apoiado na coxa. Máximo isolamento do bíceps.'},
+ obs:'Sentado, apoie o cotovelo na parte interna da coxa. Suba o halter contraindo o bíceps no topo. Máximo isolamento — ótimo para sentir o músculo trabalhando.'},
+{name:'Rosca inclinada com halteres',muscles:['biceps'],equip:'halteres',diff:2,type:'isolado',
+ obs:'Deitado em banco inclinado a 45°, braços pendurados. Suba os halteres. A inclinação aumenta o alongamento do bíceps, trabalhando a cabeça longa.'},
+{name:'Rosca 21 com barra EZ',muscles:['biceps'],equip:'barra',diff:2,type:'isolado',
+ obs:'7 reps da metade de baixo + 7 da metade de cima + 7 completas = 21 reps. Técnica avançada que mantém tensão constante. Queima muito!'},
 // ─── TRÍCEPS ───
 {name:'Tríceps mergulho (dip)',muscles:['triceps','peito','ombros'],equip:'corpo',diff:2,type:'composto',
- obs:'No banco ou barras paralelas. Desça até 90° no cotovelo. Cuidado com os ombros.'},
+ obs:'Nas barras paralelas, desça dobrando os cotovelos até 90° e empurre de volta. Corpo levemente inclinado para frente. Cuidado com os ombros — não desça demais.'},
 {name:'Tríceps mergulho com carga',muscles:['triceps','peito','ombros'],equip:'corpo',diff:3,type:'composto',
- obs:'Carga no cinto. Para avançados que já dominam o mergulho com peso corporal.'},
+ obs:'Mesmo que o dip, mas com peso no cinto. Para avançados que já fazem 15+ dips com o peso do corpo.'},
 {name:'Tríceps na polia (corda)',muscles:['triceps'],equip:'cabo',diff:1,type:'isolado',
- obs:'Cotovelos colados ao corpo. Abra as pontas da corda no final para contração extra.'},
-{name:'Tríceps testa com barra (francês)',muscles:['triceps'],equip:'barra',diff:2,type:'isolado',
- obs:'Cotovelos fixos apontando para cima. Desça até a testa. Trabalha a cabeça longa.'},
-{name:'Tríceps coice com halter (kick back)',muscles:['triceps'],equip:'halteres',diff:1,type:'isolado',
- obs:'Apoiado no banco. Braço paralelo ao tronco. Bom para contração de pico.'},
+ obs:'De frente para a polia alta, segure a corda e empurre para baixo mantendo os cotovelos colados ao corpo. No final, abra as pontas da corda para contração extra.'},
 {name:'Tríceps na polia (barra reta)',muscles:['triceps'],equip:'cabo',diff:1,type:'isolado',
- obs:'Pegada pronada. Cotovelos fixos. Alternativa à corda.'},
+ obs:'Mesmo que com corda, mas segurando a barra reta com pegada pronada (palmas para baixo). Cotovelos fixos. Alternativa à corda.'},
+{name:'Tríceps testa com barra (francês)',muscles:['triceps'],equip:'barra',diff:2,type:'isolado',
+ obs:'Deitado no banco, segure a barra EZ com braços estendidos. Dobre os cotovelos descendo a barra até perto da testa. Cotovelos apontam para o teto. Trabalha a cabeça longa do tríceps.'},
+{name:'Tríceps coice com halter (kick back)',muscles:['triceps'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Apoiado no banco com uma mão, braço do halter paralelo ao tronco. Estenda o cotovelo empurrando o halter para trás. Aperte no topo.'},
 {name:'Tríceps mergulho no banco',muscles:['triceps','ombros'],equip:'corpo',diff:1,type:'composto',
- obs:'Mãos no banco atrás, pés no chão ou em outro banco. Versão mais fácil do dip.'},
+ obs:'Mãos no banco atrás de você, pés no chão (ou em outro banco para dificultar). Desça dobrando os cotovelos e empurre. Versão mais fácil do dip.'},
+{name:'Tríceps overhead com halter',muscles:['triceps'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Sentado ou em pé, segure um halter com as duas mãos atrás da cabeça. Estenda os braços para cima. Excelente para a cabeça longa do tríceps.'},
+{name:'Tríceps na polia overhead (corda)',muscles:['triceps'],equip:'cabo',diff:2,type:'isolado',
+ obs:'De costas para a polia baixa, segure a corda atrás da cabeça e estenda os braços para frente/cima. Alongamento máximo do tríceps.'},
 // ─── QUADRÍCEPS / PERNAS ANTERIORES ───
 {name:'Agachamento livre com barra',muscles:['quadriceps','gluteos','core','posteriores'],equip:'barra',diff:3,type:'composto',
- obs:'O rei dos exercícios. Profundidade: coxa paralela ou abaixo. Coluna neutra, core firme.'},
+ obs:'Barra apoiada no trapézio, pés na largura dos ombros. Desça como se fosse sentar numa cadeira: joelhos para fora, coluna neutra, core firme. Desça até a coxa ficar paralela ao chão (ou mais). O rei dos exercícios.'},
 {name:'Agachamento no smith',muscles:['quadriceps','gluteos','posteriores'],equip:'máquina',diff:1,type:'composto',
- obs:'Pés ligeiramente à frente. Barra guiada — mais seguro para iniciantes.'},
+ obs:'Barra guiada no trilho. Pés ligeiramente à frente do corpo. Mais seguro para iniciantes que ainda estão aprendendo o movimento do agachamento.'},
 {name:'Leg press 45°',muscles:['quadriceps','gluteos','posteriores'],equip:'máquina',diff:1,type:'composto',
- obs:'Pés na largura dos ombros. Não trave os joelhos no topo. Excelente para volume.'},
+ obs:'Sentado na máquina, empurre a plataforma com os pés na largura dos ombros. Não trave os joelhos no topo! Pés mais altos = mais glúteo; mais baixos = mais quadríceps.'},
 {name:'Leg press explosivo',muscles:['quadriceps','gluteos','posteriores'],equip:'máquina',diff:2,type:'composto',
- obs:'70% da carga máxima. Concêntrica em velocidade máxima. Para treinos de potência.'},
+ obs:'No leg press com 70% da carga máxima. Empurre com velocidade máxima na subida. Treino de potência — a ideia é ser rápido e explosivo.'},
 {name:'Hack squat na máquina',muscles:['quadriceps','gluteos'],equip:'máquina',diff:1,type:'composto',
- obs:'Costas apoiadas. Desça até 90° no joelho. Menor exigência de estabilização.'},
+ obs:'Costas apoiadas no encosto. Desça até os joelhos ficarem a 90°. Ótimo para quem quer treinar quadríceps sem precisar estabilizar tanto o tronco.'},
 {name:'Cadeira extensora (leg extension)',muscles:['quadriceps'],equip:'máquina',diff:1,type:'isolado',
- obs:'Contração máxima no topo. Movimento controlado. Isola o quadríceps.'},
+ obs:'Sentado na máquina, estenda os joelhos levantando o peso. Contraia forte no topo e desça devagar. Isola o quadríceps — bom para aquecer ou finalizar o treino de perna.'},
 {name:'Agachamento búlgaro',muscles:['quadriceps','gluteos','core','posteriores'],equip:'halteres',diff:2,type:'composto',
- obs:'Pé traseiro elevado. Execute cada lado antes de trocar. Trabalha equilíbrio e força.'},
+ obs:'Um pé no chão, o outro apoiado atrás num banco. Desça até o joelho da frente ficar a 90°. Trabalha equilíbrio, força e estabilidade. Faça todas as reps de um lado antes de trocar.'},
 {name:'Afundo com halteres (passada)',muscles:['quadriceps','gluteos','posteriores'],equip:'halteres',diff:1,type:'composto',
- obs:'Passo longo. Joelho da frente a 90°. Pode ser feito caminhando ou parado.'},
+ obs:'Dê um passo largo à frente, desça até ambos os joelhos formarem 90°. Volte à posição inicial e repita (ou alterne as pernas). Pode ser feito parado ou caminhando.'},
 {name:'Agachamento com salto lastrado',muscles:['quadriceps','gluteos','posteriores'],equip:'halteres',diff:3,type:'composto',
- obs:'Descida controlada, subida explosiva. Treino de potência. Cuidado com a aterrissagem.'},
+ obs:'Agachamento seguido de salto explosivo. Use peso leve ou só o corpo. Descida controlada, subida explosiva. Cuidado com a aterrissagem — absorva com os joelhos.'},
 {name:'Agachamento goblet (com halter)',muscles:['quadriceps','gluteos','core'],equip:'halteres',diff:1,type:'composto',
- obs:'Halter junto ao peito. Ideal para aprender a agachar corretamente. Ótimo para iniciantes.'},
+ obs:'Segure um halter junto ao peito como um cálice. Agache mantendo o peito aberto e cotovelos entre os joelhos. Ideal para aprender a agachar corretamente. Ótimo para iniciantes.'},
 {name:'Agachamento sumô',muscles:['quadriceps','gluteos','posteriores'],equip:'barra',diff:2,type:'composto',
- obs:'Pés bem abertos, pontas para fora. Maior ativação de glúteos e adutores.'},
+ obs:'Pés bem abertos com as pontas dos pés apontando para fora. Desça mantendo os joelhos alinhados com os pés. Maior ativação de glúteos e adutores (parte interna da coxa).'},
+{name:'Agachamento frontal com barra',muscles:['quadriceps','core','gluteos'],equip:'barra',diff:3,type:'composto',
+ obs:'Barra apoiada na frente dos ombros (posição de rack frontal). Exige boa mobilidade de punho. Mantém o tronco mais ereto que o agachamento traseiro — foco maior no quadríceps.'},
+{name:'Step-up com halteres',muscles:['quadriceps','gluteos'],equip:'halteres',diff:1,type:'composto',
+ obs:'Com halteres nas mãos, suba num banco ou step com uma perna de cada vez. Empurre com o calcanhar da perna de cima. Simples e eficaz para glúteos e quadríceps.'},
+{name:'Sissy squat',muscles:['quadriceps'],equip:'corpo',diff:3,type:'isolado',
+ obs:'Em pé, segure em algo para equilíbrio. Incline o corpo para trás dobrando os joelhos, mantendo quadris estendidos. Isola o quadríceps de forma intensa. Avançado.'},
 // ─── POSTERIORES / GLÚTEOS ───
 {name:'Levantamento terra',muscles:['posteriores','gluteos','costas','core','quadriceps'],equip:'barra',diff:3,type:'composto',
- obs:'Barra rente à perna, coluna neutra. Um dos exercícios mais completos que existem.'},
+ obs:'Barra no chão. Agache, segure a barra e levante estendendo quadris e joelhos simultaneamente. Barra rente à perna, coluna sempre neutra. Um dos exercícios mais completos que existem.'},
 {name:'Levantamento terra romeno (stiff)',muscles:['posteriores','gluteos','costas'],equip:'barra',diff:2,type:'composto',
- obs:'Joelhos semi-flexionados. Quadril para trás. Foco no alongamento dos posteriores.'},
+ obs:'Em pé, joelhos semi-flexionados (quase retos). Empurre o quadril para trás descendo a barra ao longo das pernas. Sinta o alongamento nos posteriores. Suba apertando os glúteos.'},
 {name:'Stiff com halteres',muscles:['posteriores','gluteos'],equip:'halteres',diff:2,type:'composto',
- obs:'Mesmo padrão do stiff com barra. Halteres permitem maior liberdade de movimento.'},
+ obs:'Mesmo padrão do stiff com barra, mas com halteres. Permitem maior liberdade de movimento e são mais gentis com a lombar.'},
 {name:'Leg curl (mesa flexora)',muscles:['posteriores'],equip:'máquina',diff:1,type:'isolado',
- obs:'Excêntrica lenta (3 seg) para máximo recrutamento dos isquiotibiais.'},
+ obs:'Deitado na máquina, dobre os joelhos puxando o peso em direção aos glúteos. Desça devagar (3 segundos) para máximo recrutamento dos isquiotibiais.'},
 {name:'Cadeira flexora (leg curl sentado)',muscles:['posteriores'],equip:'máquina',diff:1,type:'isolado',
- obs:'Variação sentada. Igualmente eficaz para isolar os isquiotibiais.'},
+ obs:'Sentado na máquina, dobre os joelhos empurrando o apoio para baixo. Variação sentada que trabalha os isquiotibiais em ângulo diferente.'},
 {name:'Elevação pélvica com barra (hip thrust)',muscles:['gluteos','posteriores','core'],equip:'barra',diff:2,type:'composto',
- obs:'Ombros no banco, barra sobre a pelve. O melhor exercício para glúteo máximo.'},
+ obs:'Ombros apoiados no banco, barra sobre a pelve (use proteção). Empurre os quadris para cima apertando os glúteos no topo. O melhor exercício para glúteo máximo, comprovado por estudos.'},
 {name:'Glúteo na máquina (glute kickback)',muscles:['gluteos'],equip:'máquina',diff:1,type:'isolado',
- obs:'Foco no glúteo máximo. Sem arquear a lombar. Movimento controlado.'},
+ obs:'Na máquina, empurre a plataforma para trás com uma perna, como se estivesse dando um coice. Aperte o glúteo no final. Sem arquear a lombar.'},
 {name:'Abdução na máquina (glúteo médio)',muscles:['gluteos'],equip:'máquina',diff:1,type:'isolado',
- obs:'Foco no glúteo médio. Tronco levemente inclinado para maior ativação.'},
+ obs:'Sentado na máquina, abra as pernas contra a resistência. Trabalha o glúteo médio (lateral do quadril). Incline levemente o tronco para frente para maior ativação.'},
+{name:'Elevação pélvica com halter',muscles:['gluteos','posteriores','core'],equip:'halteres',diff:1,type:'composto',
+ obs:'Deitado no chão, halter sobre a pelve. Empurre os quadris para cima apertando os glúteos. Versão mais acessível do hip thrust, sem precisar de banco.'},
+{name:'Stiff unilateral com halter',muscles:['posteriores','gluteos','core'],equip:'halteres',diff:2,type:'composto',
+ obs:'Em pé sobre uma perna, incline o tronco para frente com halter na mão oposta. A perna de trás sobe como contrapeso. Ótimo para equilíbrio e isquiotibiais.'},
+{name:'Ponte de glúteo',muscles:['gluteos','posteriores'],equip:'corpo',diff:1,type:'isolado',
+ obs:'Deitado de costas, joelhos flexionados, pés no chão. Eleve o quadril contraindo os glúteos. Segure 2 seg no topo. Exercício básico e eficaz para ativar os glúteos.'},
+{name:'Adução na máquina',muscles:['quadriceps','gluteos'],equip:'máquina',diff:1,type:'isolado',
+ obs:'Sentado na máquina, feche as pernas contra a resistência. Trabalha os adutores (parte interna da coxa). Movimento controlado, sem impulso.'},
 // ─── PANTURRILHA ───
 {name:'Panturrilha em pé com carga',muscles:['panturrilha'],equip:'máquina',diff:1,type:'isolado',
- obs:'Pausa de 1 seg no topo. Amplitude máxima. Trabalha o gastrocnêmio.'},
+ obs:'Na máquina ou em um step, suba nas pontas dos pés e desça alongando bem. Pausa de 1 seg no topo. Trabalha o gastrocnêmio (parte de cima da panturrilha).'},
 {name:'Panturrilha sentado na máquina',muscles:['panturrilha'],equip:'máquina',diff:1,type:'isolado',
- obs:'Trabalha o sóleo (músculo profundo). Amplitude total.'},
+ obs:'Sentado com os joelhos dobrados, suba nas pontas dos pés. Trabalha o sóleo (músculo profundo da panturrilha). Amplitude total: desça bem e suba bem.'},
 {name:'Panturrilha no leg press',muscles:['panturrilha'],equip:'máquina',diff:1,type:'isolado',
- obs:'Só a ponta dos pés apoiada. Empurre e desça controlado.'},
+ obs:'No leg press, apoie só a ponta dos pés na plataforma. Empurre estendendo os tornozelos e desça controlado.'},
+{name:'Panturrilha em pé com halter',muscles:['panturrilha'],equip:'halteres',diff:1,type:'isolado',
+ obs:'Em pé sobre um step com halter na mão, suba e desça com uma perna de cada vez. Segure-se em algo para equilíbrio. Versão unilateral para corrigir diferenças entre as pernas.'},
 // ─── CORE ───
 {name:'Prancha frontal',muscles:['core'],equip:'corpo',diff:1,type:'isolado',
- obs:'Estabilização do core — quadril alinhado. Mantenha a posição sem deixar o quadril cair.'},
+ obs:'Apoiado nos antebraços e ponta dos pés, corpo reto como uma tábua. Contraia o abdômen e mantenha 20–60 seg. Não deixe o quadril cair nem subir demais.'},
 {name:'Prancha lateral',muscles:['core'],equip:'corpo',diff:1,type:'isolado',
- obs:'Corpo alinhado, quadril elevado. Trabalha os oblíquos e estabilizadores laterais.'},
+ obs:'De lado, apoiado em um antebraço. Corpo alinhado, quadril elevado. Mantenha 20–40 seg de cada lado. Trabalha os oblíquos e estabilizadores laterais.'},
 {name:'Ab wheel (roda abdominal)',muscles:['core'],equip:'acessório',diff:2,type:'isolado',
- obs:'Flexão de tronco — lento e controlado. Excelente para reto abdominal e oblíquos.'},
+ obs:'Ajoelhado, segure a roda e role para frente esticando o corpo. Volte usando a força do abdômen. Vá só até onde conseguir manter a lombar neutra. Excelente para reto abdominal.'},
 {name:'Elevação de pernas suspenso',muscles:['core'],equip:'corpo',diff:2,type:'isolado',
- obs:'Pendurado na barra. Foco em iliopsoas e reto abdominal inferior.'},
+ obs:'Pendurado na barra, levante as pernas (retas ou dobradas) até a altura do quadril. Sem balançar o corpo. Trabalha fortemente o abdômen inferior.'},
 {name:'Elevação de pernas deitado',muscles:['core'],equip:'corpo',diff:1,type:'isolado',
- obs:'Lombar colada no chão. Desça sem encostar os pés. Versão mais acessível.'},
+ obs:'Deitado de costas, mãos sob os glúteos. Levante as pernas retas até 90° e desça devagar sem encostar no chão. Mantenha a lombar colada no chão o tempo todo.'},
 {name:'Abdominal crunch na máquina',muscles:['core'],equip:'máquina',diff:1,type:'isolado',
- obs:'Flexão de tronco controlada. Não puxe o pescoço. Resistência ajustável.'},
+ obs:'Sentado na máquina, flexione o tronco para frente contra a resistência. Não puxe pelo pescoço! Contraia o abdômen, não os braços. Resistência ajustável.'},
 {name:'Rotação de tronco (oblíquos)',muscles:['core'],equip:'máquina',diff:1,type:'isolado',
- obs:'Máquina rotatória ou com cabo. Movimento lento e controlado.'},
+ obs:'Na máquina rotatória ou com cabo, gire o tronco para um lado mantendo os quadris fixos. Movimento lento e controlado. Trabalha os oblíquos.'},
+{name:'Abdominal bicicleta',muscles:['core'],equip:'corpo',diff:1,type:'isolado',
+ obs:'Deitado, mãos atrás da cabeça. Leve o cotovelo ao joelho oposto alternando os lados como se pedalasse. Trabalha reto abdominal e oblíquos simultaneamente.'},
+{name:'Pallof press (anti-rotação)',muscles:['core'],equip:'cabo',diff:2,type:'isolado',
+ obs:'De lado para a polia, segure a alça com as duas mãos no peito. Estenda os braços à frente resistindo à rotação. Excelente para estabilidade do core.'},
+{name:'Dead bug',muscles:['core'],equip:'corpo',diff:1,type:'isolado',
+ obs:'Deitado de costas, braços esticados para cima, joelhos a 90°. Estenda o braço e a perna opostos simultaneamente, mantendo a lombar no chão. Ótimo para coordenação e ativação profunda do core.'},
 // ─── FULL BODY / POTÊNCIA ───
 {name:'Kettlebell swing',muscles:['gluteos','posteriores','core','costas','ombros'],equip:'kettlebell',diff:2,type:'composto',
- obs:'Hip hinge explosivo. Força vem do quadril, não dos braços. Excelente para condicionamento.'},
+ obs:'Segure o kettlebell com as duas mãos. Empurre os quadris para trás (como no stiff) e depois projete para frente de forma explosiva, balançando o peso até a altura dos ombros. A força vem dos quadris, não dos braços.'},
 {name:'Burpee com salto explosivo',muscles:['quadriceps','peito','ombros','core','triceps','gluteos'],equip:'corpo',diff:2,type:'composto',
- obs:'Cadeia cinética completa. Salto máximo a cada rep. Muito usado em circuitos.'},
+ obs:'Agache, coloque as mãos no chão, pule os pés para trás (posição de flexão), faça uma flexão, pule os pés de volta e salte o mais alto que puder. Um exercício completo para todo o corpo.'},
 {name:'Clean and press',muscles:['ombros','quadriceps','gluteos','core','costas'],equip:'barra',diff:3,type:'composto',
- obs:'Levantamento olímpico simplificado. Puxa do chão e pressiona acima da cabeça.'},
+ obs:'Puxa a barra do chão até os ombros (clean) e depois empurra acima da cabeça (press). Movimento olímpico simplificado. Trabalha praticamente todos os músculos do corpo.'},
 {name:'Turkish get-up',muscles:['core','ombros','gluteos','quadriceps'],equip:'kettlebell',diff:3,type:'composto',
- obs:'Sequência de movimentos do chão até em pé com peso acima da cabeça. Estabilidade total.'},
+ obs:'Deitado no chão com peso em uma mão estendida, levante-se até ficar de pé e deite novamente, tudo com o peso no alto. Sequência complexa que exige estabilidade total.'},
 {name:'Thruster (agachamento + press)',muscles:['quadriceps','ombros','gluteos','triceps','core'],equip:'halteres',diff:2,type:'composto',
- obs:'Agachamento frontal seguido de press acima da cabeça em um movimento fluido.'},
+ obs:'Agache segurando halteres nos ombros. Na subida, use o impulso para empurrar os halteres acima da cabeça. Um movimento fluido que combina pernas e ombros.'},
+{name:'Man maker',muscles:['peito','costas','ombros','quadriceps','core','gluteos'],equip:'halteres',diff:3,type:'composto',
+ obs:'Com halteres: flexão + remada de cada lado + salte os pés para frente + agachamento + press acima da cabeça. O exercício mais completo que existe. Para avançados.'},
+{name:'Bear crawl (engatinhar)',muscles:['core','ombros','quadriceps'],equip:'corpo',diff:1,type:'composto',
+ obs:'De quatro apoios, joelhos a 5cm do chão, ande para frente e para trás. Trabalha core, ombros e coordenação. Ótimo para aquecimento ou circuitos.'},
+{name:'Mountain climber',muscles:['core','ombros','quadriceps'],equip:'corpo',diff:1,type:'composto',
+ obs:'Na posição de flexão, traga alternadamente os joelhos ao peito em ritmo acelerado. Trabalha core e eleva a frequência cardíaca. Excelente para circuitos.'},
+{name:'Farmers walk (caminhada do fazendeiro)',muscles:['core','ombros','gluteos','quadriceps'],equip:'halteres',diff:1,type:'composto',
+ obs:'Pegue halteres pesados e caminhe com postura ereta por 30–40 metros. Trabalha grip, core, trapézio e estabilizadores. Simples e brutalmente eficaz.'},
 ];
 // diff: 1=iniciante, 2=intermediário, 3=avançado
 // equip: 'corpo','halteres','barra','máquina','cabo','kettlebell','acessório'
@@ -2883,6 +2965,12 @@ const CHAT_STEPS=[
    },
    key:'runGoalType',
    condition:()=>{const t=chatState.answers.planType||'';const hasRun=t.includes('corrida')||t.includes('🏃');return hasRun&&!(chatState.answers.runHasOwnPlan||'').includes('já tenho');}},
+  // ── Treino combinado (musculação + corrida no mesmo dia) ──
+  {id:'combinedDays',
+   bot:()=>'Você quer **combinar musculação e corrida no mesmo dia** em algum dos seus treinos? Isso reduz dias na academia mas aumenta a duração da sessão.',
+   options:['Não, prefiro dias separados','Sim, quero dias combinados (musculação + corrida)','Sim, intercalados (alterna séries de musculação com blocos de corrida)'],
+   key:'combinedDays',
+   condition:()=>{const t=chatState.answers.planType||'';return t.includes('Musculação e corrida')&&!t.includes('Só');}},
   // ── Duração ──
   {id:'duration',
    bot:()=>{
@@ -3041,7 +3129,7 @@ beginner:[
      {label:'Caminhada normal (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
    ]},
   {name:'Trote + educativos',duration:'25 min',
-   obs:'Trote leve seguido de exercícios educativos (elevação de joelho, skipping). Melhora a técnica da passada.',
+   obs:'Trote leve seguido de exercícios educativos (elevação de joelho, skipping). Melhora a técnica da passada e coordenação.',
    segments:[
      {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
      {label:'Trote leve',sec:300,effort:'moderado',icon:'🏃'},
@@ -3051,6 +3139,40 @@ beginner:[
      {label:'Trote leve',sec:90,effort:'leve',icon:'🏃'},
      {label:'Skipping (elevação de joelhos)',sec:30,effort:'forte',icon:'⚡'},
      {label:'Trote leve',sec:180,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:180,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Pirâmide iniciante',duration:'25 min',
+   obs:'A duração da corrida aumenta e depois diminui, como uma pirâmide. Ensina a dosar energia ao longo do treino.',
+   segments:[
+     {label:'Caminhada rápida (aquecimento)',sec:180,effort:'leve',icon:'🚶'},
+     {label:'Trote leve (30s)',sec:30,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada',sec:60,effort:'leve',icon:'🚶'},
+     {label:'Trote leve (45s)',sec:45,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada',sec:60,effort:'leve',icon:'🚶'},
+     {label:'Trote leve (60s)',sec:60,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada',sec:60,effort:'leve',icon:'🚶'},
+     {label:'Trote leve (90s) — TOPO!',sec:90,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada',sec:60,effort:'leve',icon:'🚶'},
+     {label:'Trote leve (60s)',sec:60,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada',sec:60,effort:'leve',icon:'🚶'},
+     {label:'Trote leve (45s)',sec:45,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada',sec:60,effort:'leve',icon:'🚶'},
+     {label:'Trote leve (30s)',sec:30,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:180,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Corrida + fortalecimento',duration:'25 min',
+   obs:'Alterna trote com exercícios de fortalecimento no chão. Ótimo para quem está construindo base muscular para correr.',
+   segments:[
+     {label:'Caminhada rápida (aquecimento)',sec:120,effort:'leve',icon:'🚶'},
+     {label:'Trote leve',sec:120,effort:'moderado',icon:'🏃'},
+     {label:'Agachamento corpo livre (10x)',sec:45,effort:'forte',icon:'🦵'},
+     {label:'Trote leve',sec:120,effort:'moderado',icon:'🏃'},
+     {label:'Prancha frontal',sec:30,effort:'forte',icon:'💪'},
+     {label:'Trote leve',sec:120,effort:'moderado',icon:'🏃'},
+     {label:'Afundo alternado (10x)',sec:45,effort:'forte',icon:'🦵'},
+     {label:'Trote leve',sec:120,effort:'moderado',icon:'🏃'},
+     {label:'Elevação de panturrilha (15x)',sec:30,effort:'moderado',icon:'🦵'},
+     {label:'Trote leve',sec:120,effort:'moderado',icon:'🏃'},
      {label:'Caminhada (desaquecimento)',sec:180,effort:'leve',icon:'🚶'},
    ]},
 ],
@@ -3108,6 +3230,47 @@ intermediate:[
      {label:'Caminhada (aquecimento)',sec:180,effort:'leve',icon:'🚶'},
      {label:'Trote muito leve',sec:900,effort:'leve',icon:'🏃'},
      {label:'Caminhada (desaquecimento)',sec:180,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Pirâmide de velocidade',duration:'35 min',
+   obs:'Aumenta e diminui a intensidade como uma pirâmide. Ensina controle de ritmo e adaptação ao esforço.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida moderada (1 min)',sec:60,effort:'moderado',icon:'🏃'},
+     {label:'Trote leve',sec:60,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte (1 min)',sec:60,effort:'forte',icon:'🏃💨'},
+     {label:'Trote leve',sec:60,effort:'leve',icon:'🏃'},
+     {label:'Corrida muito forte (1 min)',sec:60,effort:'muito forte',icon:'🔥'},
+     {label:'Trote leve',sec:90,effort:'leve',icon:'🏃'},
+     {label:'Corrida muito forte (1 min)',sec:60,effort:'muito forte',icon:'🔥'},
+     {label:'Trote leve',sec:60,effort:'leve',icon:'🏃'},
+     {label:'Corrida forte (1 min)',sec:60,effort:'forte',icon:'🏃💨'},
+     {label:'Trote leve',sec:60,effort:'leve',icon:'🏃'},
+     {label:'Corrida moderada (1 min)',sec:60,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Corrida + fortalecimento',duration:'35 min',
+   obs:'Combina corrida com exercícios de fortalecimento. Prepara o corpo para suportar maior volume e prevenir lesões.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida moderada',sec:300,effort:'moderado',icon:'🏃'},
+     {label:'Agachamento corpo livre (15x)',sec:45,effort:'forte',icon:'🦵'},
+     {label:'Corrida moderada',sec:300,effort:'moderado',icon:'🏃'},
+     {label:'Prancha frontal (30s)',sec:30,effort:'forte',icon:'💪'},
+     {label:'Corrida moderada',sec:300,effort:'moderado',icon:'🏃'},
+     {label:'Afundo alternado (12x)',sec:40,effort:'forte',icon:'🦵'},
+     {label:'Corrida moderada',sec:240,effort:'moderado',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:240,effort:'leve',icon:'🚶'},
+   ]},
+  {name:'Tempo curto (cruise intervals)',duration:'30 min',
+   obs:'Trechos de 5 min no ritmo de limiar com breves pausas. Mais acessível que o tempo run contínuo, mesmo benefício.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida limiar (5 min)',sec:300,effort:'forte',icon:'🔥'},
+     {label:'Trote leve (1 min)',sec:60,effort:'leve',icon:'🏃'},
+     {label:'Corrida limiar (5 min)',sec:300,effort:'forte',icon:'🔥'},
+     {label:'Trote leve (1 min)',sec:60,effort:'leve',icon:'🏃'},
+     {label:'Corrida limiar (5 min)',sec:300,effort:'forte',icon:'🔥'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
    ]},
 ],
 advanced:[
@@ -3191,6 +3354,45 @@ advanced:[
      {label:'Subida FORTE',sec:50,effort:'muito forte',icon:'⛰️'},{label:'Descida trotando',sec:80,effort:'leve',icon:'🚶'},
      {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
    ]},
+  {name:'Progressivo longo',duration:'50 min',
+   obs:'Começa em Z2 e termina em ritmo de prova. Simula a segunda metade de uma corrida, quando o corpo já está cansado.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida Z2 (fácil)',sec:900,effort:'moderado',icon:'🏃'},
+     {label:'Corrida ritmo moderado',sec:600,effort:'forte',icon:'🏃💨'},
+     {label:'Corrida ritmo de prova',sec:600,effort:'muito forte',icon:'🔥'},
+     {label:'Trote leve (desaquecimento)',sec:300,effort:'leve',icon:'🏃'},
+   ]},
+  {name:'Tabata de corrida',duration:'25 min',
+   obs:'8 rounds de 20s sprint + 10s pausa — protocolo Tabata. Máxima intensidade. Melhora VO2max em menos tempo. Só para quem já tem base.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:480,effort:'leve',icon:'🏃'},
+     {label:'SPRINT máximo (20s)',sec:20,effort:'máximo',icon:'⚡'},{label:'Descanso (10s)',sec:10,effort:'leve',icon:'🧘'},
+     {label:'SPRINT máximo (20s)',sec:20,effort:'máximo',icon:'⚡'},{label:'Descanso (10s)',sec:10,effort:'leve',icon:'🧘'},
+     {label:'SPRINT máximo (20s)',sec:20,effort:'máximo',icon:'⚡'},{label:'Descanso (10s)',sec:10,effort:'leve',icon:'🧘'},
+     {label:'SPRINT máximo (20s)',sec:20,effort:'máximo',icon:'⚡'},{label:'Descanso (10s)',sec:10,effort:'leve',icon:'🧘'},
+     {label:'SPRINT máximo (20s)',sec:20,effort:'máximo',icon:'⚡'},{label:'Descanso (10s)',sec:10,effort:'leve',icon:'🧘'},
+     {label:'SPRINT máximo (20s)',sec:20,effort:'máximo',icon:'⚡'},{label:'Descanso (10s)',sec:10,effort:'leve',icon:'🧘'},
+     {label:'SPRINT máximo (20s)',sec:20,effort:'máximo',icon:'⚡'},{label:'Descanso (10s)',sec:10,effort:'leve',icon:'🧘'},
+     {label:'SPRINT máximo (20s)',sec:20,effort:'máximo',icon:'⚡'},{label:'Descanso (10s)',sec:10,effort:'leve',icon:'🧘'},
+     {label:'Caminhada (recuperação)',sec:300,effort:'leve',icon:'🚶'},
+     {label:'Trote leve (desaquecimento)',sec:300,effort:'leve',icon:'🏃'},
+   ]},
+  {name:'Corrida + força combinada',duration:'40 min',
+   obs:'Alterna blocos de corrida com exercícios de força. Treino eficiente para quem quer trabalhar resistência e músculo no mesmo dia.',
+   segments:[
+     {label:'Trote leve (aquecimento)',sec:300,effort:'leve',icon:'🏃'},
+     {label:'Corrida moderada',sec:300,effort:'moderado',icon:'🏃'},
+     {label:'Agachamento com salto (10x)',sec:40,effort:'muito forte',icon:'🦵'},
+     {label:'Corrida moderada',sec:300,effort:'moderado',icon:'🏃'},
+     {label:'Flexão de braço (15x)',sec:40,effort:'forte',icon:'💪'},
+     {label:'Corrida forte',sec:180,effort:'forte',icon:'🏃💨'},
+     {label:'Prancha frontal (45s)',sec:45,effort:'forte',icon:'💪'},
+     {label:'Corrida moderada',sec:300,effort:'moderado',icon:'🏃'},
+     {label:'Burpee (8x)',sec:40,effort:'muito forte',icon:'💪'},
+     {label:'Trote leve',sec:180,effort:'leve',icon:'🏃'},
+     {label:'Caminhada (desaquecimento)',sec:300,effort:'leve',icon:'🚶'},
+   ]},
 ]};
 
 function buildRunPlan(runDays,runExp,runGoal,age){
@@ -3207,26 +3409,31 @@ function buildRunPlan(runDays,runExp,runGoal,age){
   const plan=[];
 
   if(isBegin){
-    // Beginner: structured walk/run progression
+    // 0=Caminhada+trote, 1=Trote contínuo, 2=Caminhada rápida, 3=Trote+educativos, 4=Pirâmide iniciante, 5=Corrida+fortalecimento
     if(runDays>=1)plan.push({...sessPool[0]});// caminhada+trote
     if(runDays>=2)plan.push({...sessPool[1]});// trote contínuo
-    if(runDays>=3)plan.push({...sessPool[2]});// caminhada rápida
+    if(runDays>=3)plan.push({...sessPool[4]});// pirâmide iniciante (variação)
+    if(runDays>=4)plan.push({...sessPool[3]});// trote+educativos
+    if(runDays>=5)plan.push({...sessPool[5]});// corrida+fortalecimento
   }else if(isAdv){
-    // Advanced: mix of tempo, intervals, long runs
+    // 0=Z2, 1=Tempo run, 2=Fartlek, 3=Intervalado longo, 4=Intervalado curto, 5=Longão, 6=Regenerativo, 7=Ladeira, 8=Progressivo longo, 9=Tabata, 10=Corrida+força
     if(runDays>=2){plan.push({...sessPool[0]});plan.push({...sessPool[2]});}// Z2 + fartlek
     if(runDays>=3)plan.push({...sessPool[5]});// longão
     if(runDays>=4)plan.push({...sessPool[4]});// intervalado curto
-    if(runDays>=5)plan.push({...sessPool[6]});// regenerativo
-    // If training for race, replace one session
+    if(runDays>=5)plan.push({...sessPool[8]});// progressivo longo
+    // If training for race, replace one session with tempo run
     if(rg.includes('Maratona')||rg.includes('21 km')){
       if(plan.length>1)plan[1]={...sessPool[1]};// tempo run
+      if(runDays>=5)plan[4]={...sessPool[3]};// intervalado longo replaces progressivo
     }
+    // Add variety for 4+ days: tabata or corrida+força on alternate weeks
+    if(runDays>=4&&!rg.includes('Maratona'))plan[3]={...sessPool[9]};// tabata
   }else{
-    // Intermediate
+    // 0=Z2, 1=Progressiva, 2=Intervalado curto, 3=Longão, 4=Ladeira, 5=Regenerativo, 6=Pirâmide velocidade, 7=Corrida+fortalecimento, 8=Tempo curto
     if(runDays>=2){plan.push({...sessPool[0]});plan.push({...sessPool[2]});}// Z2 + intervalado
     if(runDays>=3)plan.push({...sessPool[3]});// longão
-    if(runDays>=4)plan.push({...sessPool[4]});// ladeira
-    if(runDays>=5)plan.push({...sessPool[5]});// regenerativo
+    if(runDays>=4)plan.push({...sessPool[6]});// pirâmide de velocidade
+    if(runDays>=5)plan.push({...sessPool[8]});// tempo curto (cruise intervals)
   }
   return{level,sessions:plan};
 }
@@ -3507,28 +3714,56 @@ function generatePlan(){
   }
 
   // ── RUNNING PLAN ──
+  const combinedMode=a.combinedDays||'';
+  const wantCombined=combinedMode.includes('combinados')||combinedMode.includes('intercalados');
+  const wantIntercalated=combinedMode.includes('intercalados');
   if(wantRun&&runDays>0){
     if(!hasOwnRunPlan){
       runPlanData=buildRunPlan(runDays,a.runExp,a.runGoalType,userAge);
       // Adjust for health conditions
       if(hasCardiac||hasAsthma||hasPregnancy){
-        // Force beginner level for these conditions
         runPlanData=buildRunPlan(runDays,'Nunca corri',a.runGoalType,userAge);
       }
     }
-    // Assign run days in gaps
-    const usedDays=new Set(strDayIdxs);
-    const available=[];
-    for(let i=0;i<7;i++)if(!usedDays.has(i))available.push(i);
-    // If running only, spread across the week
-    if(!wantStr){
-      const sp2=Math.max(1,Math.floor(7/runDays));
-      for(let i=0;i<runDays;i++)runDayIdxs.push(Math.min(i*sp2,6));
-      runDayIdxs=[...new Set(runDayIdxs)];
+    if(wantCombined&&wantStr){
+      // ── Combined mode: overlap run sessions onto strength days ──
+      const combinedCount=Math.min(runDays,strDayIdxs.length);
+      // Place combined sessions on strength days (first N)
+      for(let i=0;i<combinedCount;i++)runDayIdxs.push(strDayIdxs[i]);
+      // Remaining run days (if any) go in gaps
+      if(runDays>combinedCount){
+        const usedDays=new Set(strDayIdxs);
+        const available=[];
+        for(let i=0;i<7;i++)if(!usedDays.has(i))available.push(i);
+        for(let i=0;i<runDays-combinedCount&&i<available.length;i++)runDayIdxs.push(available[i]);
+      }
+      // Tag combined workouts
+      for(let i=0;i<combinedCount;i++){
+        if(generatedWorkouts[i]){
+          const runSess=runPlanData&&runPlanData.sessions[i]?runPlanData.sessions[i]:null;
+          generatedWorkouts[i].combinedRun=runSess;
+          generatedWorkouts[i].intercalated=wantIntercalated;
+          if(wantIntercalated&&runSess){
+            generatedWorkouts[i].sub+=' + 🏃 Corrida intercalada';
+          }else if(runSess){
+            generatedWorkouts[i].sub+=' + 🏃 '+runSess.name;
+          }
+        }
+      }
     }else{
-      const runSpacing=Math.max(1,Math.floor(available.length/runDays));
-      for(let i=0;i<runDays&&i<available.length;i++){
-        runDayIdxs.push(available[Math.min(i*runSpacing,available.length-1)]);
+      // ── Separate days mode ──
+      const usedDays=new Set(strDayIdxs);
+      const available=[];
+      for(let i=0;i<7;i++)if(!usedDays.has(i))available.push(i);
+      if(!wantStr){
+        const sp2=Math.max(1,Math.floor(7/runDays));
+        for(let i=0;i<runDays;i++)runDayIdxs.push(Math.min(i*sp2,6));
+        runDayIdxs=[...new Set(runDayIdxs)];
+      }else{
+        const runSpacing=Math.max(1,Math.floor(available.length/runDays));
+        for(let i=0;i<runDays&&i<available.length;i++){
+          runDayIdxs.push(available[Math.min(i*runSpacing,available.length-1)]);
+        }
       }
     }
   }
@@ -3554,6 +3789,15 @@ function showPlanPreview(workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,answers
     w.exercises.forEach(ex=>{
       previewHTML+=`<div class="pp-ex"><span class="pp-name">${ex.name}</span><span class="pp-sets">${ex.series}× ${ex.reps}</span></div>`;
     });
+    // Show combined running session info
+    if(w.combinedRun){
+      const rs=w.combinedRun;
+      if(w.intercalated){
+        previewHTML+=`<div class="pp-ex" style="color:var(--accent3);font-size:12px;border-top:1px dashed var(--border);padding-top:6px;margin-top:4px"><span class="pp-name">🏃 Corrida intercalada: blocos de corrida entre as séries de musculação (~${rs.duration})</span></div>`;
+      }else{
+        previewHTML+=`<div class="pp-ex" style="color:var(--accent3);font-size:12px;border-top:1px dashed var(--border);padding-top:6px;margin-top:4px"><span class="pp-name">🏃 Após musculação: ${rs.name} (${rs.duration})</span></div>`;
+      }
+    }
     previewHTML+='</div>';
   });
   // Running sessions
@@ -3598,7 +3842,12 @@ function showPlanPreview(workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,answers
   }
   const goalLabel=(answers.goal||'').split('(')[0].trim();
   let freqLabel='';
-  if(wantStr&&wantRun)freqLabel=`${workouts.length} dias de musculação + ${runDayIdxs.length} dias de corrida`;
+  const combinedWkts=workouts.filter(w=>w.combinedRun);
+  if(wantStr&&wantRun&&combinedWkts.length>0){
+    const pureRunDays=runDayIdxs.length-combinedWkts.length;
+    freqLabel=`${workouts.length} dias de musculação (${combinedWkts.length} com corrida${combinedWkts[0]&&combinedWkts[0].intercalated?' intercalada':''})`;
+    if(pureRunDays>0)freqLabel+=` + ${pureRunDays} dias só corrida`;
+  }else if(wantStr&&wantRun)freqLabel=`${workouts.length} dias de musculação + ${runDayIdxs.length} dias de corrida`;
   else if(wantStr)freqLabel=`${workouts.length} dias de musculação`;
   else freqLabel=`${runDayIdxs.length} dias de corrida`;
 
