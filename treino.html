@@ -857,8 +857,9 @@ function closeSubstituteModal(){const el=document.getElementById('subModal');el.
 function renderQuickModeBar(locked){
   const el=document.getElementById('quickModeBar');if(!el)return;
   const m=state.quickMode||'off';
-  const hint=m==='pressa'?'Séries limitadas a 3, descanso reduzido ~40%':
-             m==='preguica'?'Só os 3 principais, máx. 2 séries cada':
+  const g=isFem()?'F':'M';
+  const hint=m==='pressa'?rnd(HUMOR.quickPressa[g]):
+             m==='preguica'?rnd(HUMOR.quickPreguica[g]):
              'Plano completo — volume normal';
   el.innerHTML=`
     <div class="qm-label">Modo de execução</div>
@@ -1103,7 +1104,7 @@ function startSession(){
   document.getElementById('finishRow').style.display='';
   startClock();updateActiveBanner();requestWakeLock();
   renderTreino();
-  showToast('▶ Treino iniciado!',true);
+  showToast(rnd(HUMOR.sessionStart[isFem()?'F':'M']),true);
 }
 function finishSession(){
   const wi=state.currentWorkout;
@@ -1136,7 +1137,7 @@ function finishSession(){
   document.getElementById('progBlock').style.display='none';
   document.getElementById('finishRow').style.display='none';
   releaseWakeLock();
-  save();showToast(`✓ Treino salvo! ${fmtMin(durMin)}`,true);
+  save();showToast(rnd(HUMOR.sessionFinish[isFem()?'F':'M'])+` (${fmtMin(durMin)})`,true);
   setTimeout(()=>{renderTreino();renderHistory();renderDesempenho();renderPlano();},300);
 }
 function resetSession(){
@@ -1232,15 +1233,16 @@ function saveRunLog(){
     quickMode:'off',plan:[]
   });
   save();
-  showToast(`✓ Corrida registrada — ${km.toFixed(2).replace('.',',')} km | ${paceLabel}`,true);
+  showToast(rnd(HUMOR.runLogSaved[isFem()?'F':'M'])+` — ${km.toFixed(2).replace('.',',')} km | ${paceLabel}`,true);
   renderTreino();renderHistory();renderDesempenho();
 }
 function tomorrowMessage(){
   const tomorrow=(new Date().getDay()+1)%7;
-  if(isRunDayActive(tomorrow))return '🏃 Amanhã é dia de corrida.';
+  const g=isFem()?'F':'M';
+  if(isRunDayActive(tomorrow))return rnd(HUMOR.tomorrowRun[g]);
   const adm=getActiveDayMap();
-  if(adm[tomorrow]!==undefined){const tw=getActiveWorkouts()[adm[tomorrow]];return `🏋️ Amanhã: ${tw.name} — ${tw.sub}.`;}
-  return '😴 Amanhã é dia de descanso.';
+  if(adm[tomorrow]!==undefined){const tw=getActiveWorkouts()[adm[tomorrow]];return rnd(HUMOR.tomorrowStrength[g]).replace('%%NAME%%',tw.name+' — '+tw.sub);}
+  return rnd(HUMOR.tomorrowRest[g]);
 }
 function todayCount(type){
   const today=new Date();today.setHours(0,0,0,0);
@@ -1262,7 +1264,7 @@ function renderTreino(){
   let planLabel='';
   if(runToday)planLabel='🏃 Dia de corrida';
   else if(strengthToday)planLabel=`🏋️ ${w.name}`;
-  else planLabel='😴 Dia de descanso';
+  else planLabel=rnd(HUMOR.restDay[isFem()?'F':'M']);
   const doneMsg=doneToday>0?`<div style="margin-top:6px;font-size:12px;color:var(--done-border)">✓ ${doneToday} treino${doneToday>1?'s':''} registrado${doneToday>1?'s':''} hoje</div>`:'';
   if(showRun){
     heroBody=`<div class="hero-inner">
@@ -1473,7 +1475,7 @@ function renderSwitchNotice(){
   const el=document.getElementById('switchNotice');
   if(state.switchDismissed||!state.programStart){el.innerHTML='';return;}
   const wks=Math.floor((Date.now()-new Date(state.programStart).getTime())/(7*24*60*60*1000));
-  if(wks>=SWITCH_WEEKS)el.innerHTML=`<div class="switch-notice"><div class="sn-title">⚡ HORA DE EVOLUIR O TREINO</div><div class="sn-body">Você está neste programa há <strong>${wks} semanas</strong>. A partir de 8 semanas, o corpo adapta-se ao estímulo. Reavalie exercícios, cargas e periodização.</div><div class="sn-dismiss" onclick="dismissSwitch()">Dispensar</div></div>`;
+  if(wks>=SWITCH_WEEKS){const msg=rnd(HUMOR.switchNotice[isFem()?'F':'M']).replace('%%WEEKS%%',wks);el.innerHTML=`<div class="switch-notice"><div class="sn-title">⚡ HORA DE EVOLUIR O TREINO</div><div class="sn-body">${msg}</div><div class="sn-dismiss" onclick="dismissSwitch()">Dispensar</div></div>`;}
   else el.innerHTML='';
 }
 function dismissSwitch(){state.switchDismissed=true;save();document.getElementById('switchNotice').innerHTML='';}
@@ -2254,7 +2256,7 @@ function saveAddRecordRun(){
   });
   state.history.sort((a,b)=>new Date(b.startISO)-new Date(a.startISO));
   save();
-  showToast(`✓ Corrida registrada — ${km.toFixed(2).replace('.',',')} km`,true);
+  showToast(rnd(HUMOR.runLogSaved[isFem()?'F':'M'])+` — ${km.toFixed(2).replace('.',',')} km`,true);
   closeAddRecord();
 }
 function saveAddRecordStrength(){
@@ -2666,11 +2668,9 @@ function closePlanChat(){switchPage('plano');}
 
 const CHAT_STEPS=[
   {id:'welcome',bot:()=>{
-    const fem=state.profile.sex==='F';
-    if(chatState.editing)return 'Vamos ajustar o seu plano! Vou fazer algumas perguntas rápidas. Você pode mudar qualquer coisa: adicionar corrida, trocar divisão muscular, reduzir dias — é só responder. 💪';
-    return fem
-      ?'Olá! Vou criar um plano de treino personalizado para você. Vou te fazer algumas perguntas sobre seu corpo, seus objetivos e sua rotina. São rápidas — vamos lá! 💪'
-      :'Olá! Vou criar um plano de treino personalizado para você. Vou te fazer algumas perguntas sobre seu corpo, seus objetivos e sua rotina. São rápidas — vamos lá! 💪';
+    const g=isFem()?'F':'M';
+    if(chatState.editing)return rnd(HUMOR.chatWelcomeEdit[g]);
+    return rnd(HUMOR.chatWelcome[g]);
    },auto:true},
   // ── Perfil: nome ──
   {id:'userName',
@@ -2850,7 +2850,7 @@ const CHAT_STEPS=[
    condition:()=>(chatState.answers.limitations||'').includes('mais de uma')},
   // ── Gerar ──
   {id:'generating',
-   bot:()=>'Perfeito! Analisando suas respostas e montando o plano ideal... 🧠',
+   bot:()=>rnd(HUMOR.chatGenerating[isFem()?'F':'M']),
    auto:true,action:'generate'},
 ];
 
@@ -3561,7 +3561,7 @@ function confirmPlan(){
   state.switchDismissed=false;
 
   save();
-  showToast('✓ Plano aplicado com sucesso!',true);
+  showToast(rnd(HUMOR.planApplied[isFem()?'F':'M']),true);
   setTimeout(()=>location.reload(),600);
 }
 
@@ -3675,7 +3675,7 @@ function stopRunTimer(finished){
   releaseWakeLock();
   if(finished){
     beep(880,0.3,4);
-    showToast('✓ Sessão de corrida concluída!',true);
+    showToast(rnd(HUMOR.runTimerDone[isFem()?'F':'M']),true);
   }
   renderTreino();
 }
@@ -3722,13 +3722,80 @@ function updateRunTimerDisplay(){
 
 // THEME — PAI vs MÃE
 function getAppName(){return state.profile.sex==='F'?'TREINO DA MÃE':'TREINO DO PAI';}
+function isFem(){return state.profile.sex==='F';}
 function applyTheme(){
-  const isFem=state.profile.sex==='F';
-  document.body.classList.toggle('theme-mae',isFem);
+  const fem=isFem();
+  document.body.classList.toggle('theme-mae',fem);
   const brandMain=document.getElementById('appBrandMain');
-  if(brandMain)brandMain.innerHTML=isFem?'<span class="brand-highlight">DA</span> MÃE':'<span class="brand-highlight">DO</span> PAI';
+  if(brandMain)brandMain.innerHTML=fem?'<span class="brand-highlight">DA</span> MÃE':'<span class="brand-highlight">DO</span> PAI';
   document.title=getAppName();
 }
+// ═══════════════════════════════════════════════
+// HUMOR — mensagens leves e motivacionais por gênero
+// ═══════════════════════════════════════════════
+function rnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
+const HUMOR={
+  sessionStart:{
+    F:['Bora, poderosa! Hoje o treino que vai te agradecer é você mesma. 💪','Chegou a hora! Cada série te deixa mais forte do que ontem.','O treino de hoje é patrocinado pela sua determinação. Bora!','Ninguém segura essa mulher! Partiu treinar. 🔥','A academia não sabe o que a espera. Vai com tudo!'],
+    M:['Bora, pai! Hoje é dia de mostrar que o sofá não venceu.','Hora de trocar o controle remoto pela barra. Partiu!','O ferro está te esperando. Não vai deixar ele na mão, né?','Treino ativado! Modo bestão: ON. 🦍','Deixa o café fazer efeito e vamos nessa! 💪']
+  },
+  sessionFinish:{
+    F:['Mais um treino na conta! Você é imparável. ✨','Treino concluído! Seu corpo agradece, sua mente também.','Missão cumprida! Cada gota de suor valeu a pena.','Arrasou! Pode comemorar — você mereceu.','Concluído! Você está ficando mais forte a cada dia.'],
+    M:['Treino no bolso! Hoje o sofá vai te respeitar.','Concluído! Pode flexionar no espelho — ninguém está olhando. 💪','Missão cumprida! O churrasco de hoje foi conquistado.','Mais um treino sobrevivido. O pai é brabo! 🦁','Feito! Amanhã a dor vai te lembrar desse momento.']
+  },
+  restDay:{
+    F:['Dia de descanso merecido! O corpo se transforma no repouso. 🧘‍♀️','Hoje é dia de recuperação. Você já fez sua parte! ✨','Relaxa, guerreira! Amanhã tem mais.','Descanso é parte do treino. Aproveite sem culpa!','Hoje o treino é cuidar de si. 💆‍♀️'],
+    M:['Dia de descanso! Até o super-herói precisa tirar folga. 🛋️','Descansa, guerreiro! Amanhã o ferro te espera.','Hoje é dia de recarregar as baterias. O sofá é seu amigo.','Descanso merecido! Sem culpa — o músculo cresce dormindo.','Hoje o único peso que você levanta é o do garfo. 🍽️']
+  },
+  tomorrowRun:{
+    F:['🏃‍♀️ Amanhã é dia de corrida! Prepara o tênis e a playlist.','🏃‍♀️ Amanhã tem corrida! Nada como sentir o vento no rosto.','🏃‍♀️ Corrida amanhã! Seu corpo já sabe o caminho.'],
+    M:['🏃 Amanhã é dia de corrida! Bora queimar a pizza de ontem.','🏃 Corrida amanhã! Hora de provar que as pernas servem pra mais que pisar no freio.','🏃 Amanhã tem corrida! O asfalto está te esperando.']
+  },
+  tomorrowStrength:{
+    F:['🏋️ Amanhã: %%NAME%%. Vai arrasar!','🏋️ Amanhã tem %%NAME%%. Mais um dia para ficar mais forte!','🏋️ Amanhã: %%NAME%%. O treino que te empodera.'],
+    M:['🏋️ Amanhã: %%NAME%%. Prepara o pré-treino!','🏋️ Amanhã tem %%NAME%%. O ferro está com saudade.','🏋️ Amanhã: %%NAME%%. Bora construir esse shape.']
+  },
+  tomorrowRest:{
+    F:['😴 Amanhã é descanso! Aproveita pra relaxar.','😴 Amanhã folga! Seu corpo agradece.','😴 Amanhã descansa, guerreira. Você merece!'],
+    M:['😴 Amanhã é descanso! O sofá te espera de braços abertos.','😴 Folga amanhã! Pode maratonar série sem culpa.','😴 Amanhã é dia de descanso. Até o Hulk tira folga.']
+  },
+  quickPressa:{
+    F:['Sem tempo? Sem problema! Treino express para quem não para. ⚡','Modo turbo! Treino enxuto pra encaixar na correria.','Bora no modo rápido! Pouco tempo, muito resultado.'],
+    M:['Sem tempo, pai? Treino express! Rápido que nem desculpa. ⚡','Modo pressa: treino de quem tem compromisso com o shape. E com o relógio.','Bora no turbo! Pega leve no descanso, pesa no esforço.']
+  },
+  quickPreguica:{
+    F:['Tudo bem! Treino leve é melhor que treino nenhum. 😌','Modo tranquilo ativado! Hoje é dia de ir no seu ritmo.','Um treino suave ainda é um treino. Orgulho de você!'],
+    M:['O importante é ter vindo! Modo economia de energia ativado. 😴','Treino leve de hoje > sofá de hoje. Já venceu!','Modo preguiça: o corpo descansa, mas a consciência fica limpa.']
+  },
+  runTimerDone:{
+    F:['Corrida concluída! Você é uma máquina! 🏃‍♀️✨','Sessão finalizada! Cada passo te leva mais longe.','Arrasou na corrida! Pode se orgulhar. 🔥'],
+    M:['Corrida concluída! O asfalto que lute! 🏃💨','Sessão no bolso! Tá ficando cada vez mais rápido.','Concluído! Corrida boa é corrida feita. 🔥']
+  },
+  chatWelcome:{
+    F:['Olá! Vou criar um plano de treino sob medida para você. São perguntas rápidas sobre seus objetivos, experiência e rotina. Bora montar algo incrível! 💪','Oi! Vamos juntas montar o treino perfeito pra você? Algumas perguntas rápidas e já saímos com tudo definido! 💪'],
+    M:['E aí! Bora montar um plano de treino que vai te transformar? Algumas perguntas rápidas e já saímos com tudo no esquema. 💪','Fala! Vou criar um plano de treino na medida. Me responde umas perguntas rápidas e a gente monta o esquema. 💪']
+  },
+  chatWelcomeEdit:{
+    F:['Bora ajustar o plano! Pode mudar qualquer coisa: adicionar corrida, trocar divisão, reduzir dias — é só responder. ✨','Vamos dar um upgrade no seu treino? Muda o que quiser! 💪'],
+    M:['Bora mexer no plano! Pode mudar tudo: corrida, divisão, dias — sem medo. 💪','Hora de ajustar o treino! Muda o que precisar, pai. 🔧']
+  },
+  chatGenerating:{
+    F:['Analisando suas respostas e montando o plano perfeito para você... 🧠✨','Preparando um treino incrível com base no seu perfil... 💪'],
+    M:['Calculando o plano ideal... modo cientista maluco ativado! 🧠','Processando dados... montando o treino que vai te deixar monstro. 💪']
+  },
+  switchNotice:{
+    F:['Você está arrasando nesse programa! Mas após %%WEEKS%% semanas, é hora de evoluir. Reavalie exercícios e cargas para continuar progredindo. 🚀','Parabéns por %%WEEKS%% semanas de dedicação! Seu corpo já se adaptou — hora de surpreendê-lo com novos estímulos. ✨'],
+    M:['%%WEEKS%% semanas no mesmo treino, pai! O corpo já decorou. Hora de mudar pra continuar evoluindo. 🔄','Tá nesse plano há %%WEEKS%% semanas! O músculo tá pedindo novidade. Bora evoluir! 💪']
+  },
+  planApplied:{
+    F:['Plano ativado! Agora é só seguir e arrasar! ✨','Prontinho! Seu treino personalizado está no ar! 💪'],
+    M:['Plano ativado! Agora é hora de botar pra quebrar! 🔥','Feito! Seu treino tá montado. O ferro te espera! 💪']
+  },
+  runLogSaved:{
+    F:['Corrida registrada! Cada km conta. Você é demais! 🏃‍♀️','Corrida no diário! Mais um passo rumo à sua meta. ✨'],
+    M:['Corrida registrada! Mais uma pro currículo de atleta. 🏃','Corrida salva! O Strava que se cuide. 😎']
+  }
+};
 
 // DISCLAIMER & ONBOARDING
 function acceptDisclaimer(){
