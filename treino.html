@@ -569,13 +569,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div style="display:flex;gap:12px">
       <button class="gender-btn" onclick="selectGender('F')" style="border-color:#ff69b4">
         <span class="gender-icon">👩</span>
-        <span class="gender-label" style="color:#ff69b4">DA MÃE</span>
+        <span class="gender-label" style="color:#ff69b4">A mãe</span>
       </button>
       <button class="gender-btn" onclick="selectGender('M')" style="border-color:#e8ff47">
         <span class="gender-icon">👨</span>
-        <span class="gender-label" style="color:#e8ff47">DO PAI</span>
+        <span class="gender-label" style="color:#e8ff47">O pai</span>
       </button>
     </div>
+    <div style="margin-top:18px"><button onclick="backToDisclaimer()" style="background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer;text-decoration:underline">← Voltar ao disclaimer</button></div>
   </div>
 </div>
 
@@ -3801,12 +3802,16 @@ const HUMOR={
 function acceptDisclaimer(){
   state.disclaimerAccepted=true;save();
   document.getElementById('disclaimerModal').style.display='none';
-  // If gender not set, show gender picker; otherwise go to onboarding
   if(!state.profile.sex){
     document.getElementById('genderPicker').style.display='flex';
   }else{
     checkOnboarding();
   }
+}
+function backToDisclaimer(){
+  document.getElementById('genderPicker').style.display='none';
+  state.disclaimerAccepted=false;save();
+  document.getElementById('disclaimerModal').style.display='flex';
 }
 function selectGender(sex){
   state.profile.sex=sex;save();
@@ -3852,9 +3857,11 @@ document.getElementById('dateDisplay').textContent=`${dayN[dn.getDay()]}, ${dn.g
 renderTreino();
 renderDesempenho();
 if(state.sessionStart){startClock();updateActiveBanner();requestWakeLock();}
-// Disclaimer check
+// Disclaimer & gender check
 if(!state.disclaimerAccepted){
   document.getElementById('disclaimerModal').style.display='flex';
+}else if(!state.profile.sex){
+  document.getElementById('genderPicker').style.display='flex';
 }else{
   checkOnboarding();
 }
