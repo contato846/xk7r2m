@@ -883,6 +883,7 @@ let _fbUser=null;
 let _cloudSaveTimer=null;
 let _cloudReady=false;
 const _isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)||window.matchMedia('(display-mode:standalone)').matches;
+const _isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(/Macintosh/i.test(navigator.userAgent)&&'ontouchend' in document);
 
 const MUSCLES={peito:'Peito',costas:'Costas',ombros:'Ombros',biceps:'Bíceps',triceps:'Tríceps',quadriceps:'Quadríceps',posteriores:'Posteriores',gluteos:'Glúteos',core:'Core',panturrilha:'Panturrilha'};
 // Placeholder workout for users without a plan (fallback only — not shown as selectable)
@@ -893,9 +894,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.17.0';
+const APP_VERSION='0.17.1';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.17.1',d:'2026-04-11',items:['Correção dos alertas sonoros em dispositivos Apple','Login com Google corrigido para iPhone e iPad','Correções de bugs e melhorias do app']},
   {v:'0.17.0',d:'2026-04-11',items:['Rastreamento GPS em tempo real durante corridas','Distância, pace, velocidade e altitude exibidos ao vivo','Ganho e perda de elevação registrados automaticamente','Dados GPS salvos no histórico de corridas','Tela mantida ligada automaticamente durante corridas']},
   {v:'0.16.1',d:'2026-04-11',items:['Visual da aba Corrida redesenhado com destaque para corrida livre','Registro manual de corrida em seção recolhível','Indicadores de ordem no histórico em telas maiores','Aba Plano renomeada para Plano de exercícios']},
   {v:'0.16.0',d:'2026-04-11',items:['Alerta sonoro ao fim do intervalo de descanso','Alerta sonoro ao atingir a meta de tempo nos exercícios','Contagem regressiva sonora nos últimos 3 segundos','Nova página Configurações com controle de sons','Correções de bugs e melhorias do app']},
@@ -1015,11 +1017,16 @@ function translateFirebaseError(code){
 async function loginGoogle(){
   document.getElementById('loginError').style.display='none';
   const provider=new firebase.auth.GoogleAuthProvider();
-  if(_isMobile){
+  if(_isMobile&&!_isIOS){
+    // Android: redirect funciona bem
     fbAuth.signInWithRedirect(provider).catch(e=>showLoginError('loginError',translateFirebaseError(e.code)));
   }else{
+    // Desktop e iOS: popup (redirect falha no Safari por causa do ITP)
     try{await fbAuth.signInWithPopup(provider);}catch(e){
-      if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request'){
+      if(e.code==='auth/popup-blocked'){
+        // Fallback: se popup bloqueado, tenta redirect
+        fbAuth.signInWithRedirect(provider).catch(e2=>showLoginError('loginError',translateFirebaseError(e2.code)));
+      }else if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request'){
         showLoginError('loginError',translateFirebaseError(e.code));
       }
     }
@@ -5186,9 +5193,35 @@ function playSfx(setting,type){
   if(!state.soundSettings||state.soundSettings[setting]===false)return;
   sfx(type);
 }
+let _audioCtx=null;
+let _audioUnlocked=false;
+function _getAudioCtx(){
+  if(!_audioCtx){
+    _audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  }
+  if(_audioCtx.state==='suspended')_audioCtx.resume().catch(()=>{});
+  return _audioCtx;
+}
+function _unlockAudio(){
+  if(_audioUnlocked)return;
+  try{
+    const ctx=_getAudioCtx();
+    if(ctx.state==='suspended')ctx.resume();
+    // iOS: tocar um buffer silencioso para desbloquear
+    const buf=ctx.createBuffer(1,1,22050);
+    const src=ctx.createBufferSource();
+    src.buffer=buf;src.connect(ctx.destination);
+    src.start(0);src.stop(0.001);
+    _audioUnlocked=true;
+  }catch(e){}
+}
+['touchstart','touchend','click','keydown'].forEach(ev=>
+  document.addEventListener(ev,_unlockAudio,{once:false,passive:true})
+);
 function sfx(type){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx=_getAudioCtx();
+    if(ctx.state==='suspended'){ctx.resume();return;}
     const n=ctx.currentTime;
     const p=(f,s,d,v=0.4)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.01,s+d);o.start(s);o.stop(s+d);};
     switch(type){
