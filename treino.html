@@ -1023,9 +1023,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.21.0';
+const APP_VERSION='0.22.0';
 const APP_UPDATED='2026-04-12';
 const CHANGELOG=[
+  {v:'0.22.0',d:'2026-04-12',items:['Wizard agora permite adicionar corrida ou musculação a um plano já existente sem apagar o outro','Ao alterar o plano, opções inteligentes detectam o que você já tem e oferecem complemento ou substituição','Plano complementar preserva treinos existentes (não sobrescreve)','Condições do wizard refatoradas para maior consistência']},
   {v:'0.21.0',d:'2026-04-12',items:['Base de exercícios expandida de 100 para 153 exercícios','53 novos exercícios com explicações didáticas detalhadas','Novos grupos: antebraço, adutores/abdutores, funcionais e estabilização','Exercícios vinculados à silhueta, wizard e sistema de contraindicações']},
   {v:'0.20.0',d:'2026-04-12',items:['Descanso inicia automaticamente ao atingir a meta do exercício cronometrado','Sons distintos para início e fim do exercício e do descanso','Campos de tempo e descanso aceitam somente números (em segundos)','Edições de tempo e descanso aplicam imediatamente','Novos controles de som nas Configurações com botões de teste']},
   {v:'0.19.0',d:'2026-04-12',items:['Busca e filtro no modal de substituição/adição de exercícios','Repetições visíveis e editáveis nos cards de exercício','Plano do wizard agora mostra reps editáveis pelo usuário','Base de exercícios expandida com contraindicações médicas','Filtro inteligente por limitações físicas (lombar, joelho, ombro, cardíaco, etc.)','Exercícios cronometrados com padrão 30s execução / 60s descanso']},
@@ -4197,6 +4198,23 @@ const EXDB=[
 // PLAN CHAT — conversational wizard
 // ═══════════════════════════════════════════════
 let chatState={step:0,answers:{},messages:[],editing:false};
+function _planWantsStrength(){
+  const t=chatState.answers.planType||'';
+  return t.includes('musculação')||t.includes('Adicionar musculação')||t.includes('🏋️');
+}
+function _planWantsRun(){
+  const t=chatState.answers.planType||'';
+  return t.includes('corrida')||t.includes('Adicionar corrida')||t.includes('🏃');
+}
+function _planOnlyRun(){
+  const t=chatState.answers.planType||'';
+  return(t.includes('Só corrida')||t.includes('Refazer só a corrida')||t.includes('Adicionar corrida'))&&!t.includes('Refazer tudo');
+}
+function _planOnlyStrength(){
+  const t=chatState.answers.planType||'';
+  return(t.includes('Só musculação')||t.includes('Refazer só a musculação')||t.includes('Adicionar musculação'))&&!t.includes('Refazer tudo');
+}
+function _planBoth(){return _planWantsStrength()&&_planWantsRun()&&!_planOnlyRun()&&!_planOnlyStrength();}
 
 function openPlanChat(editing){
   chatState={step:0,answers:{},messages:[],editing:!!editing};
@@ -4258,19 +4276,31 @@ const CHAT_STEPS=[
    condition:()=>!chatState.editing},
   // ── O que treinar ──
   {id:'planType',
-   bot:()=>'O que você quer treinar?',
-   options:['🏋️ Só musculação','🏃 Só corrida','🏋️+🏃 Musculação e corrida'],
+   bot:()=>{
+     const hasStrength=state.useCustomPlan&&state.customWorkouts&&state.customWorkouts.length>0;
+     const hasRun=!!state.customRunPlan;
+     if(hasStrength&&hasRun)return chatState.editing?'Você tem **musculação e corrida** no seu plano. O que deseja alterar?':'Você já tem **musculação e corrida** ativos. O que quer fazer?';
+     if(hasStrength)return chatState.editing?'Você tem um **plano de musculação** ativo. O que deseja fazer?':'Você já tem um **plano de musculação** ativo. O que quer fazer agora?';
+     if(hasRun)return chatState.editing?'Você tem um **plano de corrida** ativo. O que deseja fazer?':'Você já tem um **plano de corrida** ativo. O que quer fazer agora?';
+     return 'O que você quer treinar?';
+   },
+   options:()=>{
+     const hasStrength=state.useCustomPlan&&state.customWorkouts&&state.customWorkouts.length>0;
+     const hasRun=!!state.customRunPlan;
+     if(hasStrength&&hasRun)return['🏋️ Refazer só a musculação','🏃 Refazer só a corrida','🏋️+🏃 Refazer tudo (musculação e corrida)'];
+     if(hasStrength&&!hasRun)return['🏃 Adicionar corrida ao meu plano','🏋️ Refazer só a musculação','🏋️+🏃 Refazer tudo (musculação e corrida)'];
+     if(hasRun&&!hasStrength)return['🏋️ Adicionar musculação ao meu plano','🏃 Refazer só a corrida','🏋️+🏃 Refazer tudo (musculação e corrida)'];
+     return['🏋️ Só musculação','🏃 Só corrida','🏋️+🏃 Musculação e corrida'];
+   },
    key:'planType'},
   // ── Objetivo ──
   {id:'goal',
    bot:()=>{
-     const t=chatState.answers.planType||'';
-     if(t.includes('Só corrida'))return 'Qual é o seu **objetivo principal** com a corrida?';
+     if(_planOnlyRun())return 'Qual é o seu **objetivo principal** com a corrida?';
      return 'Qual é o seu **objetivo principal**?';
    },
    options:()=>{
-     const t=chatState.answers.planType||'';
-     if(t.includes('Só corrida'))return['Começar a correr (sair do sedentarismo)','Melhorar ritmo e resistência','Preparar para uma prova (5k, 10k, meia, maratona)','Emagrecer correndo','Manter condicionamento'];
+     if(_planOnlyRun())return['Começar a correr (sair do sedentarismo)','Melhorar ritmo e resistência','Preparar para uma prova (5k, 10k, meia, maratona)','Emagrecer correndo','Manter condicionamento'];
      return['Ganhar massa muscular (hipertrofia)','Emagrecer / queimar gordura','Condicionamento e resistência','Saúde geral e qualidade de vida','Ganhar força máxima'];
    },
    key:'goal'},
@@ -4279,7 +4309,7 @@ const CHAT_STEPS=[
    bot:()=>'Qual é a sua **experiência** com musculação?',
    options:['Nunca treinei (iniciante)','Treinei menos de 6 meses','Treino há 6 meses a 2 anos','Treino há mais de 2 anos'],
    key:'experience',
-   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+   condition:()=>_planWantsStrength()},
   {id:'familiarity',
    bot:()=>{
      const exp=chatState.answers.experience||'';
@@ -4294,13 +4324,13 @@ const CHAT_STEPS=[
      return['Pode incluir os avançados','Prefiro ficar nos intermediários'];
    },
    key:'familiarity',
-   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+   condition:()=>_planWantsStrength()},
   // ── Dias musculação ──
   {id:'days',
    bot:()=>'Quantos **dias por semana** você pode treinar musculação?',
    options:['2 dias','3 dias','4 dias','5 dias','6 dias'],
    key:'days',
-   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+   condition:()=>_planWantsStrength()},
   // ── Divisão muscular ──
   {id:'preference',
    bot:()=>{
@@ -4323,25 +4353,25 @@ const CHAT_STEPS=[
      return opts;
    },
    key:'preference',
-   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+   condition:()=>_planWantsStrength()},
   // ── Experiência corrida ──
   {id:'runExp',
    bot:()=>'Qual é a sua **experiência com corrida**?',
    options:['Nunca corri / muito sedentário','Corro eventualmente (1–2× mês)','Corro regularmente há menos de 6 meses','Corro regularmente há mais de 6 meses'],
    key:'runExp',
-   condition:()=>(chatState.answers.planType||'').includes('corrida')||(chatState.answers.planType||'').includes('🏃')},
+   condition:()=>_planWantsRun()},
   // ── Tem relógio/app de corrida? ──
   {id:'runWatch',
    bot:()=>'Você tem um **relógio com GPS/pace** ou usa algum app de corrida (Strava, Nike Run, etc)?',
    options:['Sim, tenho relógio/app','Não, vou usar só o celular','Não tenho nada, vou só pelo tempo'],
    key:'runWatch',
-   condition:()=>(chatState.answers.planType||'').includes('corrida')||(chatState.answers.planType||'').includes('🏃')},
+   condition:()=>_planWantsRun()},
   // ── Já tem plano de corrida? ──
   {id:'runHasOwnPlan',
    bot:()=>'Você **já tem um plano de corrida** definido (de um treinador, app, ou planilha)?',
    options:['Sim, já tenho meu plano','Não, quero que o app monte para mim'],
    key:'runHasOwnPlan',
-   condition:()=>(chatState.answers.planType||'').includes('corrida')||(chatState.answers.planType||'').includes('🏃')},
+   condition:()=>_planWantsRun()},
   // ── Dias de corrida ──
   {id:'runDays',
    bot:()=>{
@@ -4355,7 +4385,7 @@ const CHAT_STEPS=[
      return['2 dias','3 dias','4 dias','5 dias'];
    },
    key:'runDays',
-   condition:()=>(chatState.answers.planType||'').includes('corrida')||(chatState.answers.planType||'').includes('🏃')},
+   condition:()=>_planWantsRun()},
   // ── Meta de prova ──
   {id:'runGoalType',
    bot:()=>'Tem alguma **meta de distância ou prova** em mente?',
@@ -4367,18 +4397,17 @@ const CHAT_STEPS=[
      return opts;
    },
    key:'runGoalType',
-   condition:()=>{const t=chatState.answers.planType||'';const hasRun=t.includes('corrida')||t.includes('🏃');return hasRun&&!(chatState.answers.runHasOwnPlan||'').includes('já tenho');}},
+   condition:()=>_planWantsRun()&&!(chatState.answers.runHasOwnPlan||'').includes('já tenho')},
   // ── Treino combinado (musculação + corrida no mesmo dia) ──
   {id:'combinedDays',
    bot:()=>'Você quer **combinar musculação e corrida no mesmo dia** em algum dos seus treinos? Isso reduz dias na academia mas aumenta a duração da sessão.',
    options:['Não, prefiro dias separados','Sim, quero dias combinados (musculação + corrida)','Sim, intercalados (alterna séries de musculação com blocos de corrida)'],
    key:'combinedDays',
-   condition:()=>{const t=chatState.answers.planType||'';return t.includes('Musculação e corrida')&&!t.includes('Só');}},
+   condition:()=>_planBoth()},
   // ── Duração ──
   {id:'duration',
    bot:()=>{
-     const t=chatState.answers.planType||'';
-     if(t.includes('Só corrida'))return 'Quanto **tempo** você tem por sessão de corrida?';
+     if(_planOnlyRun())return 'Quanto **tempo** você tem por sessão de corrida?';
      return 'Quanto **tempo** você tem por sessão de treino (musculação)?';
    },
    options:['30 minutos','45 minutos','60 minutos','90 minutos ou mais'],
@@ -4388,7 +4417,7 @@ const CHAT_STEPS=[
    bot:()=>'Que **equipamento** você tem disponível?',
    options:['Academia completa','Home gym (halteres + barra + banco)','Só halteres','Só peso corporal (sem equipamento)'],
    key:'equipment',
-   condition:()=>!(chatState.answers.planType||'').includes('Só corrida')},
+   condition:()=>_planWantsStrength()},
   // ── Limitações expandidas ──
   {id:'limitations',
    bot:()=>'Possui alguma **limitação, lesão ou condição de saúde** que eu deva considerar?',
@@ -5172,8 +5201,8 @@ function buildRunPlan(runDays,runExp,runGoal,age){
 function generatePlan(){
   const a=chatState.answers;
   const planType=a.planType||'';
-  const wantStr=!planType.includes('Só corrida');
-  const wantRun=planType.includes('corrida')||planType.includes('🏃');
+  const wantStr=_planWantsStrength();
+  const wantRun=_planWantsRun();
   const nDays=wantStr?(parseInt(a.days)||3):0;
   const runDays=wantRun?(parseInt(a.runDays)||2):0;
   const exp=a.experience||'';
@@ -5524,9 +5553,8 @@ function generatePlan(){
 
 function showPlanPreview(workouts,strDayIdxs,runDayIdxs,dayMap,runDaySet,answers,runPlanData){
   const dayNames=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-  const planType=answers.planType||'';
-  const wantStr=!planType.includes('Só corrida');
-  const wantRun=planType.includes('corrida')||planType.includes('🏃');
+  const wantStr=_planWantsStrength();
+  const wantRun=_planWantsRun();
 
   let previewHTML='<div class="plan-preview">';
   // Strength workouts
@@ -5649,14 +5677,31 @@ function confirmPlan(){
     }
   }
 
-  state.customWorkouts=plan.workouts.length>0?plan.workouts:null;
-  state.customDayMap=plan.workouts.length>0?plan.dayMap:null;
-  state.customRunDays=Array.from(plan.runDaySet);
-  state.customRunPlan=plan.runPlanData||null;
-  state.customRunHasOwnPlan=!!(a.runHasOwnPlan||'').includes('já tenho');
+  const onlyRun=_planOnlyRun();
+  const onlyStrength=_planOnlyStrength();
+
+  if(onlyRun){
+    // Preserve existing strength plan, only update running
+    state.customRunDays=Array.from(plan.runDaySet);
+    state.customRunPlan=plan.runPlanData||null;
+    state.customRunHasOwnPlan=!!(a.runHasOwnPlan||'').includes('já tenho');
+  }else if(onlyStrength){
+    // Preserve existing running plan, only update strength
+    state.customWorkouts=plan.workouts.length>0?plan.workouts:null;
+    state.customDayMap=plan.workouts.length>0?plan.dayMap:null;
+  }else{
+    // Full replacement — update everything
+    state.customWorkouts=plan.workouts.length>0?plan.workouts:null;
+    state.customDayMap=plan.workouts.length>0?plan.dayMap:null;
+    state.customRunDays=Array.from(plan.runDaySet);
+    state.customRunPlan=plan.runPlanData||null;
+    state.customRunHasOwnPlan=!!(a.runHasOwnPlan||'').includes('já tenho');
+  }
+
   state.customPlanMeta={
     createdAt:new Date().toISOString(),
-    answers:{...a}
+    answers:{...a},
+    mode:onlyRun?'addRun':onlyStrength?'addStrength':'full'
   };
 
   // Save limitations to profile for contra-based filtering
@@ -5669,12 +5714,14 @@ function confirmPlan(){
   state.sessionSets=null;
   state.sessionPlan=null;
   state.sessionStart=null;
-  state.programStart=new Date().toISOString();
+  if(!onlyRun&&!onlyStrength)state.programStart=new Date().toISOString();
   state.planEnd=suggestPlanEnd(fmtDateISO(new Date()));
   state.switchDismissed=false;
 
   save();
-  showToast(rnd(HUMOR.planApplied[isFem()?'F':'M']),true);
+  if(onlyRun)showToast('🏃 Corrida adicionada ao seu plano!',true);
+  else if(onlyStrength)showToast('🏋️ Musculação adicionada ao seu plano!',true);
+  else showToast(rnd(HUMOR.planApplied[isFem()?'F':'M']),true);
   setTimeout(()=>location.reload(),600);
 }
 
