@@ -49,6 +49,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .menu-overlay.open .menu-item:nth-child(5){transition-delay:.17s;}
 .menu-overlay.open .menu-item:nth-child(6){transition-delay:.2s;}
 .menu-overlay.open .menu-item:nth-child(7){transition-delay:.23s;}
+.menu-overlay.open .menu-item:nth-child(8){transition-delay:.26s;}
 .menu-item:hover,.menu-item.active{color:var(--accent);}
 .menu-item .mbadge{width:10px;height:10px;border-radius:50%;background:var(--danger);display:none;}
 .menu-item .mbadge.show{display:block;}
@@ -701,6 +702,7 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
     <button class="menu-item" data-page="perfil" onclick="switchPage('perfil',this)">Perfil</button>
     <button class="menu-item" data-page="config" onclick="switchPage('config',this)">Configurações</button>
     <button class="menu-item" data-page="sobre" onclick="switchPage('sobre',this)">Sobre</button>
+    <button class="menu-item" id="menuAuthBtn" onclick="menuAuthAction()">Login</button>
   </div>
 </div>
 
@@ -1224,6 +1226,23 @@ function logout(){
   _cloudReady=false;
   showToast('Logout realizado',false);
   renderCloudStatus();
+  updateMenuAuthBtn();
+}
+function menuAuthAction(){
+  closeMenu();
+  if(_fbUser){logout();}
+  else{showLogin();}
+}
+function updateMenuAuthBtn(){
+  const btn=document.getElementById('menuAuthBtn');
+  if(!btn)return;
+  if(_fbUser){
+    btn.textContent='Sair da conta';
+    btn.style.color='var(--danger)';
+  }else{
+    btn.textContent='Entrar / Criar conta';
+    btn.style.color='var(--accent3)';
+  }
 }
 
 function saveToCloud(){
@@ -1330,11 +1349,13 @@ fbAuth.onAuthStateChanged(async(user)=>{
     _loginLoading(false);
     renderCloudStatus();
     renderCloudBanner();
+    updateMenuAuthBtn();
   }else{
     _loginLoading(false);
     _cloudReady=false;
     renderCloudStatus();
     renderCloudBanner();
+    updateMenuAuthBtn();
   }
 });
 
