@@ -439,9 +439,15 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .login-overlay{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease;overflow-y:auto;}
 .login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 22px;max-width:380px;width:100%;}
 .login-subtitle{font-size:13px;color:var(--muted2);text-align:center;margin-bottom:22px;line-height:1.5;}
-.login-google-btn{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;transition:border-color .2s;}
+.login-google-btn{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;transition:border-color .2s,opacity .2s;}
 .login-google-btn:active{border-color:var(--accent);}
 .login-google-btn svg{width:20px;height:20px;}
+.login-google-btn.loading{opacity:.6;pointer-events:none;}
+.login-google-btn .btn-spinner{display:none;width:18px;height:18px;border:2px solid var(--muted);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;}
+.login-google-btn.loading .btn-spinner{display:block;}
+.login-google-btn.loading svg{display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.login-status{text-align:center;font-size:12px;color:var(--muted2);margin-top:8px;min-height:18px;}
 .login-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:12px;}
 .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border);}
 .login-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-family:inherit;margin-bottom:10px;outline:none;transition:border-color .2s;}
@@ -788,10 +794,12 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
       <span class="disclaimer-brand-main"><span style="color:#ff69b4">DA MÃE</span> <span style="color:#909090">&amp;</span> <span style="color:#e8ff47">DO PAI</span></span>
     </div>
     <p class="login-subtitle">Entre para sincronizar seus dados na nuvem</p>
-    <button class="login-google-btn" onclick="loginGoogle()">
+    <button class="login-google-btn" id="googleLoginBtn" onclick="loginGoogle()">
+      <span class="btn-spinner"></span>
       <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Entrar com Google
+      <span id="googleBtnText">Entrar com Google</span>
     </button>
+    <div class="login-status" id="loginStatus"></div>
     <div class="login-divider"><span>ou entre com e-mail</span></div>
     <div id="loginEmailForm">
       <input type="email" id="loginEmail" class="login-input" placeholder="E-mail">
@@ -894,9 +902,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.17.1';
+const APP_VERSION='0.17.2';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.17.2',d:'2026-04-11',items:['Login mais rápido com feedback visual de carregamento','Indicação de progresso durante autenticação e sincronização','Correções de bugs e melhorias do app']},
   {v:'0.17.1',d:'2026-04-11',items:['Correção dos alertas sonoros em dispositivos Apple','Login com Google corrigido para iPhone e iPad','Correções de bugs e melhorias do app']},
   {v:'0.17.0',d:'2026-04-11',items:['Rastreamento GPS em tempo real durante corridas','Distância, pace, velocidade e altitude exibidos ao vivo','Ganho e perda de elevação registrados automaticamente','Dados GPS salvos no histórico de corridas','Tela mantida ligada automaticamente durante corridas']},
   {v:'0.16.1',d:'2026-04-11',items:['Visual da aba Corrida redesenhado com destaque para corrida livre','Registro manual de corrida em seção recolhível','Indicadores de ordem no histórico em telas maiores','Aba Plano renomeada para Plano de exercícios']},
@@ -1014,20 +1023,40 @@ function translateFirebaseError(code){
   return m[code]||'Erro ao autenticar. Tente novamente.';
 }
 
+function _loginLoading(on,msg){
+  const btn=document.getElementById('googleLoginBtn');
+  const txt=document.getElementById('googleBtnText');
+  const st=document.getElementById('loginStatus');
+  if(btn)btn.classList.toggle('loading',on);
+  if(txt)txt.textContent=on?'Conectando…':'Entrar com Google';
+  if(st)st.textContent=msg||'';
+}
 async function loginGoogle(){
   document.getElementById('loginError').style.display='none';
+  _loginLoading(true,'Abrindo autenticação Google…');
   const provider=new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({prompt:'select_account'});
   if(_isMobile&&!_isIOS){
-    // Android: redirect funciona bem
-    fbAuth.signInWithRedirect(provider).catch(e=>showLoginError('loginError',translateFirebaseError(e.code)));
+    fbAuth.signInWithRedirect(provider).catch(e=>{
+      _loginLoading(false);
+      showLoginError('loginError',translateFirebaseError(e.code));
+    });
   }else{
-    // Desktop e iOS: popup (redirect falha no Safari por causa do ITP)
-    try{await fbAuth.signInWithPopup(provider);}catch(e){
+    try{
+      await fbAuth.signInWithPopup(provider);
+      _loginLoading(true,'Sincronizando dados…');
+    }catch(e){
       if(e.code==='auth/popup-blocked'){
-        // Fallback: se popup bloqueado, tenta redirect
-        fbAuth.signInWithRedirect(provider).catch(e2=>showLoginError('loginError',translateFirebaseError(e2.code)));
-      }else if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request'){
-        showLoginError('loginError',translateFirebaseError(e.code));
+        _loginLoading(true,'Redirecionando…');
+        fbAuth.signInWithRedirect(provider).catch(e2=>{
+          _loginLoading(false);
+          showLoginError('loginError',translateFirebaseError(e2.code));
+        });
+      }else{
+        _loginLoading(false);
+        if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request'){
+          showLoginError('loginError',translateFirebaseError(e.code));
+        }
       }
     }
   }
@@ -1136,15 +1165,20 @@ async function forceCloudSync(){
 }
 
 // Handle redirect result (for mobile Google login)
-fbAuth.getRedirectResult().catch(e=>{
+fbAuth.getRedirectResult().then(result=>{
+  if(result&&result.user){_loginLoading(true,'Sincronizando dados…');}
+}).catch(e=>{
+  _loginLoading(false);
   if(e.code&&e.code!=='auth/popup-closed-by-user'){
     console.warn('Redirect auth error:',e.code);
+    showLoginError('loginError',translateFirebaseError(e.code));
   }
 });
 
 fbAuth.onAuthStateChanged(async(user)=>{
   _fbUser=user;
   if(user){
+    _loginLoading(true,'Sincronizando dados…');
     hideLogin();
     document.getElementById('cloudNudge').style.display='none';
     _cloudBannerDismissed=true;
@@ -1162,9 +1196,11 @@ fbAuth.onAuthStateChanged(async(user)=>{
       }
     }catch(e){console.warn('Cloud sync error:',e);}
     _cloudReady=true;
+    _loginLoading(false);
     renderCloudStatus();
     renderCloudBanner();
   }else{
+    _loginLoading(false);
     _cloudReady=false;
     renderCloudStatus();
     renderCloudBanner();
