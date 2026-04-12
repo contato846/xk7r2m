@@ -550,6 +550,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
 </div>
 
+<div class="page" id="page-changelog">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div class="section-title" style="margin:0">Todas as atualizações</div>
+    <button class="btn btn-secondary btn-small" onclick="closeChangelogPage()">✕ Fechar</button>
+  </div>
+  <div id="changelogFullContent"></div>
+</div>
+
 <div class="page" id="page-backup">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div class="section-title" style="margin:0">Backup e dados</div>
@@ -632,9 +640,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.13.0';
+const APP_VERSION='0.13.1';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.13.1',d:'2026-04-11',items:['Página Sobre mostra apenas a última atualização','Histórico completo em página separada']},
   {v:'0.13.0',d:'2026-04-11',items:['Novo nome: TREINO DA MÃE & DO PAI','Novo ícone do app']},
   {v:'0.12.0',d:'2026-04-11',items:['Compatibilidade automática ao restaurar backups de versões anteriores','Backups antigos são atualizados para a versão atual na importação']},
   {v:'0.11.1',d:'2026-04-11',items:['Correções de bugs e melhorias do app']},
@@ -997,25 +1006,39 @@ function renderSobre(){
         <p style="margin-bottom:0">O app é uma ferramenta de apoio — a responsabilidade pela prática segura é sempre sua.</p>
       </div>
     </div>
-    <div class="section-title" style="margin-top:24px;margin-bottom:12px">Histórico de atualizações</div>
-    ${CHANGELOG.map((c,i)=>{
-      const[y,m,d]=c.d.split('-');
-      const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-      const df=+d+' '+meses[+m-1]+' '+y;
-      return `<div style="background:var(--card);border-radius:12px;padding:14px 16px;margin-bottom:8px${i===0?';border-left:3px solid var(--accent)':''}">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-weight:700;font-size:14px;color:${i===0?'var(--accent)':'var(--text)'}">v${c.v}</span>
-          <span style="font-size:11px;color:var(--muted2)">${df}</span>
-        </div>
-        <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7">
-          ${c.items.map(it=>'<li>'+it+'</li>').join('')}
-        </ul>
-      </div>`;
-    }).join('')}
+    <div class="section-title" style="margin-top:24px;margin-bottom:12px">Última atualização</div>
+    ${(()=>{const c=CHANGELOG[0];const[y,m,d]=c.d.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const df=+d+' '+meses[+m-1]+' '+y;return `<div style="background:var(--card);border-radius:12px;padding:14px 16px;margin-bottom:8px;border-left:3px solid var(--accent)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-weight:700;font-size:14px;color:var(--accent)">v${c.v}</span>
+        <span style="font-size:11px;color:var(--muted2)">${df}</span>
+      </div>
+      <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7">
+        ${c.items.map(it=>'<li>'+it+'</li>').join('')}
+      </ul>
+    </div>`;})()}
+    ${CHANGELOG.length>1?`<div style="text-align:center;margin-top:4px;margin-bottom:16px"><a href="#" onclick="event.preventDefault();openChangelogPage()" style="color:var(--accent3);font-size:13px;text-decoration:none">Ver atualizações anteriores →</a></div>`:''}
     <div style="text-align:center;color:var(--muted2);font-size:11px;margin-top:20px;line-height:1.6">
       Feito com 💪 para quem vive a vida real.
     </div>`;
 }
+function _renderChangelogEntry(c,i){
+  const[y,m,d]=c.d.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const df=+d+' '+meses[+m-1]+' '+y;
+  return `<div style="background:var(--card);border-radius:12px;padding:14px 16px;margin-bottom:8px${i===0?';border-left:3px solid var(--accent)':''}">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-weight:700;font-size:14px;color:${i===0?'var(--accent)':'var(--text)'}">v${c.v}</span>
+      <span style="font-size:11px;color:var(--muted2)">${df}</span>
+    </div>
+    <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.7">
+      ${c.items.map(it=>'<li>'+it+'</li>').join('')}
+    </ul>
+  </div>`;
+}
+function openChangelogPage(){
+  document.getElementById('changelogFullContent').innerHTML=CHANGELOG.map((c,i)=>_renderChangelogEntry(c,i)).join('');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-changelog').classList.add('active');
+}
+function closeChangelogPage(){switchPage('sobre');}
 function openBackupPage(){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-backup').classList.add('active');
