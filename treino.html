@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/png" href="apple-touch-icon.png?v=1775954806">
+    <link rel="icon" type="image/png" href="apple-touch-icon.png?v=1775960400">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>TREINO DA MÃE &amp; DO PAI</title>
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1775954806">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1775960400">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TREINO DA MÃE &amp; DO PAI">
@@ -121,6 +121,26 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .tt-btn.active{background:var(--accent);color:#000;font-weight:700;}
 .run-log-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;}
 .rl-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:12px;color:var(--accent);}
+.run-hero-cta{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:16px;padding:22px 20px;width:100%;cursor:pointer;margin-bottom:14px;text-align:left;color:#000;transition:opacity .15s,transform .1s;position:relative;overflow:hidden;}
+.run-hero-cta:active{opacity:.85;transform:scale(.98);}
+.run-hero-cta .rhc-glow{position:absolute;top:-40%;right:-20%;width:60%;height:180%;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;}
+.run-hero-cta .rhc-icon{font-size:32px;margin-bottom:6px;display:block;}
+.run-hero-cta .rhc-label{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;line-height:1.1;}
+.run-hero-cta .rhc-sub{font-size:12px;opacity:.7;margin-top:4px;}
+.run-secondary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.run-sec-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:border-color .2s,background .15s;border:1px solid var(--border);}
+.run-sec-card:active{background:var(--card);border-color:var(--accent);}
+.run-sec-card .rsc-icon{font-size:22px;margin-bottom:6px;}
+.run-sec-card .rsc-label{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;color:var(--text);}
+.run-sec-card .rsc-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+.run-manual-section{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;}
+.run-manual-header{padding:14px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;}
+.run-manual-header .rmh-left{display:flex;align-items:center;gap:8px;}
+.run-manual-header .rmh-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;color:var(--muted2);}
+.run-manual-header .rmh-chevron{color:var(--muted);font-size:18px;transition:transform .2s;}
+.run-manual-body{display:none;padding:0 16px 16px;}
+.run-manual-section.open .run-manual-body{display:block;}
+.run-manual-section.open .rmh-chevron{transform:rotate(180deg);}
 .rl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .rl-row{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
 .rl-row label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
@@ -198,6 +218,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
 .hist-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
 .hist-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.hist-seq{display:none;font-family:'Bebas Neue',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid var(--border);}
 .hist-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
 .hbadge{font-size:11px;padding:3px 9px;border-radius:6px;background:var(--surface);border:1px solid var(--border);color:var(--muted2);}
 .hist-muscles{font-size:11px;color:var(--muted);}
@@ -361,6 +382,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .rt-aux-btn .rt-aux-icon{font-size:22px;}
 .rt-aux-btn.danger{border-color:#ff454544;color:#ff6b6b;}
 .rt-laps-box{width:100%;max-width:360px;margin-top:6px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:10px;max-height:100px;overflow-y:auto;}
+.rt-gps-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:400px;margin-top:10px;}
+.rt-gps-stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center;}
+.rt-gps-stat .gs-val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--text);line-height:1.1;}
+.rt-gps-stat .gs-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:3px;}
+.rt-gps-signal{display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;color:var(--muted);margin-top:6px;}
+.rt-gps-signal .gs-dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.rt-gps-signal .gs-dot.good{background:#72b800;}
+.rt-gps-signal .gs-dot.med{background:#ffaa00;}
+.rt-gps-signal .gs-dot.bad{background:#ff4545;}
+.rt-gps-signal .gs-dot.off{background:var(--muted);}
+.rt-screen-warn{font-size:10px;color:var(--warn);text-align:center;letter-spacing:.5px;margin-top:4px;opacity:.7;}
 .no-plan-cta{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 18px;text-align:center;margin-top:12px;}
 .npc-icon{font-size:48px;margin-bottom:8px;}
 .npc-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1px;margin-bottom:10px;}
@@ -482,8 +514,11 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   .ex-card.open{grid-column:1/-1;}
   .stat-grid{grid-template-columns:repeat(4,1fr);}
   .profile-stats{grid-template-columns:1fr 1fr;gap:16px;}
-  #historyList{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .hist-item{margin-bottom:0;}
+  #historyList{display:grid;grid-template-columns:1fr 1fr;gap:10px;counter-reset:hist;}
+  .hist-item{margin-bottom:0;counter-increment:hist;}
+  .hist-seq{display:flex;align-items:center;gap:6px;}
+  .hist-seq::before{content:counter(hist);font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent);opacity:.5;min-width:20px;}
+  .hist-seq::after{content:'';flex:1;height:1px;background:var(--border);}
   .plan-week{gap:8px;}
   .plan-day{padding:10px 4px;}
   .plan-day .pd-icon{font-size:19px;}
@@ -560,8 +595,9 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
     <button class="menu-item active" data-page="treino" onclick="switchPage('treino',this)">Treino</button>
     <button class="menu-item" data-page="dashboard" onclick="switchPage('dashboard',this)">Desempenho<span class="mbadge" id="alertBadge"></span></button>
     <button class="menu-item" data-page="historico" onclick="switchPage('historico',this)">Histórico</button>
-    <button class="menu-item" data-page="plano" onclick="switchPage('plano',this)">Plano</button>
+    <button class="menu-item" data-page="plano" onclick="switchPage('plano',this)">Plano de exercícios</button>
     <button class="menu-item" data-page="perfil" onclick="switchPage('perfil',this)">Perfil</button>
+    <button class="menu-item" data-page="config" onclick="switchPage('config',this)">Configurações</button>
     <button class="menu-item" data-page="sobre" onclick="switchPage('sobre',this)">Sobre</button>
   </div>
 </div>
@@ -667,6 +703,10 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   <div id="profileStats"></div>
   <div class="section-title" style="margin-top:24px">Gerenciamento</div>
   <div id="profileActions"></div>
+</div>
+
+<div class="page" id="page-config">
+  <div id="configContent"></div>
 </div>
 
 <div class="page" id="page-sobre">
@@ -853,9 +893,12 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.15.0';
+const APP_VERSION='0.17.0';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.17.0',d:'2026-04-11',items:['Rastreamento GPS em tempo real durante corridas','Distância, pace, velocidade e altitude exibidos ao vivo','Ganho e perda de elevação registrados automaticamente','Dados GPS salvos no histórico de corridas','Tela mantida ligada automaticamente durante corridas']},
+  {v:'0.16.1',d:'2026-04-11',items:['Visual da aba Corrida redesenhado com destaque para corrida livre','Registro manual de corrida em seção recolhível','Indicadores de ordem no histórico em telas maiores','Aba Plano renomeada para Plano de exercícios']},
+  {v:'0.16.0',d:'2026-04-11',items:['Alerta sonoro ao fim do intervalo de descanso','Alerta sonoro ao atingir a meta de tempo nos exercícios','Contagem regressiva sonora nos últimos 3 segundos','Nova página Configurações com controle de sons','Correções de bugs e melhorias do app']},
   {v:'0.15.0',d:'2026-04-11',items:['Layout responsivo para tablets e tela horizontal','Exercícios e histórico em 2 colunas em telas maiores','Visual otimizado para landscape no celular']},
   {v:'0.14.3',d:'2026-04-11',items:['Política de privacidade e LGPD no disclaimer e na aba Sobre','Gerenciamento de dados da nuvem na página de backup','Opção para apagar dados da nuvem separadamente','Opção para apagar todo o histórico de treinos']},
   {v:'0.14.2',d:'2026-04-11',items:['Correções de bugs e melhorias do app']},
@@ -876,7 +919,7 @@ const CHANGELOG=[
 ];
 
 // STATE
-const STATE_VERSION=5;
+const STATE_VERSION=6;
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
 function save(){localStorage.setItem('fpv5',JSON.stringify(state));saveToCloud();}
 function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.series).fill(false));}
@@ -928,6 +971,19 @@ const MIGRATIONS=[
       });
     }
     delete s.forceStrengthDate;
+  },
+  // v5→v6: configurações de som
+  function v6(s){
+    if(!s.soundSettings)s.soundSettings={
+      sessionStartEnd:true,
+      sessionPauseResume:true,
+      restEnd:true,
+      restTick:true,
+      timedEnd:true,
+      timedTick:true,
+      runSegments:true,
+      runTick:true
+    };
   }
 ];
 function migrateState(s){
@@ -1669,8 +1725,13 @@ function startCountUp(key,target){
   const tick=()=>{
     const sec=Math.floor((Date.now()-c.startedAt)/1000)+c.base;
     if(disp)disp.textContent=fmt(sec);
-    if(target&&sec>=target&&!c.alerted){c.alerted=true;disp.classList.add('finished');
+    if(target&&!c.alerted){
+      const rem=target-sec;
+      if(rem>=1&&rem<=3&&c._lastTickRem!==rem){playSfx('timedTick','tick');c._lastTickRem=rem;}
+      if(sec>=target){c.alerted=true;disp.classList.add('finished');
+      playSfx('timedEnd','finish');
       showToast('⏱ Meta atingida!',true);if(navigator.vibrate)navigator.vibrate([200,100,200]);}
+    }
   };
   tick();
   CI[key]=setInterval(tick,250);
@@ -1695,12 +1756,15 @@ function startTimer(key,def){
   }
   d.running=true;d.endsAt=Date.now()+d.remain*1000;
   disp.classList.add('running');disp.classList.remove('finished');if(btn)btn.textContent='⏸ Pausar';
+  let _lastTickSec=-1;
   const tick=()=>{
     const sec=Math.max(0,Math.ceil((d.endsAt-Date.now())/1000));
     if(disp)disp.textContent=fmt(sec);
+    if(sec!==_lastTickSec&&sec>=1&&sec<=3){playSfx('restTick','tick');}_lastTickSec=sec;
     if(sec<=0){clearInterval(TI[key]);d.running=false;d.remain=def;
       if(disp){disp.textContent='00:00';disp.classList.remove('running');disp.classList.add('finished');}
       if(btn)btn.textContent='▶ Iniciar';
+      playSfx('restEnd','finish');
       showToast('⏱ Descanso concluído!',false);
       if(navigator.vibrate)navigator.vibrate([200,100,200]);}
   };
@@ -1763,7 +1827,7 @@ function startSession(){
   document.getElementById('progBlock').style.display='';
   document.getElementById('finishRow').style.display='';
   startClock();updateActiveBanner();requestWakeLock();
-  sfx('start');
+  playSfx('sessionStartEnd','start');
   renderTreino();
   showToast(rnd(HUMOR.sessionStart[isFem()?'F':'M']),true);
 }
@@ -1805,7 +1869,7 @@ function finishSession(){
   releaseWakeLock();
   save();
   // Check for combined running session
-  sfx('finish');
+  playSfx('sessionStartEnd','finish');
   const cw=origW.combinedRun;
   if(cw&&cw.segments&&cw.segments.length>0){
     showToast(`Musculação concluída! (${fmtMin(durMin)})`,true);
@@ -1858,6 +1922,10 @@ function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+
 function setTreinoView(v){
   state.treinoView=v;
   renderTreino();
+}
+function toggleRunManual(){
+  const s=document.getElementById('runManualSection');
+  if(s)s.classList.toggle('open');
 }
 function parseDuration(v){
   if(!v)return 0;
@@ -2043,40 +2111,65 @@ function renderTreino(){
         </div>
         <div style="border-top:1px solid var(--border);margin:14px 0;"></div>`;
       }
-      // Free run button (always available)
-      let freeRunHTML=`<button class="btn btn-outline btn-full" onclick="startFreeRun()" style="font-size:15px;padding:12px;margin-bottom:14px">🏃 Iniciar corrida livre</button>`;
-      // CTA to create plan (when no running plan)
-      let ctaHTML='';
+      // Hero CTA — corrida livre (sempre destaque principal)
+      let freeRunHTML=`<button class="run-hero-cta" onclick="startFreeRun()">
+        <div class="rhc-glow"></div>
+        <span class="rhc-icon">🏃</span>
+        <div class="rhc-label">Iniciar corrida livre</div>
+        <div class="rhc-sub">Cronômetro aberto com voltas e zonas de esforço</div>
+      </button>`;
+      // Secondary cards — plano + registro manual
+      let secCards='';
       if(!hasRunPlan){
-        ctaHTML=`<div class="no-plan-cta" style="margin-bottom:14px;padding:16px">
-          <div class="npc-icon" style="font-size:28px">📋</div>
-          <div class="npc-title" style="font-size:15px">Monte seu plano de corrida</div>
-          <div class="npc-msg" style="font-size:13px;margin:6px 0 10px">Crie um programa progressivo personalizado com treinos que evoluem semana a semana, do iniciante ao avançado.</div>
-          <button class="btn btn-primary btn-full" onclick="switchPage('plano');setTimeout(()=>openPlanChat(),200);">✨ Criar plano personalizado</button>
+        secCards=`<div class="run-secondary">
+          <div class="run-sec-card" onclick="switchPage('plano');setTimeout(()=>openPlanChat(),200);">
+            <div class="rsc-icon">✨</div>
+            <div class="rsc-label">Criar plano</div>
+            <div class="rsc-sub">Programa progressivo personalizado</div>
+          </div>
+          <div class="run-sec-card" onclick="toggleRunManual()">
+            <div class="rsc-icon">📝</div>
+            <div class="rsc-label">Registrar</div>
+            <div class="rsc-sub">Adicionar corrida manualmente</div>
+          </div>
+        </div>`;
+      }else{
+        secCards=`<div class="run-secondary" style="grid-template-columns:1fr">
+          <div class="run-sec-card" onclick="toggleRunManual()">
+            <div class="rsc-icon">📝</div>
+            <div class="rsc-label">Registrar corrida manualmente</div>
+            <div class="rsc-sub">Adicione uma corrida que você já fez</div>
+          </div>
         </div>`;
       }
-      card.innerHTML=(plannedSess?plannedHTML:'')+freeRunHTML+ctaHTML+`
-        <div style="border-top:1px solid var(--border);margin:10px 0 14px;"></div>
-        <div class="rl-title">📝 Registrar corrida manualmente</div>
-        <div class="rl-grid">
-          <div class="rl-row"><label>Distância (km)</label><input type="text" inputmode="decimal" id="rl-km" placeholder="559 ou 5,59" maxlength="5"></div>
-          <div class="rl-row"><label>Duração</label><input type="text" inputmode="numeric" id="rl-dur" placeholder="5215 ou 52:15" maxlength="7"></div>
+      // Manual form (collapsible)
+      let manualFormHTML=`<div class="run-manual-section" id="runManualSection">
+        <div class="run-manual-header" onclick="toggleRunManual()">
+          <div class="rmh-left"><span>📝</span><span class="rmh-title">Registro manual</span></div>
+          <span class="rmh-chevron">⌄</span>
         </div>
-        <div class="rl-grid">
-          <div class="rl-row"><label>Tipo</label>
-            <select id="rl-type">
-              <option value="Z2">Z2 (base aeróbica)</option>
-              <option value="Tiro">Tiro / intervalado</option>
-              <option value="Longão">Longão</option>
-              <option value="Regenerativo">Regenerativo</option>
-              <option value="Livre">Livre</option>
-            </select>
+        <div class="run-manual-body">
+          <div class="rl-grid">
+            <div class="rl-row"><label>Distância (km)</label><input type="text" inputmode="decimal" id="rl-km" placeholder="559 ou 5,59" maxlength="5"></div>
+            <div class="rl-row"><label>Duração</label><input type="text" inputmode="numeric" id="rl-dur" placeholder="5215 ou 52:15" maxlength="7"></div>
           </div>
-          <div class="rl-row"><label>Conclusão (opcional)</label><input type="time" id="rl-time"></div>
+          <div class="rl-grid">
+            <div class="rl-row"><label>Tipo</label>
+              <select id="rl-type">
+                <option value="Z2">Z2 (base aeróbica)</option>
+                <option value="Tiro">Tiro / intervalado</option>
+                <option value="Longão">Longão</option>
+                <option value="Regenerativo">Regenerativo</option>
+                <option value="Livre">Livre</option>
+              </select>
+            </div>
+            <div class="rl-row"><label>Conclusão (opcional)</label><input type="time" id="rl-time"></div>
+          </div>
+          <div class="rl-row"><label>Observações</label><textarea id="rl-notes" rows="2" placeholder="Percurso, sensações, clima…"></textarea></div>
+          <button class="btn btn-primary btn-full" onclick="saveRunLog()">✓ Registrar corrida</button>
         </div>
-        <div class="rl-row"><label>Observações</label><textarea id="rl-notes" rows="2" placeholder="Percurso, sensações, clima…"></textarea></div>
-        <button class="btn btn-primary btn-full" onclick="saveRunLog()">✓ Registrar corrida</button>
-      `;
+      </div>`;
+      card.innerHTML=(plannedSess?plannedHTML:'')+freeRunHTML+secCards+manualFormHTML;
       toggleDiv.after(card);
     }
   }
@@ -2130,7 +2223,7 @@ function renderTreino(){
     const allDone=ex.series>0&&dc===ex.series;
     const card=document.createElement('div');
     card.className=`ex-card${allDone?' completed':''}`;card.id=`ec-${ei}`;
-    const key=`${wi}-${ei}`;if(!TD[key])TD[key]={sec:ex.rest,running:false};
+    const key=`${wi}-${ei}`;if(!TD[key])TD[key]={remain:ex.rest,running:false};
     const serBtns=Array.from({length:ex.series},(_,si)=>{
       const d=sets2[ei]&&sets2[ei][si];
       return `<button class="serie-btn${d?' done':''}" onclick="toggleSerie(${ei},${si})">${si+1}<span class="slabel">${d?'✓':'série'}</span></button>`;
@@ -2177,7 +2270,7 @@ function renderTreino(){
           </div>`:''}
           ${ex.rest>0?`<div class="timer-area">
             <div class="timer-label">Descanso — ${ex.rest>=60?Math.floor(ex.rest/60)+'min'+(ex.rest%60?' '+(ex.rest%60)+'s':''):ex.rest+'s'}</div>
-            <div class="timer-disp" id="td-${key}">${fmt(TD[key].sec)}</div>
+            <div class="timer-disp" id="td-${key}">${fmt(TD[key].remain)}</div>
             <div class="timer-btns">
               <button class="tbtn primary" id="tb-${key}" onclick="startTimer('${key}',${ex.rest})">▶ Iniciar</button>
               <button class="tbtn" onclick="resetTimer('${key}',${ex.rest})">↺ Reset</button>
@@ -2374,6 +2467,7 @@ function renderHistory(){
     const muscles=s.muscles.map(m=>MUSCLES[m]||m).join(', ');
     const cc=s.completion>=90?'var(--done-border)':s.completion>=60?'var(--warn)':'var(--danger)';
     return `<div class="hist-item">
+      <div class="hist-seq">${dateStr}</div>
       <div class="hist-top">
         <div><div class="hist-title">${s.workoutName}</div><div class="hist-sub">${s.workoutSub}</div></div>
         <div style="text-align:right"><div style="font-size:13px;font-weight:600">${dateStr}</div><div style="font-size:11px;color:var(--muted)">${startStr} → ${endStr}</div></div>
@@ -2382,6 +2476,8 @@ function renderHistory(){
         <span class="hbadge">📏 ${(s.distanceKm||0).toFixed(2).replace('.',',')} km</span>
         <span class="hbadge">⏱ ${s.durationSec?fmtDuration(s.durationSec):fmtMin(s.durationMin)}</span>
         ${s.paceSecPerKm?`<span class="hbadge" style="color:var(--accent);border-color:var(--accent)">🏃 ${fmtPace(s.paceSecPerKm)}</span>`:''}
+        ${s.elevationGain?`<span class="hbadge">↑${s.elevationGain}m</span>`:''}
+        ${s.maxSpeedKmh?`<span class="hbadge">⚡ ${String(s.maxSpeedKmh).replace('.',',')} km/h</span>`:''}
       </div>
       ${s.runNotes?`<div class="hist-muscles">📝 ${s.runNotes}</div>`:''}`:`<div class="hist-badges">
         <span class="hbadge">⏱ ${fmtMin(s.durationMin)}</span>
@@ -2614,8 +2710,8 @@ function renderDesempenho(){
     const wi=Math.floor((Date.now()-new Date(state.programStart).getTime())/(7*24*60*60*1000));
     const dLeft=planDaysLeft();
     const planExp=isPlanExpired();
-    if(planExp)alerts.push({type:'danger',title:'📅 Plano vencido',body:`Seu plano terminou em ${fmtDateBR(state.planEnd)}. Renove ou atualize o programa na aba Plano.`});
-    else if(dLeft!==null&&dLeft<=7)alerts.push({type:'warn',title:`⏳ Plano termina em ${dLeft} dia${dLeft>1?'s':''}`,body:`Término em ${fmtDateBR(state.planEnd)}. Renove na aba Plano.`});
+    if(planExp)alerts.push({type:'danger',title:'📅 Plano vencido',body:`Seu plano terminou em ${fmtDateBR(state.planEnd)}. Renove ou atualize o programa na aba Plano de exercícios.`});
+    else if(dLeft!==null&&dLeft<=7)alerts.push({type:'warn',title:`⏳ Plano termina em ${dLeft} dia${dLeft>1?'s':''}`,body:`Término em ${fmtDateBR(state.planEnd)}. Renove na aba Plano de exercícios.`});
     else if(wi>=SWITCH_WEEKS)alerts.push({type:'info',title:'🔄 Troca de programa recomendada',body:`${wi} semanas de programa. Reavalie exercícios, percentuais e periodização.`});
     else if(n>0)alerts.push({type:'info',title:`📅 Semana ${wi+1} de ${SWITCH_WEEKS}`,body:`Troca de programa recomendada na semana ${SWITCH_WEEKS}.`});
   }
@@ -3106,6 +3202,59 @@ function saveAddRecordStrength(){
 // NAV
 function openMenu(){document.getElementById('menuOverlay').classList.add('open');}
 function closeMenu(){document.getElementById('menuOverlay').classList.remove('open');}
+function renderConfig(){
+  if(!state.soundSettings)state.soundSettings={sessionStartEnd:true,sessionPauseResume:true,restEnd:true,restTick:true,timedEnd:true,timedTick:true,runSegments:true,runTick:true};
+  const ss=state.soundSettings;
+  const toggle=(key,label,desc)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600">${label}</div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:2px">${desc}</div>
+      </div>
+      <label style="position:relative;width:48px;height:26px;flex-shrink:0;margin-left:12px;cursor:pointer">
+        <input type="checkbox" ${ss[key]?'checked':''} onchange="toggleSound('${key}',this.checked)" style="opacity:0;width:0;height:0;position:absolute">
+        <span style="position:absolute;inset:0;background:${ss[key]?'var(--accent)':'var(--border)'};border-radius:13px;transition:background .2s"></span>
+        <span style="position:absolute;top:3px;left:${ss[key]?'24px':'3px'};width:20px;height:20px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)"></span>
+      </label>
+    </div>`;
+  document.getElementById('configContent').innerHTML=`
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:4px">Configurações</div>
+      <div style="font-size:13px;color:var(--muted2)">Personalize o comportamento do app</div>
+    </div>
+    <div class="section-title">Alertas sonoros — Sessão</div>
+    ${toggle('sessionStartEnd','Início e fim de sessão','Som ao iniciar e encerrar treinos de musculação e corrida')}
+    ${toggle('sessionPauseResume','Pausar e retomar','Som ao pausar ou retomar sessões de corrida')}
+    <div class="section-title">Alertas sonoros — Intervalos</div>
+    ${toggle('restEnd','Fim do intervalo','Som quando o tempo de descanso entre séries acaba')}
+    ${toggle('restTick','Contagem regressiva do intervalo','Bip nos últimos 3 segundos do descanso')}
+    <div class="section-title">Alertas sonoros — Exercícios por tempo</div>
+    ${toggle('timedEnd','Meta de tempo atingida','Som ao atingir o tempo-alvo em exercícios cronometrados')}
+    ${toggle('timedTick','Contagem regressiva da meta','Bip nos últimos 3 segundos antes de atingir a meta')}
+    <div class="section-title">Alertas sonoros — Corrida</div>
+    ${toggle('runSegments','Troca de etapa','Som ao mudar de etapa no cronômetro de corrida')}
+    ${toggle('runTick','Contagem regressiva da etapa','Bip nos últimos 3 segundos de cada etapa')}
+    <div style="margin-top:20px;display:flex;gap:8px">
+      <button class="btn btn-secondary btn-full" onclick="setAllSounds(true)">🔊 Ligar todos</button>
+      <button class="btn btn-secondary btn-full" onclick="setAllSounds(false)">🔇 Desligar todos</button>
+    </div>
+    <div style="margin-top:12px;text-align:center">
+      <button class="btn btn-secondary" onclick="sfx('finish')" style="font-size:12px;padding:8px 16px">🔈 Testar som</button>
+    </div>`;
+}
+function toggleSound(key,val){
+  if(!state.soundSettings)state.soundSettings={};
+  state.soundSettings[key]=val;
+  save();
+  renderConfig();
+}
+function setAllSounds(val){
+  const keys=['sessionStartEnd','sessionPauseResume','restEnd','restTick','timedEnd','timedTick','runSegments','runTick'];
+  keys.forEach(k=>state.soundSettings[k]=val);
+  save();
+  renderConfig();
+  showToast(val?'🔊 Todos os sons ligados':'🔇 Todos os sons desligados',true);
+}
 function switchPage(page,tab){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.menu-item').forEach(t=>t.classList.remove('active'));
@@ -3117,6 +3266,7 @@ function switchPage(page,tab){
   if(page==='dashboard')renderDesempenho();
   if(page==='plano')renderPlano();
   if(page==='perfil')renderPerfil();
+  if(page==='config')renderConfig();
   if(page==='sobre')renderSobre();
 }
 function showToast(msg,accent){
@@ -5032,6 +5182,10 @@ function beep(freq,duration,count){
     }
   }catch(e){}
 }
+function playSfx(setting,type){
+  if(!state.soundSettings||state.soundSettings[setting]===false)return;
+  sfx(type);
+}
 function sfx(type){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
@@ -5097,8 +5251,9 @@ function startRunTimer(sessOverride){
   const segs=applyRunQuickMode(sess.segments,mode);
   runTimer={active:true,paused:false,segments:segs,segIdx:0,segElapsed:0,totalElapsed:0,interval:null,sessionName:sess.name,startTime:new Date()};
   requestWakeLock();
+  startGPS();
   renderRunTimerUI();
-  sfx('start');
+  playSfx('sessionStartEnd','start');
   _startRunInterval();
 }
 function _startRunInterval(){
@@ -5107,9 +5262,9 @@ function _startRunInterval(){
     runTimer.totalElapsed++;
     const seg=runTimer.segments[runTimer.segIdx];
     const remaining=seg.sec-runTimer.segElapsed;
-    if(remaining===3)sfx('tick');
-    if(remaining===2)sfx('tick');
-    if(remaining===1)sfx('tick');
+    if(remaining===3)playSfx('runTick','tick');
+    if(remaining===2)playSfx('runTick','tick');
+    if(remaining===1)playSfx('runTick','tick');
     if(runTimer.segElapsed>=seg.sec){
       runTimer.segIdx++;
       runTimer.segElapsed=0;
@@ -5118,8 +5273,8 @@ function _startRunInterval(){
         return;
       }
       const next=runTimer.segments[runTimer.segIdx];
-      if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')sfx('segmentHigh');
-      else sfx('segment');
+      if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')playSfx('runSegments','segmentHigh');
+      else playSfx('runSegments','segment');
     }
     updateRunTimerDisplay();
   },1000);
@@ -5129,12 +5284,12 @@ function pauseRunTimer(){
   if(runTimer.paused){
     runTimer.paused=false;
     _startRunInterval();
-    sfx('resume');
+    playSfx('sessionPauseResume','resume');
   }else{
     runTimer.paused=true;
     if(runTimer.interval)clearInterval(runTimer.interval);
     runTimer.interval=null;
-    sfx('pause');
+    playSfx('sessionPauseResume','pause');
   }
   updateRunTimerDisplay();
 }
@@ -5147,42 +5302,55 @@ function skipRunSegment(){
     return;
   }
   const next=runTimer.segments[runTimer.segIdx];
-  if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')sfx('segmentHigh');
-  else sfx('segment');
+  if(next.effort==='muito forte'||next.effort==='máximo'||next.effort==='forte')playSfx('runSegments','segmentHigh');
+  else playSfx('runSegments','segment');
   updateRunTimerDisplay();
 }
 function _saveRunTimerHistory(completed){
   const segsExecuted=completed?runTimer.segments.length:runTimer.segIdx+(runTimer.segElapsed>0?1:0);
-  if(runTimer.totalElapsed<5)return; // ignore if < 5s
+  if(runTimer.totalElapsed<5)return;
+  const gd=getGPSData();
   const end=new Date();
   const start=runTimer.startTime||new Date(end.getTime()-runTimer.totalElapsed*1000);
   const durMin=Math.round(runTimer.totalElapsed/60*100)/100;
   const pct=Math.round(segsExecuted/runTimer.segments.length*100);
   const durLabel=fmtDuration(runTimer.totalElapsed);
+  const distKm=gd.hasData?+gd.distanceKm.toFixed(3):0;
+  const pace=gd.hasData?avgPace(gd.distanceM,runTimer.totalElapsed):0;
+  const subParts=[completed?'Completo':'`Parcial (${segsExecuted}/${runTimer.segments.length})`'];
+  if(gd.hasData)subParts.push(`${distKm.toFixed(2).replace('.',',')} km`);
+  subParts.push(durLabel);
   state.history.unshift({
     id:Date.now(),type:'cardio',workoutId:'RUN_TIMER',
     workoutName:`🏃 ${runTimer.sessionName}`,
-    workoutSub:completed?`Completo — ${durLabel}`:`Parcial (${segsExecuted}/${runTimer.segments.length} etapas) — ${durLabel}`,
+    workoutSub:completed
+      ?(gd.hasData?`Completo — ${distKm.toFixed(2).replace('.',',')} km — ${durLabel}`:`Completo — ${durLabel}`)
+      :(gd.hasData?`Parcial (${segsExecuted}/${runTimer.segments.length}) — ${distKm.toFixed(2).replace('.',',')} km — ${durLabel}`:`Parcial (${segsExecuted}/${runTimer.segments.length} etapas) — ${durLabel}`),
     startISO:start.toISOString(),endISO:end.toISOString(),durationMin:durMin,
     durationSec:runTimer.totalElapsed,
     totalSets:runTimer.segments.length,doneSets:segsExecuted,
     completion:pct,fullCompletion:pct,
     muscles:[],exercisesDone:[],weights:{},notes:{},
-    quickMode:state.quickMode||'off',plan:[]
+    quickMode:state.quickMode||'off',plan:[],
+    distanceKm:distKm,paceSecPerKm:pace,
+    elevationGain:gd.altGain,elevationLoss:gd.altLoss,
+    maxSpeedKmh:gd.maxSpeedKmh,
+    gpsTrack:gd.positions.map(p=>({lat:+p.lat.toFixed(6),lng:+p.lng.toFixed(6),alt:p.alt!==null?Math.round(p.alt):null,ts:p.ts}))
   });
   save();
 }
 function stopRunTimer(finished){
   if(runTimer.interval)clearInterval(runTimer.interval);
   _saveRunTimerHistory(finished);
+  stopGPS();
   runTimer.active=false;
   runTimer.paused=false;
   releaseWakeLock();
   if(finished){
-    sfx('finish');
+    playSfx('sessionStartEnd','finish');
     showToast(rnd(HUMOR.runTimerDone[isFem()?'F':'M']),true);
   }else{
-    sfx('stop');
+    playSfx('sessionStartEnd','stop');
     const segs=runTimer.segIdx+(runTimer.segElapsed>0?1:0);
     showToast(`Corrida encerrada — ${segs}/${runTimer.segments.length} etapas registradas`,true);
   }
@@ -5229,7 +5397,9 @@ function updateRunTimerDisplay(){
       </div>
       <div class="rt-total">Total: ${fmtT(runTimer.totalElapsed)} / ${fmtT(totalSec)}</div>
       <div class="rt-seg-count">Segmento ${runTimer.segIdx+1} de ${runTimer.segments.length}</div>
+      ${gpsStatsHTML(runTimer.totalElapsed)}
       ${nextSeg?`<div class="rt-next">Próximo: ${nextSeg.icon||''} ${nextSeg.label} (${fmtT(nextSeg.sec)})</div>`:'<div class="rt-next">Último segmento!</div>'}
+      <div class="rt-screen-warn">⚠ Mantenha a tela ligada para rastrear GPS</div>
     </div>
     <div class="rt-bottom">
       <button class="rt-main-btn ${paused?'resume':'pause'}" onclick="pauseRunTimer()">${paused?'RETOMAR':'PAUSAR'}</button>
@@ -5251,8 +5421,9 @@ const FREE_RUN_STIMULI=['Z1 (caminhada)','Z2 (leve)','Z3 (moderado)','Z4 (limiar
 function startFreeRun(){
   freeRun={active:true,paused:false,elapsed:0,interval:null,laps:[],startTime:new Date(),currentStimulus:'Z2 (leve)'};
   requestWakeLock();
+  startGPS();
   renderFreeRunUI();
-  sfx('start');
+  playSfx('sessionStartEnd','start');
   freeRun.interval=setInterval(()=>{
     freeRun.elapsed++;
     updateFreeRunDisplay();
@@ -5262,13 +5433,13 @@ function freeRunLap(){
   if(!freeRun.active)return;
   const prevLap=freeRun.laps.length>0?freeRun.laps[freeRun.laps.length-1].elapsed:0;
   freeRun.laps.push({elapsed:freeRun.elapsed,lapTime:freeRun.elapsed-prevLap,stimulus:freeRun.currentStimulus});
-  sfx('lap');
+  playSfx('runSegments','lap');
   updateFreeRunDisplay();
 }
 function freeRunChangeStimulus(){
   const idx=FREE_RUN_STIMULI.indexOf(freeRun.currentStimulus);
   freeRun.currentStimulus=FREE_RUN_STIMULI[(idx+1)%FREE_RUN_STIMULI.length];
-  sfx('switch');
+  playSfx('runSegments','switch');
   updateFreeRunDisplay();
 }
 function pauseFreeRun(){
@@ -5276,33 +5447,47 @@ function pauseFreeRun(){
   if(freeRun.paused){
     freeRun.paused=false;
     freeRun.interval=setInterval(()=>{freeRun.elapsed++;updateFreeRunDisplay();},1000);
-    sfx('resume');
+    playSfx('sessionPauseResume','resume');
   }else{
     freeRun.paused=true;
     if(freeRun.interval)clearInterval(freeRun.interval);
     freeRun.interval=null;
-    sfx('pause');
+    playSfx('sessionPauseResume','pause');
   }
   updateFreeRunDisplay();
 }
 function stopFreeRun(){
   if(freeRun.interval)clearInterval(freeRun.interval);
-  sfx(freeRun.elapsed>=10?'finish':'stop');
+  const gd=getGPSData();
+  stopGPS();
+  playSfx('sessionStartEnd',freeRun.elapsed>=10?'finish':'stop');
   if(freeRun.elapsed>=10){
     const end=new Date();
     const durMin=Math.round(freeRun.elapsed/60*100)/100;
+    const distKm=gd.hasData?+gd.distanceKm.toFixed(3):0;
+    const pace=gd.hasData?avgPace(gd.distanceM,freeRun.elapsed):0;
+    const sub=gd.hasData
+      ?`${distKm.toFixed(2).replace('.',',')} km — ${fmtDuration(freeRun.elapsed)}`
+      :`${fmtDuration(freeRun.elapsed)} — ${freeRun.laps.length} volta${freeRun.laps.length!==1?'s':''}`;
     state.history.unshift({
       id:Date.now(),type:'cardio',workoutId:'RUN_FREE',
       workoutName:'🏃 Corrida livre',
-      workoutSub:`${fmtDuration(freeRun.elapsed)} — ${freeRun.laps.length} volta${freeRun.laps.length!==1?'s':''}`,
+      workoutSub:sub,
       startISO:freeRun.startTime.toISOString(),endISO:end.toISOString(),durationMin:durMin,
       durationSec:freeRun.elapsed,totalSets:freeRun.laps.length,doneSets:freeRun.laps.length,
       completion:100,fullCompletion:100,
       muscles:[],exercisesDone:[],weights:{},notes:{},
-      quickMode:'off',plan:[],laps:freeRun.laps
+      quickMode:'off',plan:[],laps:freeRun.laps,
+      distanceKm:distKm,paceSecPerKm:pace,
+      elevationGain:gd.altGain,elevationLoss:gd.altLoss,
+      maxSpeedKmh:gd.maxSpeedKmh,
+      gpsTrack:gd.positions.map(p=>({lat:+p.lat.toFixed(6),lng:+p.lng.toFixed(6),alt:p.alt!==null?Math.round(p.alt):null,ts:p.ts}))
     });
     save();
-    showToast(`Corrida registrada! ${fmtDuration(freeRun.elapsed)}`,true);
+    const msg=gd.hasData
+      ?`Corrida registrada! ${distKm.toFixed(2).replace('.',',')} km em ${fmtDuration(freeRun.elapsed)}`
+      :`Corrida registrada! ${fmtDuration(freeRun.elapsed)}`;
+    showToast(msg,true);
   }
   freeRun.active=false;freeRun.paused=false;
   releaseWakeLock();
@@ -5339,7 +5524,9 @@ function updateFreeRunDisplay(){
       </div>
       <div class="rt-total">Volta atual: ${fmtT(lastLapTime)}</div>
       <div class="rt-seg-count">${freeRun.laps.length} volta${freeRun.laps.length!==1?'s':''} registrada${freeRun.laps.length!==1?'s':''}</div>
+      ${gpsStatsHTML(freeRun.elapsed)}
       ${lapsHTML?`<div class="rt-laps-box">${lapsHTML}</div>`:''}
+      <div class="rt-screen-warn">⚠ Mantenha a tela ligada para rastrear GPS</div>
     </div>
     <div class="rt-bottom">
       <button class="rt-main-btn ${paused?'resume':'pause'}" onclick="pauseFreeRun()">${paused?'RETOMAR':'PAUSAR'}</button>
@@ -5512,16 +5699,128 @@ function dismissCloudBanner(){
   if(el)el.innerHTML='';
 }
 
+// ═══════════════════════════════════════════════
+// GPS TRACKING
+// ═══════════════════════════════════════════════
+let _gps={watchId:null,positions:[],distance:0,altGain:0,altLoss:0,currentSpeed:0,currentPace:0,currentAlt:null,lastPos:null,active:false,accuracy:null,maxSpeed:0};
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371e3,rad=Math.PI/180;
+  const dLat=(lat2-lat1)*rad,dLon=(lon2-lon1)*rad;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*rad)*Math.cos(lat2*rad)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function startGPS(){
+  if(!navigator.geolocation){showToast('⚠ GPS não disponível',false);return;}
+  _gps={watchId:null,positions:[],distance:0,altGain:0,altLoss:0,currentSpeed:0,currentPace:0,currentAlt:null,lastPos:null,active:true,accuracy:null,maxSpeed:0};
+  _gps.watchId=navigator.geolocation.watchPosition(
+    pos=>{
+      const c=pos.coords;
+      const p={lat:c.latitude,lng:c.longitude,alt:c.altitude,speed:c.speed,acc:c.accuracy,ts:pos.timestamp};
+      _gps.accuracy=p.acc;
+      if(p.acc>40)return;
+      _gps.currentAlt=p.alt;
+      _gps.currentSpeed=p.speed||0;
+      if(p.speed>_gps.maxSpeed)_gps.maxSpeed=p.speed;
+      if(_gps.lastPos){
+        const d=haversine(_gps.lastPos.lat,_gps.lastPos.lng,p.lat,p.lng);
+        if(d>1.5&&d<150){
+          _gps.distance+=d;
+          if(p.alt!==null&&_gps.lastPos.alt!==null){
+            const diff=p.alt-_gps.lastPos.alt;
+            if(diff>0.5)_gps.altGain+=diff;
+            else if(diff<-0.5)_gps.altLoss+=Math.abs(diff);
+          }
+        }
+      }
+      if(p.speed&&p.speed>0.3)_gps.currentPace=Math.round(1000/p.speed);
+      _gps.lastPos=p;
+      if(_gps.positions.length===0||pos.timestamp-_gps.positions[_gps.positions.length-1].ts>4000){
+        _gps.positions.push(p);
+      }
+    },
+    err=>{
+      if(err.code===1)showToast('⚠ Permita acesso ao GPS nas configurações do navegador',false);
+    },
+    {enableHighAccuracy:true,maximumAge:2000,timeout:10000}
+  );
+}
+function stopGPS(){
+  if(_gps.watchId!==null){navigator.geolocation.clearWatch(_gps.watchId);_gps.watchId=null;}
+  _gps.active=false;
+}
+function getGPSData(){
+  const d=_gps.distance;const km=d/1000;
+  return{
+    distanceM:d,distanceKm:km,
+    altGain:Math.round(_gps.altGain),altLoss:Math.round(_gps.altLoss),
+    currentAlt:_gps.currentAlt!==null?Math.round(_gps.currentAlt):null,
+    currentSpeedKmh:_gps.currentSpeed?+(_gps.currentSpeed*3.6).toFixed(1):0,
+    maxSpeedKmh:_gps.maxSpeed?+(_gps.maxSpeed*3.6).toFixed(1):0,
+    currentPace:_gps.currentPace||0,
+    accuracy:_gps.accuracy,
+    positions:_gps.positions,
+    hasData:_gps.positions.length>1
+  };
+}
+function fmtGpsDist(m){
+  if(m<1000)return Math.round(m)+' m';
+  return (m/1000).toFixed(2).replace('.',',')+' km';
+}
+function fmtGpsPace(secKm){
+  if(!secKm||secKm>3600)return '--:--';
+  const m=Math.floor(secKm/60),s=secKm%60;
+  return m+"'"+String(s).padStart(2,'0')+'"';
+}
+function avgPace(distM,elapsedSec){
+  if(!distM||distM<10)return 0;
+  return Math.round(elapsedSec/(distM/1000));
+}
+function gpsSignalClass(){
+  const a=_gps.accuracy;
+  if(a===null)return'off';
+  if(a<=10)return'good';
+  if(a<=25)return'med';
+  return'bad';
+}
+function gpsStatsHTML(elapsed){
+  const g=getGPSData();
+  const pace=g.distanceM>50?avgPace(g.distanceM,elapsed):g.currentPace;
+  const sig=gpsSignalClass();
+  const sigLabel=sig==='good'?'GPS preciso':sig==='med'?'GPS moderado':sig==='bad'?'GPS fraco':'Buscando GPS…';
+  return `<div class="rt-gps-bar">
+    <div class="rt-gps-stat"><div class="gs-val">${g.distanceM>=1000?(g.distanceKm).toFixed(2).replace('.',','):Math.round(g.distanceM)}</div><div class="gs-lbl">${g.distanceM>=1000?'km':'metros'}</div></div>
+    <div class="rt-gps-stat"><div class="gs-val">${fmtGpsPace(pace)}</div><div class="gs-lbl">pace</div></div>
+    <div class="rt-gps-stat"><div class="gs-val">${g.currentSpeedKmh.toFixed?g.currentSpeedKmh.toFixed(1).replace('.',','):'0,0'}</div><div class="gs-lbl">km/h</div></div>
+  </div>
+  ${g.currentAlt!==null||g.altGain>0?`<div class="rt-gps-bar" style="margin-top:4px">
+    <div class="rt-gps-stat"><div class="gs-val">${g.currentAlt!==null?g.currentAlt+'m':'—'}</div><div class="gs-lbl">altitude</div></div>
+    <div class="rt-gps-stat"><div class="gs-val">↑${g.altGain}m</div><div class="gs-lbl">ganho elev.</div></div>
+    <div class="rt-gps-stat"><div class="gs-val">↓${g.altLoss}m</div><div class="gs-lbl">perda elev.</div></div>
+  </div>`:''}
+  <div class="rt-gps-signal"><span class="gs-dot ${sig}"></span>${sigLabel}${_gps.accuracy!==null?' (±'+Math.round(_gps.accuracy)+'m)':''}</div>`;
+}
+
 // WAKE LOCK — keep screen on during active workouts/timers
 let wakeLock=null;
 async function requestWakeLock(){
   try{
-    if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');}
+    if('wakeLock' in navigator){
+      wakeLock=await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release',()=>{wakeLock=null;_reacquireWakeLock();});
+    }
   }catch(e){}
 }
 function releaseWakeLock(){
   if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null;}
 }
+function _reacquireWakeLock(){
+  if((freeRun&&freeRun.active)||(runTimer&&runTimer.active)||state.sessionStart){
+    requestWakeLock();
+  }
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')_reacquireWakeLock();
+});
 
 // INIT
 applyTheme();
