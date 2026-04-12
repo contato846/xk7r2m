@@ -10,6 +10,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TREINO DA MÃE &amp; DO PAI">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <style>
 :root{
   --bg:#0d0d0d;--surface:#161616;--card:#1f1f1f;--border:#282828;
@@ -399,6 +402,30 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .toast.show{transform:translateX(-50%) translateY(0);}
 .toast.accent{background:var(--accent);color:#000;border-color:var(--accent);}
 ::-webkit-scrollbar{width:3px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* LOGIN OVERLAY */
+.login-overlay{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease;overflow-y:auto;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 22px;max-width:380px;width:100%;}
+.login-subtitle{font-size:13px;color:var(--muted2);text-align:center;margin-bottom:22px;line-height:1.5;}
+.login-google-btn{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;transition:border-color .2s;}
+.login-google-btn:active{border-color:var(--accent);}
+.login-google-btn svg{width:20px;height:20px;}
+.login-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:12px;}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.login-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-family:inherit;margin-bottom:10px;outline:none;transition:border-color .2s;}
+.login-input:focus{border-color:var(--accent);}
+.login-input::placeholder{color:var(--muted);}
+.login-error{background:rgba(255,69,69,.12);border:1px solid rgba(255,69,69,.3);color:#ff6b6b;font-size:12px;padding:10px 14px;border-radius:8px;margin-bottom:10px;line-height:1.5;}
+.login-skip{display:block;width:100%;background:transparent;border:none;color:var(--muted2);font-size:13px;cursor:pointer;padding:14px 0 0;font-family:inherit;text-decoration:underline;text-underline-offset:3px;}
+.login-skip:active{color:var(--accent);}
+.cloud-status{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:18px;}
+.cloud-status .cs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.cloud-status .cs-user{font-size:13px;color:var(--text);font-weight:500;}
+.cloud-status .cs-email{font-size:11px;color:var(--muted2);margin-top:2px;}
+.cloud-status .cs-badge{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:600;letter-spacing:.5px;}
+.cloud-status .cs-badge.on{background:rgba(114,184,0,.15);color:var(--done-border);border:1px solid rgba(114,184,0,.3);}
+.cloud-status .cs-badge.off{background:rgba(255,69,69,.1);color:var(--danger);border:1px solid rgba(255,69,69,.2);}
+.cloud-status .cs-actions{display:flex;gap:8px;margin-top:12px;}
 </style>
 </head>
 <body>
@@ -525,6 +552,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <button class="btn btn-outline btn-full" onclick="openProfileEdit()">✎ Dados pessoais</button>
     <button class="btn btn-outline btn-full" onclick="openBackupPage()">💾 Backup e dados</button>
   </div>
+  <div class="section-title" style="margin-top:24px">Conta e nuvem</div>
+  <div id="cloudStatus"></div>
 </div>
 
 <div class="page" id="page-sobre">
@@ -575,6 +604,38 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div class="sub-modal" id="subModal" style="display:none"></div>
 <div class="toast" id="toast"></div>
+
+<!-- Login overlay -->
+<div id="loginOverlay" class="login-overlay" style="display:none">
+  <div class="login-box">
+    <div class="disclaimer-brand" style="text-align:center;margin-bottom:16px">
+      <span class="disclaimer-brand-top">TREINO</span>
+      <span class="disclaimer-brand-main"><span style="color:#ff69b4">DA MÃE</span> <span style="color:#909090">&amp;</span> <span style="color:#e8ff47">DO PAI</span></span>
+    </div>
+    <p class="login-subtitle">Entre para sincronizar seus dados na nuvem</p>
+    <button class="login-google-btn" onclick="loginGoogle()">
+      <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Entrar com Google
+    </button>
+    <div class="login-divider"><span>ou entre com e-mail</span></div>
+    <div id="loginEmailForm">
+      <input type="email" id="loginEmail" class="login-input" placeholder="E-mail">
+      <input type="password" id="loginPass" class="login-input" placeholder="Senha">
+      <div id="loginError" class="login-error" style="display:none"></div>
+      <button class="btn btn-primary btn-full" style="margin-bottom:8px" onclick="loginEmailPass()">Entrar</button>
+      <button class="btn btn-outline btn-full" onclick="toggleCreateAccount(true)">Criar conta</button>
+    </div>
+    <div id="createAccountForm" style="display:none">
+      <input type="email" id="createEmail" class="login-input" placeholder="E-mail">
+      <input type="password" id="createPass" class="login-input" placeholder="Senha (mínimo 6 caracteres)">
+      <input type="password" id="createPass2" class="login-input" placeholder="Confirmar senha">
+      <div id="createError" class="login-error" style="display:none"></div>
+      <button class="btn btn-primary btn-full" style="margin-bottom:8px" onclick="createAccount()">Criar conta</button>
+      <button class="btn btn-outline btn-full" onclick="toggleCreateAccount(false)">Já tenho conta</button>
+    </div>
+    <button class="login-skip" onclick="hideLogin()">Continuar sem conta</button>
+  </div>
+</div>
 
 <!-- Disclaimer modal -->
 <div id="disclaimerModal" class="disclaimer-overlay" style="display:none">
@@ -631,6 +692,16 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </div>
 
 <script>
+// ═══════════════════════════════════════════════
+// FIREBASE
+// ═══════════════════════════════════════════════
+const fbApp=firebase.initializeApp({apiKey:"AIzaSyCmH3rt_u3XRcSt-xFGm6O16VdVWrjVY6U",authDomain:"treino-da-mae-e-do-pai.firebaseapp.com",projectId:"treino-da-mae-e-do-pai",storageBucket:"treino-da-mae-e-do-pai.firebasestorage.app",messagingSenderId:"707370919881",appId:"1:707370919881:web:8a050a5e7716c168d22a18"});
+const fbAuth=firebase.auth();
+const fbDb=firebase.firestore();
+let _fbUser=null;
+let _cloudSaveTimer=null;
+let _cloudReady=false;
+
 const MUSCLES={peito:'Peito',costas:'Costas',ombros:'Ombros',biceps:'Bíceps',triceps:'Tríceps',quadriceps:'Quadríceps',posteriores:'Posteriores',gluteos:'Glúteos',core:'Core',panturrilha:'Panturrilha'};
 // Placeholder workout for users without a plan (fallback only — not shown as selectable)
 const WORKOUTS=[
@@ -640,9 +711,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.13.1';
+const APP_VERSION='0.14.0';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.14.0',d:'2026-04-11',items:['Login com Google ou e-mail e senha','Sincronização automática dos dados na nuvem','Seus treinos ficam seguros mesmo se trocar de celular']},
   {v:'0.13.1',d:'2026-04-11',items:['Página Sobre mostra apenas a última atualização','Histórico completo em página separada']},
   {v:'0.13.0',d:'2026-04-11',items:['Novo nome: TREINO DA MÃE & DO PAI','Novo ícone do app']},
   {v:'0.12.0',d:'2026-04-11',items:['Compatibilidade automática ao restaurar backups de versões anteriores','Backups antigos são atualizados para a versão atual na importação']},
@@ -660,7 +732,7 @@ const CHANGELOG=[
 // STATE
 const STATE_VERSION=5;
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
-function save(){localStorage.setItem('fpv5',JSON.stringify(state));}
+function save(){localStorage.setItem('fpv5',JSON.stringify(state));saveToCloud();}
 function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.series).fill(false));}
 
 // ── Versioned state migrations ──
@@ -719,6 +791,161 @@ function migrateState(s){
   return s;
 }
 let state=migrateState(load()||{currentWorkout:0,sessionSets:null,sessionStart:null,history:[],programStart:null,switchDismissed:false,_stateVersion:0});
+
+// ═══════════════════════════════════════════════
+// AUTH & CLOUD SYNC
+// ═══════════════════════════════════════════════
+function showLogin(){
+  document.getElementById('loginOverlay').style.display='flex';
+  document.getElementById('loginError').style.display='none';
+  document.getElementById('createError').style.display='none';
+  toggleCreateAccount(false);
+}
+function hideLogin(){document.getElementById('loginOverlay').style.display='none';}
+
+function showLoginError(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
+
+function translateFirebaseError(code){
+  const m={'auth/invalid-email':'E-mail inválido.','auth/user-disabled':'Conta desativada.','auth/user-not-found':'Nenhuma conta com este e-mail.','auth/wrong-password':'Senha incorreta.','auth/email-already-in-use':'Este e-mail já está cadastrado.','auth/weak-password':'Senha muito fraca (mínimo 6 caracteres).','auth/popup-closed-by-user':'Login cancelado.','auth/network-request-failed':'Sem conexão com a internet.','auth/too-many-requests':'Muitas tentativas. Aguarde um momento.','auth/invalid-credential':'E-mail ou senha incorretos.','auth/cancelled-popup-request':'Login cancelado.','auth/popup-blocked':'Pop-up bloqueado. Tentando redirecionamento...'};
+  return m[code]||'Erro ao autenticar. Tente novamente.';
+}
+
+async function loginGoogle(){
+  document.getElementById('loginError').style.display='none';
+  const provider=new firebase.auth.GoogleAuthProvider();
+  try{await fbAuth.signInWithPopup(provider);}catch(e){
+    if(e.code==='auth/popup-blocked'||e.code==='auth/cancelled-popup-request'){
+      try{await fbAuth.signInWithRedirect(provider);}catch(e2){showLoginError('loginError',translateFirebaseError(e2.code));}
+    }else if(e.code!=='auth/popup-closed-by-user'){showLoginError('loginError',translateFirebaseError(e.code));}
+  }
+}
+
+function loginEmailPass(){
+  document.getElementById('loginError').style.display='none';
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){showLoginError('loginError','Preencha e-mail e senha.');return;}
+  fbAuth.signInWithEmailAndPassword(email,pass).catch(e=>showLoginError('loginError',translateFirebaseError(e.code)));
+}
+
+function createAccount(){
+  document.getElementById('createError').style.display='none';
+  const email=document.getElementById('createEmail').value.trim();
+  const pass=document.getElementById('createPass').value;
+  const pass2=document.getElementById('createPass2').value;
+  if(!email||!pass){showLoginError('createError','Preencha e-mail e senha.');return;}
+  if(pass.length<6){showLoginError('createError','A senha deve ter pelo menos 6 caracteres.');return;}
+  if(pass!==pass2){showLoginError('createError','As senhas não coincidem.');return;}
+  fbAuth.createUserWithEmailAndPassword(email,pass).catch(e=>showLoginError('createError',translateFirebaseError(e.code)));
+}
+
+function toggleCreateAccount(show){
+  document.getElementById('loginEmailForm').style.display=show?'none':'block';
+  document.getElementById('createAccountForm').style.display=show?'block':'none';
+}
+
+function logout(){
+  if(!confirm('Sair da conta? Seus dados locais serão mantidos.'))return;
+  fbAuth.signOut();
+  _fbUser=null;
+  _cloudReady=false;
+  showToast('Logout realizado',false);
+  renderCloudStatus();
+}
+
+function saveToCloud(){
+  if(!_fbUser||!_cloudReady)return;
+  if(_cloudSaveTimer)clearTimeout(_cloudSaveTimer);
+  _cloudSaveTimer=setTimeout(()=>{
+    fbDb.collection('users').doc(_fbUser.uid).set({
+      state:JSON.stringify(state),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+      appVersion:APP_VERSION
+    }).catch(e=>console.warn('Cloud save error:',e));
+  },2000);
+}
+
+async function loadFromCloud(){
+  if(!_fbUser)return null;
+  try{
+    const doc=await fbDb.collection('users').doc(_fbUser.uid).get();
+    if(doc.exists){const d=doc.data();return JSON.parse(d.state);}
+  }catch(e){console.warn('Cloud load error:',e);}
+  return null;
+}
+
+function renderCloudStatus(){
+  const el=document.getElementById('cloudStatus');
+  if(!el)return;
+  if(_fbUser){
+    const name=_fbUser.displayName||'';
+    const email=_fbUser.email||'';
+    const provId=_fbUser.providerData&&_fbUser.providerData[0]?_fbUser.providerData[0].providerId:'';
+    const provLabel=provId==='google.com'?'Google':'E-mail';
+    el.innerHTML=`<div class="cloud-status">
+      <div class="cs-header">
+        <div>
+          <div class="cs-user">☁️ ${name||email}</div>
+          ${name?`<div class="cs-email">${email}</div>`:''}
+        </div>
+        <span class="cs-badge on">Sincronizado</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Logado via ${provLabel}</div>
+      <div class="cs-actions">
+        <button class="btn btn-outline btn-full btn-small" onclick="forceCloudSync()">↻ Sincronizar agora</button>
+        <button class="btn btn-secondary btn-full btn-small" onclick="logout()">Sair</button>
+      </div>
+    </div>`;
+  }else{
+    el.innerHTML=`<div class="cloud-status">
+      <div class="cs-header">
+        <div class="cs-user" style="color:var(--muted2)">Sem conta conectada</div>
+        <span class="cs-badge off">Offline</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5">Seus dados estão salvos apenas neste dispositivo. Entre com uma conta para sincronizar na nuvem.</div>
+      <div class="cs-actions">
+        <button class="btn btn-primary btn-full btn-small" onclick="showLogin()">Entrar</button>
+      </div>
+    </div>`;
+  }
+}
+
+async function forceCloudSync(){
+  if(!_fbUser){showToast('Faça login primeiro',false);return;}
+  try{
+    await fbDb.collection('users').doc(_fbUser.uid).set({
+      state:JSON.stringify(state),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+      appVersion:APP_VERSION
+    });
+    showToast('☁️ Sincronizado com sucesso',true);
+  }catch(e){showToast('Erro ao sincronizar',false);}
+}
+
+fbAuth.onAuthStateChanged(async(user)=>{
+  _fbUser=user;
+  if(user){
+    hideLogin();
+    try{
+      const cloudState=await loadFromCloud();
+      if(cloudState){
+        state=migrateState(cloudState);
+        localStorage.setItem('fpv5',JSON.stringify(state));
+        applyTheme();renderTreino();renderDesempenho();
+        showToast('☁️ Dados sincronizados',true);
+      }else{
+        _cloudReady=true;
+        saveToCloud();
+        showToast('☁️ Dados enviados para a nuvem',true);
+      }
+    }catch(e){console.warn('Cloud sync error:',e);}
+    _cloudReady=true;
+    renderCloudStatus();
+  }else{
+    _cloudReady=false;
+    renderCloudStatus();
+  }
+});
 
 // QUICK MODE & SESSION PLAN HELPERS
 function getOriginalWorkout(wi){return getActiveWorkouts()[wi];}
@@ -1064,6 +1291,7 @@ function renderPerfil(){
     sum.innerHTML=`<div class="profile-summary"><div class="ps-info" style="color:var(--muted)">Nenhum dado pessoal cadastrado.</div></div>`;
   }
   const el=document.getElementById('profileStats');
+  renderCloudStatus();
   if(!p.weightKg||!p.heightCm){el.innerHTML='<div class="empty"><p>Preencha peso e altura para ver IMC e gasto calórico estimado.</p></div>';return;}
   const m=p.heightCm/100;
   const imc=p.weightKg/(m*m);
@@ -2628,7 +2856,9 @@ function showToast(msg,accent){
 }
 function clearAllData(){
   if(!confirm('Apagar TODOS os dados? Não é possível desfazer.'))return;
-  localStorage.removeItem('fpv5');location.reload();
+  localStorage.removeItem('fpv5');
+  if(_fbUser){fbDb.collection('users').doc(_fbUser.uid).delete().catch(()=>{});}
+  location.reload();
 }
 function fitCRC(buf){
   const t=[0x0000,0xCC01,0xD801,0x1400,0xF001,0x3C00,0x2800,0xE401,0xA001,0x6C00,0x7800,0xB401,0x5000,0x9C01,0x8801,0x4400];
