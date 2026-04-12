@@ -447,6 +447,24 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 .backup-cloud-hint.hint-info .bch-title{color:var(--accent3);}
 .backup-cloud-hint.hint-ok .bch-title{color:var(--done-border);}
 .backup-cloud-hint .bch-body{font-size:12px;color:var(--muted2);line-height:1.6;}
+/* CLOUD NUDGE */
+.cloud-nudge-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:550;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease;}
+.cloud-nudge-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 22px;max-width:360px;width:100%;text-align:center;}
+.cloud-nudge-icon{font-size:48px;margin-bottom:12px;}
+.cloud-nudge-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;}
+.cloud-nudge-body{font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:20px;text-align:left;}
+.cloud-nudge-benefits{list-style:none;padding:0;margin:0 0 20px;text-align:left;}
+.cloud-nudge-benefits li{font-size:13px;color:var(--text);padding:6px 0;display:flex;align-items:center;gap:8px;}
+.cloud-nudge-benefits li::before{content:'✓';color:var(--done-border);font-weight:700;font-size:14px;}
+.cloud-nudge-skip{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:12px 0 0;font-family:inherit;text-decoration:underline;text-underline-offset:3px;}
+.cloud-nudge-skip:active{color:var(--text);}
+/* CLOUD BANNER (treino page) */
+.cloud-banner{background:linear-gradient(135deg,rgba(71,184,255,.1),rgba(71,184,255,.04));border:1px solid rgba(71,184,255,.25);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;animation:fadeIn .3s ease;}
+.cloud-banner .cb-text{flex:1;font-size:12px;color:var(--muted2);line-height:1.4;}
+.cloud-banner .cb-text strong{color:var(--text);font-weight:600;}
+.cloud-banner .cb-btn{font-size:11px;font-weight:700;color:var(--accent3);background:none;border:1px solid var(--accent3);border-radius:8px;padding:6px 12px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;}
+.cloud-banner .cb-btn:active{background:var(--accent3);color:#000;}
+.cloud-banner .cb-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:0 0 0 4px;line-height:1;}
 </style>
 </head>
 <body>
@@ -479,6 +497,7 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 </div>
 
 <div class="page active" id="page-treino">
+  <div id="cloudBanner"></div>
   <div id="switchNotice"></div>
   <div id="heroCard"></div>
   <div class="quick-mode-bar" id="quickModeBar"></div>
@@ -628,6 +647,22 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 <div class="sub-modal" id="subModal" style="display:none"></div>
 <div class="toast" id="toast"></div>
 
+<!-- Cloud nudge modal -->
+<div id="cloudNudge" class="cloud-nudge-overlay" style="display:none">
+  <div class="cloud-nudge-box">
+    <div class="cloud-nudge-icon">🛡️</div>
+    <div class="cloud-nudge-title">Proteja seus treinos</div>
+    <ul class="cloud-nudge-benefits">
+      <li>Seus dados ficam seguros na nuvem</li>
+      <li>Acesse de qualquer dispositivo</li>
+      <li>Nunca mais perca seu histórico</li>
+      <li>Gratuito — leva menos de 1 minuto</li>
+    </ul>
+    <button class="btn btn-primary btn-full" style="font-size:15px;padding:14px;border-radius:10px" onclick="acceptCloudNudge()">Criar conta gratuita</button>
+    <button class="cloud-nudge-skip" onclick="dismissCloudNudge()">Agora não</button>
+  </div>
+</div>
+
 <!-- Login overlay -->
 <div id="loginOverlay" class="login-overlay" style="display:none">
   <div class="login-box">
@@ -734,9 +769,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.14.1';
+const APP_VERSION='0.14.2';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.14.2',d:'2026-04-11',items:['Correções de bugs e melhorias do app']},
   {v:'0.14.1',d:'2026-04-11',items:['Perfil redesenhado com foco em manter dados atualizados','Nuvem em destaque no perfil para incentivar sincronização','Página de backup local separada com orientação sobre a nuvem','Reiniciar plano agora na seção Gerenciamento']},
   {v:'0.14.0',d:'2026-04-11',items:['Login com Google ou e-mail e senha','Sincronização automática dos dados na nuvem','Seus treinos ficam seguros mesmo se trocar de celular']},
   {v:'0.13.1',d:'2026-04-11',items:['Página Sobre mostra apenas a última atualização','Histórico completo em página separada']},
@@ -950,6 +986,8 @@ fbAuth.onAuthStateChanged(async(user)=>{
   _fbUser=user;
   if(user){
     hideLogin();
+    document.getElementById('cloudNudge').style.display='none';
+    _cloudBannerDismissed=true;
     try{
       const cloudState=await loadFromCloud();
       if(cloudState){
@@ -965,9 +1003,11 @@ fbAuth.onAuthStateChanged(async(user)=>{
     }catch(e){console.warn('Cloud sync error:',e);}
     _cloudReady=true;
     renderCloudStatus();
+    renderCloudBanner();
   }else{
     _cloudReady=false;
     renderCloudStatus();
+    renderCloudBanner();
   }
 });
 
@@ -1770,6 +1810,7 @@ function todayCount(type){
 }
 function isRestDay(dow){return !isRunDayActive(dow)&&getActiveDayMap()[dow]===undefined;}
 function renderTreino(){
+  renderCloudBanner();
   const wi=state.currentWorkout,w=getActiveWorkouts()[wi];
   const exercises=getCurrentExercises(wi);
   const todayDow=new Date().getDay();
@@ -5259,6 +5300,8 @@ function checkOnboarding(){
     const title=document.getElementById('onboardingTitle');
     if(title)title.textContent=state.profile.sex==='F'?'Bem-vinda!':'Bem-vindo!';
     document.getElementById('onboardingAlert').style.display='flex';
+  }else{
+    checkCloudNudge();
   }
 }
 function startOnboarding(){
@@ -5268,6 +5311,41 @@ function startOnboarding(){
 }
 function dismissOnboarding(){
   document.getElementById('onboardingAlert').style.display='none';
+}
+
+// CLOUD NUDGE & BANNER
+let _cloudBannerDismissed=false;
+function checkCloudNudge(){
+  if(_fbUser)return;
+  const dismissed=state.cloudNudgeDismissedAt;
+  if(dismissed){
+    const daysSince=Math.floor((Date.now()-dismissed)/(1000*60*60*24));
+    if(daysSince<3)return;
+  }
+  document.getElementById('cloudNudge').style.display='flex';
+}
+function dismissCloudNudge(){
+  document.getElementById('cloudNudge').style.display='none';
+  state.cloudNudgeDismissedAt=Date.now();save();
+}
+function acceptCloudNudge(){
+  document.getElementById('cloudNudge').style.display='none';
+  showLogin();
+}
+function renderCloudBanner(){
+  const el=document.getElementById('cloudBanner');
+  if(!el)return;
+  if(_fbUser||_cloudBannerDismissed){el.innerHTML='';return;}
+  el.innerHTML=`<div class="cloud-banner">
+    <div class="cb-text"><strong>Seus dados estão apenas neste aparelho.</strong> Crie uma conta para não perdê-los.</div>
+    <button class="cb-btn" onclick="showLogin()">Entrar</button>
+    <button class="cb-close" onclick="dismissCloudBanner()">×</button>
+  </div>`;
+}
+function dismissCloudBanner(){
+  _cloudBannerDismissed=true;
+  const el=document.getElementById('cloudBanner');
+  if(el)el.innerHTML='';
 }
 
 // WAKE LOCK — keep screen on during active workouts/timers
