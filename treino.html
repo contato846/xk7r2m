@@ -532,6 +532,7 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   <button class="btn btn-outline btn-full" style="margin-bottom:14px" onclick="openAddRecord()">+ Adicionar registro</button>
   <div class="section-title">Sessões realizadas</div>
   <div id="historyList"></div>
+  <div id="historyClearWrap"></div>
 </div>
 
 <div class="page" id="page-addrecord">
@@ -641,9 +642,12 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
     <button class="btn btn-secondary btn-full" onclick="document.getElementById('restoreInput').click()">⬆ Restaurar backup</button>
     <input type="file" id="restoreInput" accept=".json,application/json" style="display:none" onchange="importBackup(this.files[0])">
   </div>
+  <div class="section-title" style="margin-top:24px">Dados na nuvem</div>
+  <div id="backupCloudManage"></div>
   <div class="section-title" style="margin-top:24px;color:var(--danger)">Zona de perigo</div>
   <div class="backup-block">
-    <button class="btn btn-danger btn-full" onclick="clearAllData()">🗑 Apagar todos os dados</button>
+    <button class="btn btn-danger btn-full" style="margin-bottom:8px" onclick="deleteCloudData()">☁️ Apagar dados da nuvem</button>
+    <button class="btn btn-danger btn-full" onclick="clearAllData()">🗑 Apagar todos os dados (local + nuvem)</button>
   </div>
 </div>
 
@@ -700,7 +704,7 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 
 <!-- Disclaimer modal -->
 <div id="disclaimerModal" class="disclaimer-overlay" style="display:none">
-  <div class="disclaimer-box" style="text-align:center">
+  <div class="disclaimer-box" style="text-align:center;max-height:90vh;overflow-y:auto">
     <div class="disclaimer-brand">
       <span class="disclaimer-brand-top">TREINO</span>
       <span class="disclaimer-brand-main"><span style="color:#ff69b4">DA MÃE</span> <span style="color:#909090">&</span> <span style="color:#e8ff47">DO PAI</span></span>
@@ -709,8 +713,13 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
       <p style="margin-bottom:10px"><strong>Aviso importante antes de começar:</strong></p>
       <p style="margin-bottom:8px">Este aplicativo gera planos de treino com base nas suas respostas, mas <strong>não substitui a orientação de um profissional de educação física ou médico</strong>.</p>
       <p style="margin-bottom:8px">Ao utilizar o app, você assume total responsabilidade pela execução dos exercícios e sessões de corrida. Se você tem qualquer condição de saúde, lesão ou dúvida, <strong>consulte um profissional antes de iniciar</strong>.</p>
-      <p style="margin-bottom:8px">O app é uma ferramenta de apoio — a responsabilidade pela prática segura é sempre sua.</p>
-      <p style="color:var(--muted2);font-size:12px">Ao continuar, você declara que leu e concorda com este aviso.</p>
+      <p style="margin-bottom:12px">O app é uma ferramenta de apoio — a responsabilidade pela prática segura é sempre sua.</p>
+      <p style="margin-bottom:10px"><strong>Privacidade e proteção de dados (LGPD):</strong></p>
+      <p style="margin-bottom:8px"><strong>Dados coletados:</strong> nome, idade, sexo, peso, altura, meta de peso, histórico de treinos, cargas e observações. Todos fornecidos voluntariamente por você.</p>
+      <p style="margin-bottom:8px"><strong>Finalidade:</strong> os dados são usados exclusivamente para gerar planos de treino, calcular indicadores de saúde e acompanhar sua evolução. Não são compartilhados com terceiros nem utilizados para publicidade.</p>
+      <p style="margin-bottom:8px"><strong>Armazenamento:</strong> seus dados ficam salvos localmente no seu dispositivo. Se você criar uma conta, serão também armazenados na nuvem (Google Firebase) para sincronização entre dispositivos.</p>
+      <p style="margin-bottom:8px"><strong>Seus direitos:</strong> você pode a qualquer momento acessar, exportar, corrigir ou excluir todos os seus dados pessoais, tanto locais quanto da nuvem, diretamente pelo app (Perfil → Gerenciamento e Backup local).</p>
+      <p style="color:var(--muted2);font-size:12px">Ao continuar, você declara que leu e concorda com estes termos, incluindo a política de privacidade e tratamento de dados conforme a LGPD (Lei nº 13.709/2018).</p>
     </div>
     <button class="btn btn-full" onclick="acceptDisclaimer()" style="font-size:15px;padding:14px;background:linear-gradient(135deg,#e8ff47,#ff69b4);color:#000;border:none;font-weight:600;border-radius:10px;">Entendi e aceito</button>
   </div>
@@ -772,9 +781,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.14.2';
+const APP_VERSION='0.14.3';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.14.3',d:'2026-04-11',items:['Política de privacidade e LGPD no disclaimer e na aba Sobre','Gerenciamento de dados da nuvem na página de backup','Opção para apagar dados da nuvem separadamente','Opção para apagar todo o histórico de treinos']},
   {v:'0.14.2',d:'2026-04-11',items:['Correções de bugs e melhorias do app']},
   {v:'0.14.1',d:'2026-04-11',items:['Perfil redesenhado com foco em manter dados atualizados','Nuvem em destaque no perfil para incentivar sincronização','Página de backup local separada com orientação sobre a nuvem','Reiniciar plano agora na seção Gerenciamento']},
   {v:'0.14.0',d:'2026-04-11',items:['Login com Google ou e-mail e senha','Sincronização automática dos dados na nuvem','Seus treinos ficam seguros mesmo se trocar de celular']},
@@ -1300,6 +1310,15 @@ function renderSobre(){
         <p style="margin-bottom:0">O app é uma ferramenta de apoio — a responsabilidade pela prática segura é sempre sua.</p>
       </div>
     </div>
+    <div style="background:var(--card);border-radius:12px;padding:18px;margin-bottom:16px">
+      <div style="font-size:13px;line-height:1.7;color:var(--text)">
+        <p style="margin-bottom:10px"><strong>🔒 Privacidade e dados (LGPD)</strong></p>
+        <p style="margin-bottom:8px"><strong>Dados coletados:</strong> nome, idade, sexo, peso, altura, meta de peso, histórico de treinos, cargas e observações — todos fornecidos voluntariamente por você.</p>
+        <p style="margin-bottom:8px"><strong>Finalidade:</strong> gerar planos de treino, calcular indicadores e acompanhar evolução. Seus dados não são compartilhados com terceiros nem usados para publicidade.</p>
+        <p style="margin-bottom:8px"><strong>Armazenamento:</strong> dados ficam no seu dispositivo. Com uma conta, também ficam na nuvem (Google Firebase) para sincronização.</p>
+        <p style="margin-bottom:0"><strong>Seus direitos:</strong> você pode acessar, exportar, corrigir ou excluir todos os seus dados a qualquer momento pelo app (Perfil → Gerenciamento e Backup local).</p>
+      </div>
+    </div>
     <div class="section-title" style="margin-top:24px;margin-bottom:12px">Última atualização</div>
     ${(()=>{const c=CHANGELOG[0];const[y,m,d]=c.d.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const df=+d+' '+meses[+m-1]+' '+y;return `<div style="background:var(--card);border-radius:12px;padding:14px 16px;margin-bottom:8px;border-left:3px solid var(--accent)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -1337,6 +1356,36 @@ function openBackupPage(){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-backup').classList.add('active');
   renderBackupCloudHint();
+  renderBackupCloudManage();
+}
+function renderBackupCloudManage(){
+  const el=document.getElementById('backupCloudManage');
+  if(!el)return;
+  if(_fbUser){
+    const name=_fbUser.displayName||'';
+    const email=_fbUser.email||'';
+    el.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:500;color:var(--text)">☁️ ${name||email}</span>
+        <span class="cs-badge on">Conectado</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;margin-bottom:4px">Seus dados pessoais (nome, peso, altura, idade), histórico de treinos, cargas, observações e plano estão armazenados na nuvem associados a esta conta.</div>
+    </div>`;
+  }else{
+    el.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+      <div style="font-size:13px;color:var(--muted2);line-height:1.6">Você não está logado. Nenhum dado está armazenado na nuvem.</div>
+    </div>`;
+  }
+}
+async function deleteCloudData(){
+  if(!_fbUser){showToast('Você não está logado',false);return;}
+  if(!confirm('Apagar todos os seus dados da nuvem? Seus dados locais serão mantidos.'))return;
+  if(!confirm('Tem certeza? Os dados na nuvem serão excluídos permanentemente.'))return;
+  try{
+    await fbDb.collection('users').doc(_fbUser.uid).delete();
+    showToast('☁️ Dados da nuvem apagados',true);
+    renderBackupCloudManage();
+  }catch(e){showToast('Erro ao apagar dados da nuvem',false);}
 }
 function closeBackupPage(){switchPage('perfil');}
 function renderBackupCloudHint(){
@@ -2228,7 +2277,9 @@ function deleteHistory(hi){
 }
 function renderHistory(){
   const el=document.getElementById('historyList');
-  if(!state.history.length){el.innerHTML='<div class="empty"><span class="emoji">📋</span><p>Nenhum treino registrado ainda.<br>Finalize sua primeira sessão para ver o histórico.</p></div>';return;}
+  const clearWrap=document.getElementById('historyClearWrap');
+  if(!state.history.length){el.innerHTML='<div class="empty"><span class="emoji">📋</span><p>Nenhum treino registrado ainda.<br>Finalize sua primeira sessão para ver o histórico.</p></div>';if(clearWrap)clearWrap.innerHTML='';return;}
+  if(clearWrap)clearWrap.innerHTML=`<div style="text-align:center;margin-top:20px"><button class="btn btn-danger btn-small" onclick="clearAllHistory()">🗑 Apagar todo o histórico</button></div>`;
   el.innerHTML=state.history.map((s,hi)=>{
     if(editingHist===hi)return renderHistEdit(s,hi);
     const start=new Date(s.startISO),end=new Date(s.endISO);
@@ -2262,6 +2313,16 @@ function renderHistory(){
       </div>
     </div>`;
   }).join('');
+}
+function clearAllHistory(){
+  if(!confirm('Apagar todo o histórico de treinos? Essa ação não pode ser desfeita.'))return;
+  if(!confirm('Tem certeza? Todas as sessões registradas serão perdidas.'))return;
+  state.history=[];
+  state.weights={};
+  state.notes={};
+  save();
+  renderHistory();renderDesempenho();
+  showToast('🗑 Histórico apagado',true);
 }
 
 // SILHUETA MUSCULAR
