@@ -574,7 +574,8 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   <div class="section-title">🏃 Metas de corrida</div>
   <div id="runGoals"></div>
   <div class="section-title" style="margin-top:24px">Gerenciamento</div>
-  <button class="btn btn-outline btn-full" onclick="restartProgram()">🔄 Reiniciar plano (manter histórico)</button>
+  <button class="btn btn-outline btn-full" style="margin-bottom:8px" onclick="restartProgram()">🔄 Reiniciar plano (manter histórico)</button>
+  <button class="btn btn-danger btn-full" onclick="restartProgramFull()">🗑 Reiniciar plano e apagar histórico</button>
 </div>
 
 <div class="page" id="page-planchat">
@@ -1426,6 +1427,7 @@ function renderProfileActions(){
   if(!el)return;
   el.innerHTML=`
     <button class="btn btn-outline btn-full" style="margin-bottom:8px" onclick="restartProgram()">🔄 Reiniciar plano (manter histórico)</button>
+    <button class="btn btn-danger btn-full" style="margin-bottom:8px" onclick="restartProgramFull()">🗑 Reiniciar plano e apagar histórico</button>
     <span class="profile-backup-link" onclick="openBackupPage()">Backup local →</span>`;
 }
 function renderProfileChart(){
@@ -3141,6 +3143,21 @@ function restartProgram(){
   state.programStart=new Date().toISOString();
   state.switchDismissed=false;
   save();showToast('🔄 Plano reiniciado',true);
+  setTimeout(()=>location.reload(),500);
+}
+function restartProgramFull(){
+  if(!confirm('Reiniciar o plano E apagar todo o histórico de treinos? Essa ação não pode ser desfeita.'))return;
+  if(!confirm('Tem certeza? Todo o histórico de sessões, cargas e observações será perdido.'))return;
+  state.programStart=new Date().toISOString();
+  state.switchDismissed=false;
+  state.history=[];
+  state.weights={};
+  state.notes={};
+  state.profileHistory=[];
+  state.sessionSets=null;
+  state.sessionStart=null;
+  state.sessionPlan=null;
+  save();showToast('🔄 Plano reiniciado do zero',true);
   setTimeout(()=>location.reload(),500);
 }
 
