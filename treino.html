@@ -426,6 +426,27 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .cloud-status .cs-badge.on{background:rgba(114,184,0,.15);color:var(--done-border);border:1px solid rgba(114,184,0,.3);}
 .cloud-status .cs-badge.off{background:rgba(255,69,69,.1);color:var(--danger);border:1px solid rgba(255,69,69,.2);}
 .cloud-status .cs-actions{display:flex;gap:8px;margin-top:12px;}
+/* PROFILE CTA */
+.profile-cta-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px;}
+.profile-cta-card.empty-data{text-align:center;border-style:dashed;}
+.profile-cta-card.empty-data .pcc-icon{font-size:34px;margin-bottom:8px;}
+.profile-cta-card.empty-data .pcc-text{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:14px;}
+.profile-cta-card.stale-data{border-color:var(--accent);background:linear-gradient(135deg,rgba(232,255,71,.06),rgba(232,255,71,.02));}
+body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,105,180,.06),rgba(255,105,180,.02));}
+.profile-cta-card .pcc-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.profile-cta-card .pcc-title{font-size:14px;font-weight:600;}
+.profile-cta-card .pcc-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.profile-edit-link{font-size:12px;color:var(--muted2);cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .15s;}
+.profile-edit-link:active{color:var(--accent);}
+.profile-backup-link{display:block;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:10px 0;transition:color .15s;}
+.profile-backup-link:active{color:var(--text);}
+.backup-cloud-hint{border-radius:12px;padding:14px 16px;margin-bottom:14px;line-height:1.6;}
+.backup-cloud-hint.hint-info{background:linear-gradient(135deg,rgba(71,184,255,.1),rgba(71,184,255,.03));border:1px solid rgba(71,184,255,.3);}
+.backup-cloud-hint.hint-ok{background:linear-gradient(135deg,rgba(114,184,0,.1),rgba(114,184,0,.03));border:1px solid rgba(114,184,0,.3);}
+.backup-cloud-hint .bch-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.backup-cloud-hint.hint-info .bch-title{color:var(--accent3);}
+.backup-cloud-hint.hint-ok .bch-title{color:var(--done-border);}
+.backup-cloud-hint .bch-body{font-size:12px;color:var(--muted2);line-height:1.6;}
 </style>
 </head>
 <body>
@@ -546,14 +567,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div class="page" id="page-perfil">
   <div id="profileSummary"></div>
+  <div id="profileUpdateCta"></div>
+  <div class="section-title" style="margin-top:18px">Conta e nuvem</div>
+  <div id="cloudStatus"></div>
   <div class="section-title">Indicadores</div>
   <div id="profileStats"></div>
-  <div style="display:flex;gap:8px;margin-top:18px">
-    <button class="btn btn-outline btn-full" onclick="openProfileEdit()">✎ Dados pessoais</button>
-    <button class="btn btn-outline btn-full" onclick="openBackupPage()">💾 Backup e dados</button>
-  </div>
-  <div class="section-title" style="margin-top:24px">Conta e nuvem</div>
-  <div id="cloudStatus"></div>
+  <div class="section-title" style="margin-top:24px">Gerenciamento</div>
+  <div id="profileActions"></div>
 </div>
 
 <div class="page" id="page-sobre">
@@ -589,15 +609,18 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <div class="page" id="page-backup">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <div class="section-title" style="margin:0">Backup e dados</div>
-    <button class="btn btn-secondary btn-small" onclick="closeBackupPage()">✕ Fechar</button>
+    <div class="section-title" style="margin:0">Backup local</div>
+    <button class="btn btn-secondary btn-small" onclick="closeBackupPage()">← Voltar</button>
   </div>
-  <p class="backup-intro">O backup contém: histórico completo, cargas, observações, perfil, evolução, planos customizados (incluindo planos criados pelo assistente), metas de corrida, período do plano, sessão em andamento, métricas e preferências.</p>
+  <div id="backupCloudHint"></div>
+  <p class="backup-intro">O backup local exporta um arquivo <strong>.json</strong> para o seu dispositivo. Use quando quiser uma cópia manual dos seus dados.</p>
   <div class="backup-block">
     <button class="btn btn-secondary btn-full" onclick="exportBackup()">⬇ Exportar backup (.json)</button>
     <button class="btn btn-secondary btn-full" onclick="document.getElementById('restoreInput').click()">⬆ Restaurar backup</button>
     <input type="file" id="restoreInput" accept=".json,application/json" style="display:none" onchange="importBackup(this.files[0])">
-    <button class="btn btn-secondary btn-full" onclick="restartProgram()">🔄 Reiniciar plano (manter histórico)</button>
+  </div>
+  <div class="section-title" style="margin-top:24px;color:var(--danger)">Zona de perigo</div>
+  <div class="backup-block">
     <button class="btn btn-danger btn-full" onclick="clearAllData()">🗑 Apagar todos os dados</button>
   </div>
 </div>
@@ -711,9 +734,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.14.0';
+const APP_VERSION='0.14.1';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.14.1',d:'2026-04-11',items:['Perfil redesenhado com foco em manter dados atualizados','Nuvem em destaque no perfil para incentivar sincronização','Página de backup local separada com orientação sobre a nuvem','Reiniciar plano agora na seção Gerenciamento']},
   {v:'0.14.0',d:'2026-04-11',items:['Login com Google ou e-mail e senha','Sincronização automática dos dados na nuvem','Seus treinos ficam seguros mesmo se trocar de celular']},
   {v:'0.13.1',d:'2026-04-11',items:['Página Sobre mostra apenas a última atualização','Histórico completo em página separada']},
   {v:'0.13.0',d:'2026-04-11',items:['Novo nome: TREINO DA MÃE & DO PAI','Novo ícone do app']},
@@ -1269,8 +1293,31 @@ function closeChangelogPage(){switchPage('sobre');}
 function openBackupPage(){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-backup').classList.add('active');
+  renderBackupCloudHint();
 }
 function closeBackupPage(){switchPage('perfil');}
+function renderBackupCloudHint(){
+  const el=document.getElementById('backupCloudHint');
+  if(!el)return;
+  if(_fbUser){
+    el.innerHTML=`<div class="backup-cloud-hint hint-ok">
+      <div class="bch-title">☁️ Seus dados estão na nuvem</div>
+      <div class="bch-body">Como você já tem uma conta, seus dados são sincronizados automaticamente. O backup local é opcional — use apenas se quiser uma cópia extra no seu dispositivo.</div>
+    </div>`;
+  }else{
+    el.innerHTML=`<div class="backup-cloud-hint hint-info">
+      <div class="bch-title">☁️ Prefira a sincronização na nuvem</div>
+      <div class="bch-body">Com uma conta, seus dados são salvos automaticamente e ficam disponíveis em qualquer dispositivo. O backup local é uma opção manual para quem prefere não criar conta.</div>
+      <button class="btn btn-primary btn-small" style="margin-top:10px" onclick="closeBackupPage();setTimeout(showLogin,300)">Criar conta gratuita</button>
+    </div>`;
+  }
+}
+function getLastProfileUpdateDays(){
+  const hist=state.profileHistory||[];
+  if(!hist.length)return -1;
+  const last=new Date(hist[hist.length-1].date);
+  return Math.floor((Date.now()-last.getTime())/(1000*60*60*24));
+}
 function renderPerfil(){
   const p=state.profile;
   // Resumo compacto
@@ -1290,9 +1337,34 @@ function renderPerfil(){
   }else{
     sum.innerHTML=`<div class="profile-summary"><div class="ps-info" style="color:var(--muted)">Nenhum dado pessoal cadastrado.</div></div>`;
   }
-  const el=document.getElementById('profileStats');
+  // CTA de atualização
+  const ctaEl=document.getElementById('profileUpdateCta');
+  const hasData=p.weightKg&&p.heightCm;
+  const daysSince=getLastProfileUpdateDays();
+  if(!hasData){
+    ctaEl.innerHTML=`<div class="profile-cta-card empty-data">
+      <div class="pcc-icon">📊</div>
+      <div class="pcc-text">Preencha peso e altura para ver seu IMC, gasto calórico estimado e acompanhar sua evolução.</div>
+      <button class="btn btn-primary btn-full" onclick="openProfileEdit()">Preencher dados pessoais</button>
+    </div>`;
+  }else if(daysSince>7){
+    ctaEl.innerHTML=`<div class="profile-cta-card stale-data">
+      <div class="pcc-row">
+        <div>
+          <div class="pcc-title">Atualizar medidas</div>
+          <div class="pcc-sub">Última atualização há ${daysSince} dias</div>
+        </div>
+        <button class="btn btn-primary btn-small" onclick="openProfileEdit()">Atualizar</button>
+      </div>
+    </div>`;
+  }else{
+    ctaEl.innerHTML=`<div style="text-align:right;margin-top:4px"><span class="profile-edit-link" onclick="openProfileEdit()">Editar dados pessoais →</span></div>`;
+  }
+  // Cloud
   renderCloudStatus();
-  if(!p.weightKg||!p.heightCm){el.innerHTML='<div class="empty"><p>Preencha peso e altura para ver IMC e gasto calórico estimado.</p></div>';return;}
+  // Indicadores
+  const el=document.getElementById('profileStats');
+  if(!p.weightKg||!p.heightCm){el.innerHTML='<div class="empty"><p>Preencha peso e altura para ver IMC e gasto calórico estimado.</p></div>';renderProfileActions();return;}
   const m=p.heightCm/100;
   const imc=p.weightKg/(m*m);
   const imcCat=imc<18.5?'Abaixo':imc<25?'Normal':imc<30?'Sobrepeso':'Obesidade';
@@ -1305,6 +1377,14 @@ function renderPerfil(){
     <div class="ps-card"><div class="ps-val">${tdee}</div><div class="ps-lbl">Gasto diário est.</div></div>
     <div class="ps-card"><div class="ps-val">${diff} kg</div><div class="ps-lbl">Para a meta</div></div>
   </div>`+renderProfileChart();
+  renderProfileActions();
+}
+function renderProfileActions(){
+  const el=document.getElementById('profileActions');
+  if(!el)return;
+  el.innerHTML=`
+    <button class="btn btn-outline btn-full" style="margin-bottom:8px" onclick="restartProgram()">🔄 Reiniciar plano (manter histórico)</button>
+    <span class="profile-backup-link" onclick="openBackupPage()">Backup local →</span>`;
 }
 function renderProfileChart(){
   const hist=state.profileHistory||[];
