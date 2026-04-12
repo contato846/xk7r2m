@@ -1021,7 +1021,7 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.19.0';
+const APP_VERSION='0.20.0';
 const APP_UPDATED='2026-04-12';
 const CHANGELOG=[
   {v:'0.19.0',d:'2026-04-12',items:['Busca e filtro no modal de substituição/adição de exercícios','Repetições visíveis e editáveis nos cards de exercício','Plano do wizard agora mostra reps editáveis pelo usuário','Base de exercícios expandida com contraindicações médicas','Filtro inteligente por limitações físicas (lombar, joelho, ombro, cardíaco, etc.)','Exercícios cronometrados com padrão 30s execução / 60s descanso']},
@@ -1052,7 +1052,7 @@ const CHANGELOG=[
 ];
 
 // STATE
-const STATE_VERSION=6;
+const STATE_VERSION=7;
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
 function save(){localStorage.setItem('fpv5',JSON.stringify(state));saveToCloud();}
 function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.series).fill(false));}
@@ -1117,6 +1117,13 @@ const MIGRATIONS=[
       runSegments:true,
       runTick:true
     };
+  },
+  // v6→v7: sons de início de exercício e início de descanso
+  function v7(s){
+    if(s.soundSettings){
+      if(s.soundSettings.timedStart===undefined)s.soundSettings.timedStart=true;
+      if(s.soundSettings.restStart===undefined)s.soundSettings.restStart=true;
+    }
   }
 ];
 function migrateState(s){
@@ -1633,7 +1640,18 @@ function setReps(ei,v){
   materializePlan();
   const ex=state.sessionPlan[ei];if(!ex)return;
   ex.reps=v.trim();save();
+  renderTreino();toggleEx(ei);
   showToast('✓ Repetições atualizadas',true);
+}
+function setTimedReps(ei,v){
+  materializePlan();
+  const ex=state.sessionPlan[ei];if(!ex)return;
+  const sec=Math.max(5,parseInt(v)||30);
+  ex.reps=sec+' seg';
+  const key=state.currentWorkout+'-'+ei;
+  resetCountUp(key);
+  save();renderTreino();toggleEx(ei);
+  showToast('✓ Tempo atualizado: '+sec+'s',true);
 }
 function setSeries(ei,v){
   materializePlan();
@@ -1648,8 +1666,12 @@ function setSeries(ei,v){
 function setExRest(ei,v){
   materializePlan();
   const ex=state.sessionPlan[ei];if(!ex)return;
-  ex.rest=Math.max(0,parseInt(v)||0);save();
-  showToast('✓ Descanso atualizado',true);
+  ex.rest=Math.max(0,parseInt(v)||0);
+  const key=state.currentWorkout+'-'+ei;
+  clearInterval(TI[key]);
+  if(TD[key]){TD[key].remain=ex.rest;TD[key].running=false;TD[key].endsAt=null;}
+  save();renderTreino();toggleEx(ei);
+  showToast('✓ Descanso atualizado: '+ex.rest+'s',true);
 }
 function openProfileEdit(){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1951,7 +1973,7 @@ save();
 // TIMER
 let TD={},TI={},CU={},CI={};
 function parseSecTarget(reps){const m=String(reps).match(/(\d+)(?:\D+(\d+))?\s*(?:seg|s\b)/i);if(!m)return 0;return parseInt(m[2]||m[1],10);}
-function startCountUp(key,target){
+function startCountUp(key,target,restDur){
   if(!CU[key])CU[key]={elapsed:0,running:false};
   const c=CU[key],disp=document.getElementById('cu-'+key),btn=document.getElementById('cb-'+key);
   if(!disp)return;
@@ -1960,6 +1982,7 @@ function startCountUp(key,target){
     c.elapsed=Math.floor((Date.now()-c.startedAt)/1000)+(c.base||0);
     if(btn)btn.textContent='▶ Continuar';disp.classList.remove('running');return;
   }
+  if(!c.elapsed)playSfx('timedStart','exerciseStart');
   c.running=true;c.base=c.elapsed||0;c.startedAt=Date.now();
   disp.classList.add('running');if(btn)btn.textContent='⏸ Pausar';
   const tick=()=>{
@@ -1969,8 +1992,17 @@ function startCountUp(key,target){
       const rem=target-sec;
       if(rem>=1&&rem<=3&&c._lastTickRem!==rem){playSfx('timedTick','tick');c._lastTickRem=rem;}
       if(sec>=target){c.alerted=true;disp.classList.add('finished');
-      playSfx('timedEnd','finish');
-      showToast('⏱ Meta atingida!',true);if(navigator.vibrate)navigator.vibrate([200,100,200]);}
+      clearInterval(CI[key]);c.running=false;
+      c.elapsed=Math.floor((Date.now()-c.startedAt)/1000)+(c.base||0);
+      if(btn)btn.textContent='▶ Iniciar';
+      playSfx('timedEnd','exerciseEnd');
+      showToast('⏱ Meta atingida!',true);if(navigator.vibrate)navigator.vibrate([200,100,200]);
+      if(restDur&&restDur>0){
+        setTimeout(()=>{resetTimer(key,restDur);startTimer(key,restDur);
+          showToast('⏳ Descanso iniciado',false);
+        },800);
+      }
+      }
     }
   };
   tick();
@@ -1994,6 +2026,7 @@ function startTimer(key,def){
     d.remain=Math.max(0,Math.ceil((d.endsAt-Date.now())/1000));
     if(btn)btn.textContent='▶ Continuar';disp.classList.remove('running');return;
   }
+  if(d.remain>=def)playSfx('restStart','restStart');
   d.running=true;d.endsAt=Date.now()+d.remain*1000;
   disp.classList.add('running');disp.classList.remove('finished');if(btn)btn.textContent='⏸ Pausar';
   let _lastTickSec=-1;
@@ -2004,7 +2037,7 @@ function startTimer(key,def){
     if(sec<=0){clearInterval(TI[key]);d.running=false;d.remain=def;
       if(disp){disp.textContent='00:00';disp.classList.remove('running');disp.classList.add('finished');}
       if(btn)btn.textContent='▶ Iniciar';
-      playSfx('restEnd','finish');
+      playSfx('restEnd','restEnd');
       showToast('⏱ Descanso concluído!',false);
       if(navigator.vibrate)navigator.vibrate([200,100,200]);}
   };
@@ -2464,6 +2497,8 @@ function renderTreino(){
     const card=document.createElement('div');
     card.className=`ex-card${allDone?' completed':''}`;card.id=`ec-${ei}`;card.style.setProperty('--i',ei);
     const key=`${wi}-${ei}`;if(!TD[key])TD[key]={remain:ex.rest,running:false};
+    const secTarget=parseSecTarget(ex.reps);
+    const isTimed=secTarget>0;
     const serBtns=Array.from({length:ex.series},(_,si)=>{
       const d=sets2[ei]&&sets2[ei][si];
       return `<button class="serie-btn${d?' done':''}" onclick="toggleSerie(${ei},${si})">${si+1}<span class="slabel">${d?'✓':'série'}</span></button>`;
@@ -2497,12 +2532,19 @@ function renderTreino(){
           <div class="ex-reps-edit" onclick="event.stopPropagation()">
             <span class="ex-reps-label">Séries:</span>
             <input class="ex-reps-input" type="number" inputmode="numeric" min="1" max="10" value="${ex.series}" onchange="setSeries(${ei},this.value)">
+            ${isTimed?`
+            <span class="ex-reps-label" style="margin-left:8px">Tempo:</span>
+            <input class="ex-reps-input" type="number" inputmode="numeric" min="5" max="300" step="5" value="${secTarget}" onchange="setTimedReps(${ei},this.value)" style="width:60px">
+            <span class="ex-reps-label">seg</span>
+            `:`
             <span class="ex-reps-label" style="margin-left:8px">Reps:</span>
             <input class="ex-reps-input" type="text" value="${ex.reps}" onchange="setReps(${ei},this.value)" style="width:80px">
+            `}
             <span class="ex-reps-label" style="margin-left:8px">Descanso:</span>
-            <input class="ex-reps-input" type="number" inputmode="numeric" min="0" max="600" step="15" value="${ex.rest}" onchange="setExRest(${ei},this.value)" style="width:52px">
-            <span class="ex-reps-label">s</span>
+            <input class="ex-reps-input" type="number" inputmode="numeric" min="0" max="600" step="5" value="${ex.rest}" onchange="setExRest(${ei},this.value)" style="width:52px">
+            <span class="ex-reps-label">seg</span>
           </div>
+          ${isTimed?'<div style="font-size:11px;color:var(--muted2);margin-top:4px;padding:0 4px">⏱ Valores de tempo e descanso em segundos. Ao atingir a meta, o descanso inicia automaticamente.</div>':''}
           <div class="ex-note-wrap">
             <label>Minhas anotações</label>
             <textarea class="ex-note" rows="2" placeholder="Ex.: máquina 7, pegada aberta, PR pessoal…" onchange="setNote(this.dataset.n,this.value)" data-n="${ex.name.replace(/"/g,'&quot;')}">${(state.notes&&state.notes[ex.name])||''}</textarea>
@@ -2510,11 +2552,11 @@ function renderTreino(){
           <div class="muscle-tags">${mtags}</div>
           <div class="series-label">Marcar séries</div>
           <div class="series-grid">${serBtns}</div>
-          ${parseSecTarget(ex.reps)?`<div class="timer-area">
-            <div class="timer-label">Cronômetro do exercício — meta ${parseSecTarget(ex.reps)}s</div>
+          ${isTimed?`<div class="timer-area">
+            <div class="timer-label">Cronômetro do exercício — meta ${secTarget}s</div>
             <div class="timer-disp" id="cu-${key}">00:00</div>
             <div class="timer-btns">
-              <button class="tbtn primary" id="cb-${key}" onclick="startCountUp('${key}',${parseSecTarget(ex.reps)})">▶ Iniciar</button>
+              <button class="tbtn primary" id="cb-${key}" onclick="startCountUp('${key}',${secTarget},${ex.rest||0})">▶ Iniciar</button>
               <button class="tbtn" onclick="resetCountUp('${key}')">↺ Reset</button>
             </div>
           </div>`:''}
@@ -3493,7 +3535,9 @@ function saveAddRecordStrength(){
 function openMenu(){document.getElementById('menuOverlay').classList.add('open');}
 function closeMenu(){document.getElementById('menuOverlay').classList.remove('open');}
 function renderConfig(){
-  if(!state.soundSettings)state.soundSettings={sessionStartEnd:true,sessionPauseResume:true,restEnd:true,restTick:true,timedEnd:true,timedTick:true,runSegments:true,runTick:true};
+  if(!state.soundSettings)state.soundSettings={sessionStartEnd:true,sessionPauseResume:true,restEnd:true,restTick:true,restStart:true,timedEnd:true,timedTick:true,timedStart:true,runSegments:true,runTick:true};
+  if(state.soundSettings.timedStart===undefined)state.soundSettings.timedStart=true;
+  if(state.soundSettings.restStart===undefined)state.soundSettings.restStart=true;
   const ss=state.soundSettings;
   const toggle=(key,label,desc)=>`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;">
@@ -3516,9 +3560,11 @@ function renderConfig(){
     ${toggle('sessionStartEnd','Início e fim de sessão','Som ao iniciar e encerrar treinos de musculação e corrida')}
     ${toggle('sessionPauseResume','Pausar e retomar','Som ao pausar ou retomar sessões de corrida')}
     <div class="section-title">Alertas sonoros — Intervalos</div>
+    ${toggle('restStart','Início do descanso','Som ao iniciar o timer de descanso (manual ou automático)')}
     ${toggle('restEnd','Fim do intervalo','Som quando o tempo de descanso entre séries acaba')}
     ${toggle('restTick','Contagem regressiva do intervalo','Bip nos últimos 3 segundos do descanso')}
     <div class="section-title">Alertas sonoros — Exercícios por tempo</div>
+    ${toggle('timedStart','Início do exercício','Som ao iniciar o cronômetro do exercício')}
     ${toggle('timedEnd','Meta de tempo atingida','Som ao atingir o tempo-alvo em exercícios cronometrados')}
     ${toggle('timedTick','Contagem regressiva da meta','Bip nos últimos 3 segundos antes de atingir a meta')}
     <div class="section-title">Alertas sonoros — Corrida</div>
@@ -3528,8 +3574,11 @@ function renderConfig(){
       <button class="btn btn-secondary btn-full" onclick="setAllSounds(true)">🔊 Ligar todos</button>
       <button class="btn btn-secondary btn-full" onclick="setAllSounds(false)">🔇 Desligar todos</button>
     </div>
-    <div style="margin-top:12px;text-align:center">
-      <button class="btn btn-secondary" onclick="sfx('finish')" style="font-size:12px;padding:8px 16px">🔈 Testar som</button>
+    <div style="margin-top:12px;text-align:center;display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
+      <button class="btn btn-secondary" onclick="sfx('exerciseStart')" style="font-size:11px;padding:6px 10px">🔈 Início ex.</button>
+      <button class="btn btn-secondary" onclick="sfx('exerciseEnd')" style="font-size:11px;padding:6px 10px">🔈 Fim ex.</button>
+      <button class="btn btn-secondary" onclick="sfx('restStart')" style="font-size:11px;padding:6px 10px">🔈 Início desc.</button>
+      <button class="btn btn-secondary" onclick="sfx('restEnd')" style="font-size:11px;padding:6px 10px">🔈 Fim desc.</button>
     </div>`;
 }
 function toggleSound(key,val){
@@ -3539,7 +3588,7 @@ function toggleSound(key,val){
   renderConfig();
 }
 function setAllSounds(val){
-  const keys=['sessionStartEnd','sessionPauseResume','restEnd','restTick','timedEnd','timedTick','runSegments','runTick'];
+  const keys=['sessionStartEnd','sessionPauseResume','restStart','restEnd','restTick','timedStart','timedEnd','timedTick','runSegments','runTick'];
   keys.forEach(k=>state.soundSettings[k]=val);
   save();
   renderConfig();
@@ -5576,6 +5625,10 @@ function sfx(type){
       case 'switch':p(523,n,0.06,0.2);p(587,n+0.07,0.06,0.2);break;
       case 'segment':p(660,n,0.12,0.35);p(660,n+0.14,0.12,0.35);break;
       case 'segmentHigh':p(880,n,0.1,0.4);p(880,n+0.12,0.1,0.4);p(880,n+0.24,0.1,0.4);break;
+      case 'exerciseStart':p(440,n,0.08,0.3);p(660,n+0.1,0.08,0.3);p(880,n+0.2,0.15,0.45);break;
+      case 'exerciseEnd':p(880,n,0.15,0.4);p(784,n+0.15,0.15,0.35);p(659,n+0.3,0.2,0.3);p(523,n+0.5,0.35,0.5);break;
+      case 'restStart':p(587,n,0.2,0.3);p(440,n+0.22,0.25,0.25);p(330,n+0.48,0.3,0.2);break;
+      case 'restEnd':p(523,n,0.1,0.3);p(659,n+0.1,0.1,0.35);p(784,n+0.2,0.1,0.4);p(1047,n+0.3,0.08,0.45);p(1047,n+0.4,0.15,0.5);break;
     }
   }catch(e){}
 }
