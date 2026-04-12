@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/png" href="apple-touch-icon.png?v=1775683057">
+    <link rel="icon" type="image/png" href="apple-touch-icon.png?v=1775954806">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TREINO DO PAI</title>
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1775683057">
+<title>TREINO DA MÃE &amp; DO PAI</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1775954806">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TREINO DO PAI">
+<meta name="apple-mobile-web-app-title" content="TREINO DA MÃE &amp; DO PAI">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -632,9 +632,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.12.0';
+const APP_VERSION='0.13.0';
 const APP_UPDATED='2026-04-11';
 const CHANGELOG=[
+  {v:'0.13.0',d:'2026-04-11',items:['Novo nome: TREINO DA MÃE & DO PAI','Novo ícone do app']},
   {v:'0.12.0',d:'2026-04-11',items:['Compatibilidade automática ao restaurar backups de versões anteriores','Backups antigos são atualizados para a versão atual na importação']},
   {v:'0.11.1',d:'2026-04-11',items:['Correções de bugs e melhorias do app']},
   {v:'0.11.0',d:'2026-04-11',items:['Alertas sonoros diferenciados para cada etapa do treino','Sons ao iniciar, pausar, retomar e encerrar sessões de musculação e corrida']},
@@ -2725,11 +2726,11 @@ function exportFit(idx){
   }catch(e){alert('Erro ao gerar .fit: '+e.message);}
 }
 function exportBackup(){
-  const payload={app:'treino-do-pai',version:1,stateVersion:STATE_VERSION,appVersion:APP_VERSION,exportedAt:new Date().toISOString(),state};
+  const payload={app:'treino-da-mae-e-pai',version:1,stateVersion:STATE_VERSION,appVersion:APP_VERSION,exportedAt:new Date().toISOString(),state};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const d=new Date(),pad=n=>String(n).padStart(2,'0');
-  const fname=`treino-do-pai-backup-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.json`;
+  const fname=`treino-backup-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.json`;
   const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();
   setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},100);
   showToast('✓ Backup exportado',true);
@@ -4820,7 +4821,7 @@ function updateFreeRunDisplay(){
 }
 
 // THEME — PAI vs MÃE
-function getAppName(){return state.profile.sex==='F'?'TREINO DA MÃE':'TREINO DO PAI';}
+function getAppName(){return 'TREINO DA MÃE & DO PAI';}
 function isFem(){return state.profile.sex==='F';}
 function applyTheme(){
   const fem=isFem();
