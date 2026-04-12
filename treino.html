@@ -1356,6 +1356,7 @@ fbAuth.onAuthStateChanged(async(user)=>{
     renderCloudStatus();
     renderCloudBanner();
     updateMenuAuthBtn();
+    checkCloudNudge();
   }
 });
 
@@ -6222,8 +6223,6 @@ function checkOnboarding(){
     const title=document.getElementById('onboardingTitle');
     if(title)title.textContent=state.profile.sex==='F'?'Bem-vinda!':'Bem-vindo!';
     _openModal('onboardingAlert');
-  }else{
-    checkCloudNudge();
   }
 }
 function startOnboarding(){
