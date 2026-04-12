@@ -90,7 +90,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 /* SESSION */
 .session-active-bar{background:linear-gradient(135deg,#1d3300,#0e1f00);border:1px solid var(--done-border);border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
 .sab-time{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);letter-spacing:2px;line-height:1;}
-.session-start-cta{background:var(--accent);color:#000;border:none;border-radius:12px;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;width:100%;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 16px rgba(var(--accent-rgb),.2);}
+.session-start-cta{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:12px;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;width:100%;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 16px rgba(var(--accent-rgb),.2);position:relative;overflow:hidden;}
+.session-start-cta::before{content:'';position:absolute;top:-40%;right:-20%;width:60%;height:180%;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;}
 .session-start-cta:active{transform:scale(.97);box-shadow:0 2px 8px rgba(var(--accent-rgb),.15);}
 .session-start-cta:hover{box-shadow:0 6px 24px rgba(var(--accent-rgb),.35);}
 .session-start-cta.hidden{display:none;}
@@ -253,6 +254,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .hist-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
 .hist-sub{font-size:11px;color:var(--muted);margin-top:1px;}
 .hist-seq{display:none;font-family:'Bebas Neue',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.hist-num{font-size:14px;color:var(--accent);opacity:.6;}
 .hist-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
 .hbadge{font-size:11px;padding:3px 9px;border-radius:6px;background:var(--surface);border:1px solid var(--border);color:var(--muted2);}
 .hist-muscles{font-size:11px;color:var(--muted);}
@@ -566,12 +568,12 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   #exerciseList{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .ex-card{margin-bottom:0;}
   .ex-card.open{grid-column:1/-1;}
+  .no-plan-cta{grid-column:1/-1;}
   .stat-grid{grid-template-columns:repeat(4,1fr);}
   .profile-stats{grid-template-columns:1fr 1fr;gap:16px;}
-  #historyList{display:grid;grid-template-columns:1fr 1fr;gap:10px;counter-reset:hist;}
-  .hist-item{margin-bottom:0;counter-increment:hist;}
+  #historyList{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .hist-item{margin-bottom:0;}
   .hist-seq{display:flex;align-items:center;gap:6px;}
-  .hist-seq::before{content:counter(hist);font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent);opacity:.5;min-width:20px;}
   .hist-seq::after{content:'';flex:1;height:1px;background:var(--border);}
   .plan-week{gap:8px;}
   .plan-day{padding:10px 4px;}
@@ -626,6 +628,10 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 .cloud-banner .cb-btn{font-size:11px;font-weight:700;color:var(--accent3);background:none;border:1px solid var(--accent3);border-radius:8px;padding:6px 12px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;}
 .cloud-banner .cb-btn:active{background:var(--accent3);color:#000;}
 .cloud-banner .cb-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:0 0 0 4px;line-height:1;}
+/* PERIOD FILTER */
+.period-filter{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:14px;}
+.pf-btn{flex:1;padding:8px 4px;background:transparent;color:var(--muted2);border:0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;}
+.pf-btn.active{background:var(--accent);color:#000;}
 /* SCROLL TO TOP */
 .scroll-top{position:fixed;bottom:28px;right:20px;z-index:100;width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--accent);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 4px 16px rgba(0,0,0,.4);}
 .scroll-top.visible{opacity:1;visibility:visible;transform:translateY(0);}
@@ -724,6 +730,12 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 <div class="page" id="page-historico">
   <button class="btn btn-outline btn-full" style="margin-bottom:14px" onclick="openAddRecord()">+ Adicionar registro</button>
   <div class="section-title">Sessões realizadas</div>
+  <div class="period-filter" id="histFilter">
+    <button class="pf-btn active" onclick="setHistFilter('all',this)">Tudo</button>
+    <button class="pf-btn" onclick="setHistFilter('week',this)">Semana</button>
+    <button class="pf-btn" onclick="setHistFilter('month',this)">Mês</button>
+    <button class="pf-btn" onclick="setHistFilter('year',this)">Ano</button>
+  </div>
   <div id="historyList"></div>
   <div id="historyClearWrap"></div>
 </div>
@@ -741,6 +753,12 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 </div>
 
 <div class="page" id="page-dashboard">
+  <div class="period-filter" id="dashFilter">
+    <button class="pf-btn active" onclick="setDashFilter('all',this)">Tudo</button>
+    <button class="pf-btn" onclick="setDashFilter('week',this)">Semana</button>
+    <button class="pf-btn" onclick="setDashFilter('month',this)">Mês</button>
+    <button class="pf-btn" onclick="setDashFilter('year',this)">Ano</button>
+  </div>
   <div class="section-title">Resumo geral</div>
   <div class="stat-grid" id="statsGrid"></div>
   <div class="section-title">Cobertura muscular</div>
@@ -994,9 +1012,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.18.0';
+const APP_VERSION='0.18.1';
 const APP_UPDATED='2026-04-12';
 const CHANGELOG=[
+  {v:'0.18.1',d:'2026-04-12',items:['Filtros por período (semana, mês, ano) no Histórico e Desempenho','Numeração correta dos treinos no histórico em telas maiores','Botão Iniciar Treino com gradiente visual aprimorado','Layout corrigido para tela sem plano em visualização horizontal']},
   {v:'0.18.0',d:'2026-04-12',items:['Redesign completo de UX com animações e transições fluidas','Painéis de exercícios abrem e fecham suavemente','Menu lateral deslizante com animação escalonada','Modais com backdrop blur e efeito de escala','Botão voltar ao topo flutuante','Toast com barra de progresso visual','Efeitos de hover e toque aprimorados em todos os botões','Diálogo de confirmação estilizado','Sombra dinâmica na barra de navegação ao rolar']},
   {v:'0.17.2',d:'2026-04-11',items:['Login mais rápido com feedback visual de carregamento','Indicação de progresso durante autenticação e sincronização','Correções de bugs e melhorias do app']},
   {v:'0.17.1',d:'2026-04-11',items:['Correção dos alertas sonoros em dispositivos Apple','Login com Google corrigido para iPhone e iPad','Correções de bugs e melhorias do app']},
@@ -2588,12 +2607,52 @@ function deleteHistory(hi){
   renderHistory();renderDesempenho();
   showToast('🗑 Treino removido',true);
 }
+// ═══ PERIOD FILTERS ═══
+let _histPeriod='all';
+let _dashPeriod='all';
+function _getPeriodStart(period){
+  const now=new Date();
+  if(period==='week'){const d=new Date(now);d.setDate(d.getDate()-d.getDay());d.setHours(0,0,0,0);return d;}
+  if(period==='month'){return new Date(now.getFullYear(),now.getMonth(),1);}
+  if(period==='year'){return new Date(now.getFullYear(),0,1);}
+  return null;
+}
+function _filterHistory(hist){
+  const start=_getPeriodStart(_histPeriod);
+  if(!start)return hist;
+  return hist.filter(s=>new Date(s.startISO)>=start);
+}
+function _filterDashHistory(hist){
+  const start=_getPeriodStart(_dashPeriod);
+  if(!start)return hist;
+  return hist.filter(s=>new Date(s.startISO)>=start);
+}
+function setHistFilter(period,btn){
+  _histPeriod=period;
+  document.querySelectorAll('#histFilter .pf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory();
+}
+function setDashFilter(period,btn){
+  _dashPeriod=period;
+  document.querySelectorAll('#dashFilter .pf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDesempenho();
+}
 function renderHistory(){
   const el=document.getElementById('historyList');
   const clearWrap=document.getElementById('historyClearWrap');
   if(!state.history.length){el.innerHTML='<div class="empty"><span class="emoji">📋</span><p>Nenhum treino registrado ainda.<br>Finalize sua primeira sessão para ver o histórico.</p></div>';if(clearWrap)clearWrap.innerHTML='';return;}
   if(clearWrap)clearWrap.innerHTML=`<div style="text-align:center;margin-top:20px"><button class="btn btn-danger btn-small" onclick="clearAllHistory()">🗑 Apagar todo o histórico</button></div>`;
-  el.innerHTML=state.history.map((s,hi)=>{
+  const filtered=_filterHistory(state.history);
+  if(!filtered.length){
+    const labels={week:'esta semana',month:'este mês',year:'este ano'};
+    el.innerHTML=`<div class="empty"><span class="emoji">📋</span><p>Nenhum treino registrado ${labels[_histPeriod]||''}.</p></div>`;
+    return;
+  }
+  el.innerHTML=filtered.map((s)=>{
+    const hi=state.history.indexOf(s);
+    const orderNum=state.history.length-hi;
     if(editingHist===hi)return renderHistEdit(s,hi);
     const start=new Date(s.startISO),end=new Date(s.endISO);
     const dateStr=start.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
@@ -2603,7 +2662,7 @@ function renderHistory(){
     const muscles=s.muscles.map(m=>MUSCLES[m]||m).join(', ');
     const cc=s.completion>=90?'var(--done-border)':s.completion>=60?'var(--warn)':'var(--danger)';
     return `<div class="hist-item">
-      <div class="hist-seq">${dateStr}</div>
+      <div class="hist-seq"><span class="hist-num">#${orderNum}</span> ${dateStr}</div>
       <div class="hist-top">
         <div><div class="hist-title">${s.workoutName}</div><div class="hist-sub">${s.workoutSub}</div></div>
         <div style="text-align:right"><div style="font-size:13px;font-weight:600">${dateStr}</div><div style="font-size:11px;color:var(--muted)">${startStr} → ${endStr}</div></div>
@@ -2773,10 +2832,11 @@ function getCompData(){
 }
 function renderDesempenho(){
   renderSilhouette();
-  const n=state.history.length;
-  const runs=state.history.filter(s=>s.type==='cardio'||s.workoutId==='RUN');
-  const strengths=state.history.filter(s=>s.type!=='cardio'&&s.workoutId!=='RUN');
-  const totalMin=state.history.reduce((a,s)=>a+s.durationMin,0);
+  const dashHist=_filterDashHistory(state.history);
+  const n=dashHist.length;
+  const runs=dashHist.filter(s=>s.type==='cardio'||s.workoutId==='RUN');
+  const strengths=dashHist.filter(s=>s.type!=='cardio'&&s.workoutId!=='RUN');
+  const totalMin=dashHist.reduce((a,s)=>a+s.durationMin,0);
   const totalSets=strengths.reduce((a,s)=>a+s.doneSets,0);
   const totalKm=runs.reduce((a,s)=>a+(s.distanceKm||0),0);
   const avgPace=runs.length>0&&totalKm>0?runs.reduce((a,s)=>a+(s.durationSec||s.durationMin*60),0)/totalKm:0;
@@ -2789,13 +2849,12 @@ function renderDesempenho(){
     <div class="stat-card"><div class="stat-val">${totalMin>=60?Math.floor(totalMin/60)+'h'+(totalMin%60>0?String(Math.round(totalMin%60)).padStart(2,'0')+'min':''):Math.round(totalMin)+'min'}</div><div class="stat-label">Tempo total</div></div>
     <div class="stat-card"><div class="stat-val">${totalSets}</div><div class="stat-label">Séries (musculação)</div><div class="stat-sub">${avgComp}% conclusão média</div>${quickSub}</div>
     <div class="stat-card"><div class="stat-val">${totalKm.toFixed(1).replace('.',',')}km</div><div class="stat-label">Distância (corrida)</div>${avgPace>0?`<div class="stat-sub">Pace médio ${fmtPace(avgPace)}</div>`:''}</div>`;
-  // Grupos musculares — semana atual
-  const{ws:wkS,we:wkE}=getWeekRange();
-  const weekStrHist=state.history.filter(s=>{const d=new Date(s.startISO);return d>=wkS&&d<wkE&&s.type!=='cardio'&&s.workoutId!=='RUN';});
+  // Grupos musculares — período selecionado
+  const muscleHist=strengths;
   const mc={};Object.keys(MUSCLES).forEach(m=>mc[m]=0);
   const exMapD={};getActiveWorkouts().forEach(w=>w.exercises.forEach(e=>{exMapD[e.name]=e.muscles;}));
   WORKOUTS.forEach(w=>w.exercises.forEach(e=>{if(!exMapD[e.name])exMapD[e.name]=e.muscles;}));
-  weekStrHist.forEach(s=>(s.exercisesDone||[]).forEach(name=>{
+  muscleHist.forEach(s=>(s.exercisesDone||[]).forEach(name=>{
     (exMapD[name]||[]).forEach(m=>{if(mc[m]!==undefined)mc[m]++;});
   }));
   const maxC=Math.max(...Object.values(mc),1);
@@ -2804,7 +2863,7 @@ function renderDesempenho(){
   document.getElementById('muscleStatus').innerHTML=Object.entries(mc).sort((a,b)=>b[1]-a[1]).map(([m,c])=>{
     const pct=maxC>0?Math.round(c/maxC*100):0;
     const expected=epw[m]||0;
-    const bc=weekStrHist.length===0?'var(--border)':c===0?'var(--danger)':c<expected?'var(--warn)':'var(--done-border)';
+    const bc=muscleHist.length===0?'var(--border)':c===0?'var(--danger)':c<expected?'var(--warn)':'var(--done-border)';
     return `<div class="muscle-row"><div class="muscle-name">${MUSCLES[m]}</div><div class="muscle-bar-track"><div class="muscle-bar-fill" style="width:${pct}%;background:${bc}"></div></div><div class="muscle-count">${c}×</div></div>`;
   }).join('');
   const{planned,missed,adh,weeks,pStr,nStr,adhStr,pRun,nRun,adhRun}=getCompData();
@@ -2834,9 +2893,9 @@ function renderDesempenho(){
     else alerts.push({type:'success',title:'✓ Aderência satisfatória',body:`${adh}% geral — excelente consistência.`});
     if(pStr>0&&adhStr<60)alerts.push({type:'warn',title:'🏋️ Musculação em baixa',body:`Aderência de ${adhStr}% (${nStr}/${pStr}). Priorize os treinos de força.`});
     if(pRun>0&&adhRun<60)alerts.push({type:'warn',title:'🏃 Corrida em baixa',body:`Aderência de ${adhRun}% (${nRun}/${pRun}). Mantenha a regularidade aeróbica.`});
-    // Defasagem usa dados acumulados (não semanais)
+    // Defasagem usa dados do período filtrado
     const mcAll={};Object.keys(MUSCLES).forEach(m=>mcAll[m]=0);
-    state.history.filter(s=>s.type!=='cardio'&&s.workoutId!=='RUN').forEach(s=>(s.exercisesDone||[]).forEach(name=>{
+    strengths.forEach(s=>(s.exercisesDone||[]).forEach(name=>{
       (exMapD[name]||[]).forEach(m=>{if(mcAll[m]!==undefined)mcAll[m]++;});
     }));
     const defM=Object.entries(mcAll).filter(([m,c])=>epw[m]*weeks>0&&c<epw[m]*weeks*0.5&&weeks>=2).map(([m])=>MUSCLES[m]);
