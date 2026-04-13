@@ -1023,9 +1023,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.22.0';
+const APP_VERSION='0.22.1';
 const APP_UPDATED='2026-04-12';
 const CHANGELOG=[
+  {v:'0.22.1',d:'2026-04-12',items:['Correção: plano gerado agora persiste corretamente ao recarregar a página','Correção: sincronização com a nuvem não sobrescreve mais plano recém-criado','Correção: programStart sempre definido ao criar plano novo']},
   {v:'0.22.0',d:'2026-04-12',items:['Wizard agora permite adicionar corrida ou musculação a um plano já existente sem apagar o outro','Ao alterar o plano, opções inteligentes detectam o que você já tem e oferecem complemento ou substituição','Plano complementar preserva treinos existentes (não sobrescreve)','Condições do wizard refatoradas para maior consistência']},
   {v:'0.21.0',d:'2026-04-12',items:['Base de exercícios expandida de 100 para 153 exercícios','53 novos exercícios com explicações didáticas detalhadas','Novos grupos: antebraço, adutores/abdutores, funcionais e estabilização','Exercícios vinculados à silhueta, wizard e sistema de contraindicações']},
   {v:'0.20.0',d:'2026-04-12',items:['Descanso inicia automaticamente ao atingir a meta do exercício cronometrado','Sons distintos para início e fim do exercício e do descanso','Campos de tempo e descanso aceitam somente números (em segundos)','Edições de tempo e descanso aplicam imediatamente','Novos controles de som nas Configurações com botões de teste']},
@@ -1059,7 +1060,7 @@ const CHANGELOG=[
 // STATE
 const STATE_VERSION=7;
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
-function save(){localStorage.setItem('fpv5',JSON.stringify(state));saveToCloud();}
+function save(){state.lastModified=Date.now();localStorage.setItem('fpv5',JSON.stringify(state));saveToCloud();}
 function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.series).fill(false));}
 
 // ── Versioned state migrations ──
@@ -1336,10 +1337,20 @@ fbAuth.onAuthStateChanged(async(user)=>{
     try{
       const cloudState=await loadFromCloud();
       if(cloudState){
-        state=migrateState(cloudState);
-        localStorage.setItem('fpv5',JSON.stringify(state));
-        applyTheme();renderTreino();renderDesempenho();
-        showToast('☁️ Dados sincronizados',true);
+        const localState=load();
+        const localTime=(localState&&localState.lastModified)||0;
+        const cloudTime=(cloudState.lastModified)||0;
+        if(localTime>cloudTime){
+          // Local is newer (e.g. plan just confirmed) — push to cloud
+          _cloudReady=true;
+          saveToCloud();
+          showToast('☁️ Dados enviados para a nuvem',true);
+        }else{
+          state=migrateState(cloudState);
+          localStorage.setItem('fpv5',JSON.stringify(state));
+          applyTheme();renderTreino();renderDesempenho();
+          showToast('☁️ Dados sincronizados',true);
+        }
       }else{
         _cloudReady=true;
         saveToCloud();
@@ -5677,8 +5688,11 @@ function confirmPlan(){
     }
   }
 
-  const onlyRun=_planOnlyRun();
-  const onlyStrength=_planOnlyStrength();
+  // Only preserve existing data when there IS an existing plan to keep
+  const hasExistingStrength=state.useCustomPlan&&state.customWorkouts&&state.customWorkouts.length>0;
+  const hasExistingRun=!!state.customRunPlan;
+  const onlyRun=_planOnlyRun()&&hasExistingStrength;
+  const onlyStrength=_planOnlyStrength()&&hasExistingRun;
 
   if(onlyRun){
     // Preserve existing strength plan, only update running
@@ -5714,7 +5728,7 @@ function confirmPlan(){
   state.sessionSets=null;
   state.sessionPlan=null;
   state.sessionStart=null;
-  if(!onlyRun&&!onlyStrength)state.programStart=new Date().toISOString();
+  state.programStart=new Date().toISOString();
   state.planEnd=suggestPlanEnd(fmtDateISO(new Date()));
   state.switchDismissed=false;
 
