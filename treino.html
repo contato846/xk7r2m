@@ -34,7 +34,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .nav-top{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 14px;}
 .menu-btn{background:transparent;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;transition:transform .15s;}
 .menu-btn:active{transform:scale(.9);}
-.menu-overlay{position:fixed;inset:0;background:var(--surface);z-index:500;display:flex;flex-direction:column;padding:18px;opacity:0;visibility:hidden;transform:translateX(-100%);transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s ease,visibility 0s .35s;}
+.menu-overlay{position:fixed;inset:0;background:var(--surface);z-index:500;display:flex;flex-direction:column;padding:18px;opacity:0;visibility:hidden;transform:translateX(-100%);transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s ease,visibility 0s .35s;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .menu-overlay.open{opacity:1;visibility:visible;transform:translateX(0);transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s ease,visibility 0s 0s;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .menu-close{align-self:flex-end;background:transparent;border:none;color:var(--text);font-size:30px;cursor:pointer;padding:4px 12px;line-height:1;min-width:44px;min-height:44px;transition:transform .15s;}
@@ -461,7 +461,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .rl-seg-time{color:var(--muted2);font-weight:500;white-space:nowrap;}
 .disclaimer-overlay,.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility 0s .3s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
 .disclaimer-overlay.active,.onboarding-overlay.active{opacity:1;visibility:visible;transition:opacity .3s ease,visibility 0s 0s;}
-.disclaimer-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 22px;max-width:400px;width:100%;transform:scale(.92) translateY(16px);transition:transform .35s cubic-bezier(.32,.72,0,1);}
+.disclaimer-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 22px;max-width:400px;width:100%;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:scale(.92) translateY(16px);transition:transform .35s cubic-bezier(.32,.72,0,1);}
 .disclaimer-overlay.active .disclaimer-box,.onboarding-overlay.active .disclaimer-box{transform:scale(1) translateY(0);}
 .disclaimer-brand{font-family:'Bebas Neue',sans-serif;line-height:1;margin-bottom:20px;}
 .disclaimer-brand-top{display:block;font-size:14px;color:var(--muted2);letter-spacing:4px;}
@@ -943,7 +943,7 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 
 <!-- Disclaimer modal -->
 <div id="disclaimerModal" class="disclaimer-overlay">
-  <div class="disclaimer-box" style="text-align:center;max-height:90vh;overflow-y:auto">
+  <div class="disclaimer-box" style="text-align:center">
     <div class="disclaimer-brand">
       <span class="disclaimer-brand-top">TREINO</span>
       <span class="disclaimer-brand-main"><span style="color:#ff69b4">DA MÃE</span> <span style="color:#909090">&</span> <span style="color:#e8ff47">DO PAI</span></span>
