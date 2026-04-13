@@ -1309,9 +1309,11 @@ function saveToCloud(){
 async function loadFromCloud(){
   if(!_fbUser)return null;
   try{
-    const doc=await fbDb.collection('users').doc(_fbUser.uid).get();
+    const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),10000));
+    const query=fbDb.collection('users').doc(_fbUser.uid).get();
+    const doc=await Promise.race([query,timeout]);
     if(doc.exists){const d=doc.data();return JSON.parse(d.state);}
-  }catch(e){console.warn('Cloud load error:',e);}
+  }catch(e){console.warn('Cloud load error:',e);showToast('Erro ao carregar dados da nuvem',false);}
   return null;
 }
 
@@ -1387,12 +1389,22 @@ fbAuth.onAuthStateChanged(async(user)=>{
         const localState=load();
         const localTime=(localState&&localState.lastModified)||0;
         const cloudTime=(cloudState.lastModified)||0;
-        if(localTime>cloudTime){
-          // Local is newer (e.g. plan just confirmed) — push to cloud
+        // Check if local has real user data (plan or history)
+        const localHasData=localState&&((localState.history&&localState.history.length>0)||(localState.customWorkouts&&localState.customWorkouts.length>0)||localState.customRunPlan);
+        const cloudHasData=(cloudState.history&&cloudState.history.length>0)||(cloudState.customWorkouts&&cloudState.customWorkouts.length>0)||cloudState.customRunPlan;
+        if(!localHasData&&cloudHasData){
+          // Local is empty, cloud has data — always pull cloud
+          state=migrateState(cloudState);
+          localStorage.setItem('fpv5',JSON.stringify(state));
+          applyTheme();renderTreino();renderDesempenho();
+          showToast('☁️ Dados sincronizados',true);
+        }else if(localTime>cloudTime){
+          // Local has data and is newer — push to cloud
           _cloudReady=true;
           saveToCloud();
           showToast('☁️ Dados enviados para a nuvem',true);
         }else{
+          // Cloud is newer or same — pull cloud
           state=migrateState(cloudState);
           localStorage.setItem('fpv5',JSON.stringify(state));
           applyTheme();renderTreino();renderDesempenho();
