@@ -3,13 +3,14 @@
 <head>
     <link rel="icon" type="image/png" href="apple-touch-icon.png?v=1775960400">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>TREINO DA MÃE &amp; DO PAI</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1775960400">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TREINO DA MÃE &amp; DO PAI">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -42,14 +43,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .menu-list{display:flex;flex-direction:column;margin-top:24px;padding:0 12px;}
 .menu-item{background:transparent;border:none;color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;text-align:left;padding:18px 0;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;transition:color .2s,transform .2s,opacity .2s;opacity:0;transform:translateX(-20px);}
 .menu-overlay.open .menu-item{opacity:1;transform:translateX(0);}
-.menu-overlay.open .menu-item:nth-child(1){transition-delay:.05s;}
-.menu-overlay.open .menu-item:nth-child(2){transition-delay:.08s;}
-.menu-overlay.open .menu-item:nth-child(3){transition-delay:.11s;}
-.menu-overlay.open .menu-item:nth-child(4){transition-delay:.14s;}
-.menu-overlay.open .menu-item:nth-child(5){transition-delay:.17s;}
-.menu-overlay.open .menu-item:nth-child(6){transition-delay:.2s;}
-.menu-overlay.open .menu-item:nth-child(7){transition-delay:.23s;}
-.menu-overlay.open .menu-item:nth-child(8){transition-delay:.26s;}
+.menu-overlay.open .menu-item:nth-child(1){transition-delay:.06s;}
+.menu-overlay.open .menu-item:nth-child(2){transition-delay:.12s;}
+.menu-overlay.open .menu-item:nth-child(3){transition-delay:.18s;}
+.menu-overlay.open .menu-item:nth-child(4){transition-delay:.24s;}
+.mi-icon{margin-right:14px;font-size:22px;width:28px;text-align:center;}
 .menu-item:hover,.menu-item.active{color:var(--accent);}
 .menu-item .mbadge{width:10px;height:10px;border-radius:50%;background:var(--danger);display:none;}
 .menu-item .mbadge.show{display:block;}
@@ -59,11 +57,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .app-brand-main{font-size:26px;color:var(--accent);letter-spacing:3px;}
 .app-brand-main .brand-highlight{color:var(--text);}
 .date-badge{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;}
-.nav-tabs{display:flex;}
-.nav-tab{flex:1;padding:9px 4px;background:transparent;border:none;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.2px;cursor:pointer;text-align:center;border-bottom:2px solid transparent;transition:all .2s;position:relative;}
-.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-.nav-tab .nbadge{position:absolute;top:6px;right:calc(50% - 18px);width:6px;height:6px;border-radius:50%;background:var(--danger);display:none;}
-.nav-tab .nbadge.show{display:block;}
+/* (nav-tabs removed — replaced by bottom-bar) */
 .page{display:none;padding:16px;padding-bottom:110px;}
 .page.active{display:block;animation:pageEnter .3s ease both;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
@@ -484,7 +478,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .plan-preview .pp-ex{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;color:var(--muted2);}
 .plan-preview .pp-ex .pp-name{flex:1;}
 .plan-preview .pp-ex .pp-sets{font-size:11px;color:var(--muted);}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 22px;border-radius:40px;font-size:13px;font-weight:500;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;z-index:999;white-space:nowrap;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 22px;border-radius:40px;font-size:13px;font-weight:500;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;z-index:999;white-space:nowrap;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;}
 .toast::after{content:'';position:absolute;bottom:0;left:0;height:2px;background:var(--accent);width:100%;border-radius:0 0 40px 40px;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .toast.show::after{animation:toastProgress 2.4s linear forwards;}
@@ -616,6 +610,9 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   .menu-item{font-size:26px;padding:12px 0;}
   .disclaimer-box,.login-box,.cloud-nudge-box{padding:20px 22px;}
   .disclaimer-box{max-height:85vh;overflow-y:auto;}
+  .bottom-bar{height:48px;}
+  .bb-icon{font-size:18px;}
+  .bb-label{font-size:9px;}
 }
 
 /* CLOUD NUDGE */
@@ -643,7 +640,7 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 .pf-btn{flex:1;padding:8px 4px;background:transparent;color:var(--muted2);border:0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;}
 .pf-btn.active{background:var(--accent);color:#000;}
 /* SCROLL TO TOP */
-.scroll-top{position:fixed;bottom:28px;right:20px;z-index:100;width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--accent);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 4px 16px rgba(0,0,0,.4);}
+.scroll-top{position:fixed;bottom:80px;right:20px;z-index:100;width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--accent);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 4px 16px rgba(0,0,0,.4);}
 .scroll-top.visible{opacity:1;visibility:visible;transform:translateY(0);}
 .scroll-top:active{transform:scale(.9);}
 /* CONFIRM DIALOG */
@@ -658,9 +655,7 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 /* RIPPLE */
 .ripple-fx{position:absolute;border-radius:50%;background:rgba(255,255,255,.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;}
 @keyframes rippleAnim{to{transform:scale(2.5);opacity:0}}
-/* NAV TAB INDICATOR */
-.nav-tabs{display:flex;position:relative;}
-.nav-tab-indicator{position:absolute;bottom:0;height:2px;background:var(--accent);transition:left .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1);border-radius:1px;}
+/* (nav-tab-indicator removed — replaced by bottom-bar) */
 /* CARD STAGGER */
 .ex-card[style*="--i"]{animation:cardEnter .35s ease both;animation-delay:calc(var(--i) * .04s);}
 /* TOGGLE SWITCH (configs) */
@@ -673,6 +668,18 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 /* CHAT */
 .chat-opt{transition:all .2s cubic-bezier(.4,0,.2,1);}
 .chat-opt:active{transform:scale(.95);}
+/* ═══ BOTTOM NAVIGATION BAR ═══ */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:300;display:flex;justify-content:space-around;align-items:center;height:64px;padding-bottom:env(safe-area-inset-bottom,0px);background:rgba(22,22,22,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);}
+.bb-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent;border:none;color:var(--muted);cursor:pointer;padding:8px 4px;position:relative;transition:color .25s ease;-webkit-tap-highlight-color:transparent;min-height:44px;}
+.bb-icon{font-size:20px;transition:transform .3s cubic-bezier(.34,1.56,.64,1),color .25s ease;}
+.bb-label{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.3px;transition:color .25s ease;}
+.bb-tab.active .bb-icon{color:var(--accent);transform:scale(1.18);}
+.bb-tab.active .bb-label{color:var(--accent);font-weight:600;}
+.bb-tab.active::after{content:'';position:absolute;top:2px;width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(var(--accent-rgb),.5);animation:bbDotPulse 2s ease-in-out infinite;}
+@keyframes bbDotPulse{0%,100%{opacity:1;box-shadow:0 0 6px rgba(var(--accent-rgb),.4);}50%{opacity:.5;box-shadow:0 0 14px rgba(var(--accent-rgb),.7);}}
+.bb-badge{position:absolute;top:6px;right:calc(50% - 16px);width:7px;height:7px;border-radius:50%;background:var(--danger);display:none;box-shadow:0 0 4px var(--danger);}
+.bb-badge.show{display:block;}
+.bb-tab:active .bb-icon{transform:scale(.9);}
 </style>
 </head>
 <body>
@@ -692,17 +699,35 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   </div>
 </div>
 
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-bar" id="bottomBar">
+  <button class="bb-tab active" data-page="treino" onclick="switchPage('treino')">
+    <i class="fa-solid fa-dumbbell bb-icon"></i>
+    <span class="bb-label">Treino</span>
+  </button>
+  <button class="bb-tab" data-page="dashboard" onclick="switchPage('dashboard')">
+    <i class="fa-solid fa-chart-line bb-icon"></i>
+    <span class="bb-label">Desempenho</span>
+    <span class="bb-badge" id="bbAlertBadge"></span>
+  </button>
+  <button class="bb-tab" data-page="plano" onclick="switchPage('plano')">
+    <i class="fa-solid fa-clipboard-list bb-icon"></i>
+    <span class="bb-label">Plano</span>
+  </button>
+  <button class="bb-tab" data-page="historico" onclick="switchPage('historico')">
+    <i class="fa-solid fa-clock-rotate-left bb-icon"></i>
+    <span class="bb-label">Histórico</span>
+  </button>
+</nav>
+
+<!-- Hamburger Menu -->
 <div class="menu-overlay" id="menuOverlay">
   <button class="menu-close" onclick="closeMenu()" aria-label="Fechar">×</button>
   <div class="menu-list">
-    <button class="menu-item active" data-page="treino" onclick="switchPage('treino',this)">Treino</button>
-    <button class="menu-item" data-page="dashboard" onclick="switchPage('dashboard',this)">Desempenho<span class="mbadge" id="alertBadge"></span></button>
-    <button class="menu-item" data-page="historico" onclick="switchPage('historico',this)">Histórico</button>
-    <button class="menu-item" data-page="plano" onclick="switchPage('plano',this)">Plano de exercícios</button>
-    <button class="menu-item" data-page="perfil" onclick="switchPage('perfil',this)">Perfil</button>
-    <button class="menu-item" data-page="config" onclick="switchPage('config',this)">Configurações</button>
-    <button class="menu-item" data-page="sobre" onclick="switchPage('sobre',this)">Sobre</button>
-    <button class="menu-item" id="menuAuthBtn" onclick="menuAuthAction()">Login</button>
+    <button class="menu-item" data-page="perfil" onclick="switchPage('perfil',this)"><span><i class="fa-solid fa-user mi-icon"></i>Perfil</span></button>
+    <button class="menu-item" data-page="config" onclick="switchPage('config',this)"><span><i class="fa-solid fa-gear mi-icon"></i>Configurações</span></button>
+    <button class="menu-item" data-page="sobre" onclick="switchPage('sobre',this)"><span><i class="fa-solid fa-circle-info mi-icon"></i>Sobre</span></button>
+    <button class="menu-item" id="menuAuthBtn" onclick="menuAuthAction()"><span><i class="fa-solid fa-right-to-bracket mi-icon" id="menuAuthIcon"></i><span id="menuAuthText">Login</span></span></button>
   </div>
 </div>
 
@@ -1023,9 +1048,10 @@ const SWITCH_WEEKS=8;
 const DAY_TO_WORKOUT={};
 
 // APP VERSION — atualizar a cada commit
-const APP_VERSION='0.22.1';
+const APP_VERSION='0.23.0';
 const APP_UPDATED='2026-04-12';
 const CHANGELOG=[
+  {v:'0.23.0',d:'2026-04-12',items:['Nova barra de navegação inferior com 4 abas: Treino, Desempenho, Plano e Histórico','Ícones animados com indicador de aba ativa e efeito glass','Menu hambúrguer reduzido para Perfil, Configurações, Sobre e Login/Logout','Ícones Font Awesome em todo o menu e barra inferior']},
   {v:'0.22.1',d:'2026-04-12',items:['Correção: plano gerado agora persiste corretamente ao recarregar a página','Correção: sincronização com a nuvem não sobrescreve mais plano recém-criado','Correção: programStart sempre definido ao criar plano novo']},
   {v:'0.22.0',d:'2026-04-12',items:['Wizard agora permite adicionar corrida ou musculação a um plano já existente sem apagar o outro','Ao alterar o plano, opções inteligentes detectam o que você já tem e oferecem complemento ou substituição','Plano complementar preserva treinos existentes (não sobrescreve)','Condições do wizard refatoradas para maior consistência']},
   {v:'0.21.0',d:'2026-04-12',items:['Base de exercícios expandida de 100 para 153 exercícios','53 novos exercícios com explicações didáticas detalhadas','Novos grupos: antebraço, adutores/abdutores, funcionais e estabilização','Exercícios vinculados à silhueta, wizard e sistema de contraindicações']},
@@ -1236,13 +1262,17 @@ function menuAuthAction(){
   else{showLogin();}
 }
 function updateMenuAuthBtn(){
+  const icon=document.getElementById('menuAuthIcon');
+  const text=document.getElementById('menuAuthText');
   const btn=document.getElementById('menuAuthBtn');
   if(!btn)return;
   if(_fbUser){
-    btn.textContent='Sair da conta';
+    if(text)text.textContent='Sair da conta';
+    if(icon)icon.className='fa-solid fa-right-from-bracket mi-icon';
     btn.style.color='var(--danger)';
   }else{
-    btn.textContent='Entrar / Criar conta';
+    if(text)text.textContent='Entrar / Criar conta';
+    if(icon)icon.className='fa-solid fa-right-to-bracket mi-icon';
     btn.style.color='var(--accent3)';
   }
 }
@@ -3087,8 +3117,8 @@ function renderDesempenho(){
   updateAlertBadge(alerts);
 }
 function updateAlertBadge(alerts){
-  if(!alerts){const{adh}=getCompData();document.getElementById('alertBadge').classList.toggle('show',state.history.length>0&&adh<80);return;}
-  document.getElementById('alertBadge').classList.toggle('show',alerts.some(a=>a.type==='danger'||a.type==='warn'));
+  if(!alerts){const{adh}=getCompData();const s=state.history.length>0&&adh<80;const bb=document.getElementById('bbAlertBadge');if(bb)bb.classList.toggle('show',s);return;}
+  const s2=alerts.some(a=>a.type==='danger'||a.type==='warn');const bb2=document.getElementById('bbAlertBadge');if(bb2)bb2.classList.toggle('show',s2);
 }
 
 // PLANO
@@ -3632,11 +3662,17 @@ function setAllSounds(val){
 }
 function switchPage(page,tab){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.menu-item').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  const target=tab||document.querySelector('.menu-item[data-page="'+page+'"]');
-  if(target)target.classList.add('active');
+  // Sync menu items
+  document.querySelectorAll('.menu-item').forEach(t=>t.classList.remove('active'));
+  const menuTarget=tab||document.querySelector('.menu-item[data-page="'+page+'"]');
+  if(menuTarget)menuTarget.classList.add('active');
+  // Sync bottom bar tabs
+  document.querySelectorAll('.bb-tab').forEach(t=>t.classList.remove('active'));
+  const bbTarget=document.querySelector('.bb-tab[data-page="'+page+'"]');
+  if(bbTarget)bbTarget.classList.add('active');
   closeMenu();
+  window.scrollTo({top:0,behavior:'instant'});
   if(page==='historico')renderHistory();
   if(page==='dashboard')renderDesempenho();
   if(page==='plano')renderPlano();
