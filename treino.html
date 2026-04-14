@@ -1214,12 +1214,14 @@ async function loginGoogle(){
   _loginLoading(true,'Abrindo autenticação Google…');
   const provider=new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
-  if(_isMobile&&!_isIOS){
+  if(_isMobile){
+    // Mobile (iOS + Android): redirect works better with 2FA on same device
     fbAuth.signInWithRedirect(provider).catch(e=>{
       _loginLoading(false);
       showLoginError('loginError',translateFirebaseError(e.code));
     });
   }else{
+    // Desktop: popup first, fallback to redirect
     try{
       await fbAuth.signInWithPopup(provider);
       _loginLoading(true,'Sincronizando dados…');
