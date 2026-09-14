@@ -860,6 +860,71 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 .qm-i{padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6;color:var(--muted2);display:flex;gap:10px;}
 .qm-i:last-child{border-bottom:none;}
 .qm-n{color:var(--accent);font-weight:700;flex-shrink:0;}
+
+/* ═══ HOJE — sequência do dia ═══ */
+.hoje{background:linear-gradient(165deg,#13212f,#0e1a25);border:1px solid var(--accent3);border-radius:18px;padding:16px;margin-bottom:16px;}
+.hoje-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.hoje-lb{font-size:10.5px;text-transform:uppercase;letter-spacing:2px;color:var(--accent3);}
+.hoje-dia{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;line-height:1.05;margin-top:3px;}
+.hoje-cnt{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--accent);line-height:1;flex-shrink:0;}
+.hoje-cnt small{font-size:16px;color:var(--muted2);}
+.hoje-intro{font-size:12.5px;color:var(--muted2);line-height:1.55;margin:9px 0 14px;}
+.hoje-lista{display:flex;flex-direction:column;gap:9px;}
+.hoje-p{display:flex;gap:12px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:13px 13px 13px 11px;transition:all .2s;}
+.hoje-p.atual{background:rgba(var(--accent-rgb),.09);border-color:var(--accent);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.25);}
+.hoje-p.feito{opacity:.62;}
+.hoje-p.futuro{opacity:.55;}
+.hoje-p.info{opacity:.7;}
+.hoje-n{width:34px;height:34px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;flex-shrink:0;color:var(--muted2);}
+.hoje-p.atual .hoje-n{background:var(--accent);border-color:var(--accent);color:#000;}
+.hoje-p.feito .hoje-n{background:var(--done-border);border-color:var(--done-border);color:#000;}
+.hoje-b{flex:1;min-width:0;}
+.hoje-t{font-size:15.5px;font-weight:600;line-height:1.25;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.hoje-pr{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--accent);letter-spacing:.5px;}
+.hoje-s{font-size:12px;color:var(--muted2);margin-top:3px;line-height:1.45;}
+.hoje-agora{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:#000;background:var(--accent);padding:3px 9px;border-radius:20px;margin-top:8px;font-weight:700;}
+.hoje-acoes{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+.hoje-cta{padding:12px 14px;border-radius:11px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;flex:1;min-width:120px;}
+.hoje-cta.pri{background:var(--accent);color:#000;border-color:var(--accent);font-size:14.5px;padding:14px;}
+.hoje-cta.sec{flex:0 0 auto;min-width:0;color:var(--muted2);}
+.hoje-cta:active{transform:scale(.97);}
+.hoje-chk{margin-top:13px;border-top:1px solid rgba(255,255,255,.08);padding-top:6px;}
+.hoje-grp{margin:13px 0 6px;}
+.hoje-grp-t{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;color:var(--accent3);font-weight:700;}
+.hoje-grp-s{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.hoje-it{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.hoje-it:last-child{border-bottom:none;}
+.hoje-it-b{flex:1;min-width:0;cursor:pointer;}
+.hoje-it-t{font-size:14px;font-weight:600;line-height:1.3;}
+.hoje-it.done .hoje-it-t{color:var(--muted2);text-decoration:line-through;}
+.hoje-it-p{font-size:12px;color:var(--accent);margin-top:3px;font-weight:600;}
+.hoje-tm{color:var(--accent2);font-weight:500;}
+.hoje-it-o{font-size:12px;color:var(--muted2);margin-top:4px;line-height:1.45;}
+.hoje-como{flex-shrink:0;width:52px;padding:8px 4px;border-radius:9px;border:1px solid var(--accent3);background:rgba(71,184,255,.1);color:var(--accent3);font-size:10.5px;font-weight:700;line-height:1.25;font-family:inherit;cursor:pointer;text-align:center;}
+.hoje-aviso{font-size:12px;color:#f0d9c8;background:#2b1205;border-left:3px solid var(--accent2);border-radius:0 9px 9px 0;padding:10px 12px;margin:8px 0;line-height:1.55;}
+.hoje-aviso.ok{color:var(--muted2);background:rgba(0,0,0,.25);border-left-color:var(--accent3);}
+.hoje-done{margin-top:14px;background:var(--done-bg);border:1px solid var(--done-border);border-radius:14px;padding:16px;text-align:center;}
+.hoje-done-t{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:var(--done-border);}
+.hoje-done-s{font-size:12.5px;color:var(--muted2);line-height:1.55;margin:6px 0 13px;}
+/* explicação simples dentro do cartão do treino A/B */
+.ex-plain{background:rgba(71,184,255,.07);border:1px solid rgba(71,184,255,.25);border-radius:10px;padding:11px 12px;margin-bottom:11px;}
+.ex-plain-t{font-size:14px;font-weight:600;margin-bottom:4px;}
+.ex-plain-o{font-size:12.5px;color:var(--muted2);line-height:1.55;}
+.ex-como-btn{margin-top:10px;width:100%;padding:12px;border-radius:9px;border:0;background:var(--accent3);color:#000;font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer;}
+.ex-obs-rx{font-size:11px;color:var(--muted);}
+.ex-obs-lb{color:var(--muted2);font-weight:600;font-style:normal;}
+/* detalhe de exercício */
+.exd-plain-nm{font-family:'Bebas Neue',sans-serif;font-size:25px;letter-spacing:.8px;line-height:1.1;}
+.exd-tech{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
+.exd-pq{background:rgba(71,184,255,.08);border-left:3px solid var(--accent3);border-radius:0 9px 9px 0;padding:11px 13px;font-size:13.5px;line-height:1.6;}
+.exd-rxs{font-size:12px;color:var(--muted);font-style:italic;line-height:1.55;}
+/* glossário e zonas */
+.glos-i{padding:12px 0;border-bottom:1px solid var(--border);}
+.glos-i:last-child{border-bottom:none;}
+.glos-t{font-size:13.5px;font-weight:600;margin-bottom:3px;}
+.glos-d{font-size:12.5px;color:var(--muted2);line-height:1.6;}
+.zn-pl{font-size:10.5px;color:var(--muted);display:block;margin-top:2px;}
+.gd-dica{font-size:14px;color:var(--text);margin-top:6px;opacity:.85;}
 </style>
 </head>
 <body>
@@ -1260,209 +1325,277 @@ const CHANGELOG=[
    + cotovelo D (epicondilalgia, ~50% de ruptura)
    Provisório, até a consulta com o Dr. Lazaroni.
 
-   PROVENIÊNCIA DO TEXTO (importante):
+   PROVENIÊNCIA DO TEXTO:
    - `obs`, `cad`, `series`, `reps`: copiados da prescrição. NÃO alterar.
-   - `pos`, `exec`, `erro`: guia de execução redigido para o app,
-     NÃO faz parte da prescrição. Marcado como tal na interface
-     para conferência com o fisioterapeuta.
+   - `plain`, `oque`, `porque`, `como`, `cuidado`: explicação em
+     linguagem simples, escrita para este app. Não é a prescrição.
+     Sinalizado na interface para conferência com o fisioterapeuta.
    ═══════════════════════════════════════════════════════════════ */
 const REAB_JOELHO=[
-  {name:"Isometria de quadríceps (quad set)",series:5,reps:"10 seg",sec:10,rest:20,muscles:['quadriceps'],
+  {name:"Isometria de quadríceps (quad set)",plain:"Apertar a coxa com o joelho esticado",series:5,reps:"10 seg",sec:10,rest:20,muscles:['quadriceps'],
    obs:"Joelho estendido, toalha sob o joelho. Contração máxima.",
-   pos:"Deitado de costas ou sentado com a perna estendida, uma toalha enrolada sob o joelho.",
-   exec:["Pressione o joelho contra a toalha, contraindo a coxa com força máxima.","Mantenha 10 segundos respirando normalmente.","Solte por completo e descanse antes da próxima."],
-   erro:"Prender a respiração, ou contrair o glúteo no lugar do quadríceps. Você deve ver o vasto medial — a parte interna logo acima do joelho — endurecer."},
-  {name:"Elevação de perna reta",series:3,reps:"12 reps",rest:30,muscles:['quadriceps','core'],
+   oque:"Você contrai o músculo da frente da coxa e segura, sem mexer a perna. Isso se chama isometria: força parada.",
+   porque:"Acorda o músculo que protege o joelho sem dobrar nem carregar a articulação. É o exercício mais seguro que existe para começar.",
+   como:["Deite de costas ou sente com a perna esticada. Ponha uma toalha enrolada embaixo do joelho.","Empurre a parte de trás do joelho contra a toalha, apertando a coxa com toda a força.","Segure 10 segundos respirando normal. Solte.","Repita 5 vezes."],
+   cuidado:"Não prenda a respiração e não aperte o bumbum no lugar da coxa. Olhe a parte de dentro da coxa, logo acima do joelho: ela tem que endurecer."},
+  {name:"Elevação de perna reta",plain:"Levantar a perna esticada",series:3,reps:"12 reps",rest:30,muscles:['quadriceps','core'],
    obs:"Sem flexão; pé em leve rotação externa.",
-   pos:"Deitado de costas, perna a trabalhar estendida, a outra dobrada com o pé apoiado no chão.",
-   exec:["Contraia o quadríceps primeiro e trave o joelho.","Suba a perna até cerca de 30 cm do chão, mantendo o joelho reto.","Desça devagar, sem encostar totalmente entre as repetições."],
-   erro:"Deixar o joelho dobrar durante a subida — isso tira a carga do quadríceps. Trave o joelho ANTES de iniciar o movimento."},
-  {name:"Extensão terminal com elástico (TKE)",series:3,reps:"15 reps",rest:30,muscles:['quadriceps'],
+   oque:"Deitado, você levanta a perna reta uns 30 cm e desce devagar.",
+   porque:"Fortalece a coxa sem dobrar o joelho — zero pressão na articulação.",
+   como:["Deite de costas. Dobre a outra perna e apoie o pé no chão.","Aperte a coxa e trave o joelho esticado antes de levantar. Vire o pé um pouquinho para fora.","Suba a perna até uns 30 cm do chão.","Desça devagar. Não encoste no chão entre uma e outra.","12 vezes."],
+   cuidado:"Se o joelho dobrar na subida, a coxa deixa de trabalhar. Trave o joelho primeiro, depois levante."},
+  {name:"Extensão terminal com elástico (TKE)",plain:"Esticar o joelho contra o elástico",series:3,reps:"15 reps",rest:30,muscles:['quadriceps'],
    obs:"Trabalha os últimos 30° — protege a patela.",
-   pos:"Em pé, elástico preso atrás do joelho a um ponto fixo à frente, joelho levemente flexionado.",
-   exec:["Estenda o joelho até travar, vencendo a resistência do elástico.","Segure 1 segundo no fim do movimento.","Retorne devagar até a flexão leve inicial."],
-   erro:"Recuar o quadril em vez de estender o joelho. O quadril fica parado: só o joelho trabalha."},
-  {name:"Abdução de quadril em decúbito lateral",series:3,reps:"15 reps cada lado",rest:30,muscles:['gluteos'],
+   oque:"Em pé, com um elástico atrás do joelho, você estica a perna até o fim contra a força do elástico.",
+   porque:"Trabalha só o final do movimento de esticar — a parte que protege a rótula e que costuma ficar fraca quando o joelho dói.",
+   como:["Prenda o elástico num ponto fixo à sua frente, na altura do joelho.","Passe o elástico por trás do joelho e dê um passo para trás até ele ficar esticado.","Deixe o joelho um pouquinho dobrado.","Estique o joelho até travar. Segure 1 segundo.","Volte devagar até dobrar de novo só um pouco.","15 vezes."],
+   cuidado:"Não jogue o quadril para trás. O quadril fica parado — só o joelho abre e fecha."},
+  {name:"Abdução de quadril em decúbito lateral",plain:"Levantar a perna de lado, deitado",series:3,reps:"15 reps cada lado",rest:30,muscles:['gluteos'],
    obs:"Glúteo médio: é o que corrige valgo dinâmico.",
-   pos:"Deitado de lado, quadris empilhados, pernas estendidas e alinhadas com o tronco.",
-   exec:["Suba a perna de cima até cerca de 45°, sem rodar o quadril.","Pausa de 1 segundo no topo.","Desça controlado, sem encostar na perna de baixo."],
-   erro:"Rolar o quadril para trás na subida — isso troca o glúteo médio pelo tensor da fáscia lata. Mantenha o tronco perpendicular ao chão."},
-  {name:"Ponte de glúteo",series:3,reps:"15 reps",rest:30,muscles:['gluteos','posteriores','core'],
+   oque:"Deitado de lado, você levanta a perna de cima e desce devagar.",
+   porque:"Fortalece o músculo do lado do quadril. Quando ele é fraco, o joelho cai para dentro ao pisar e ao agachar — e isso machuca o joelho. É uma das causas mais comuns de dor em corredor.",
+   como:["Deite de lado, um quadril em cima do outro, pernas esticadas em linha com o corpo.","Levante a perna de cima até uns 45 graus — meio caminho até o teto.","Segure 1 segundo lá em cima.","Desça devagar sem encostar na outra perna.","15 vezes. Depois vire e faça o outro lado."],
+   cuidado:"Não deixe o corpo rolar para trás enquanto sobe a perna. Se rolar, outro músculo assume e o do quadril não trabalha. O tronco fica reto, como uma parede."},
+  {name:"Ponte de glúteo",plain:"Levantar o quadril deitado (ponte)",series:3,reps:"15 reps",rest:30,muscles:['gluteos','posteriores','core'],
    obs:"Bilateral; unilateral só quando indolor.",
-   pos:"Deitado de costas, joelhos dobrados, pés apoiados na largura do quadril.",
-   exec:["Empurre pelos calcanhares e suba o quadril até tronco e coxa formarem uma linha reta.","Aperte o glúteo por 1 segundo no topo.","Desça devagar, sem largar o peso de uma vez."],
-   erro:"Subir arqueando a lombar em vez de contrair o glúteo. Se sentir na lombar, suba menos e aperte mais o glúteo."},
-  {name:"Elevação de panturrilha",series:3,reps:"15 reps",rest:30,muscles:['panturrilha'],
+   oque:"Deitado de costas com os joelhos dobrados, você levanta o quadril do chão apertando o bumbum.",
+   porque:"Fortalece bumbum e parte de trás da coxa, que ajudam a sustentar o joelho. Por enquanto com as duas pernas — só passe para uma perna quando não doer nada.",
+   como:["Deite de costas, joelhos dobrados, pés no chão na largura do quadril.","Empurre o chão com os calcanhares e levante o quadril até o corpo formar uma linha reta do joelho ao ombro.","Aperte o bumbum 1 segundo lá em cima.","Desça devagar.","15 vezes."],
+   cuidado:"Não arqueie as costas para subir mais alto. Se sentir na lombar, suba menos e aperte mais o bumbum."},
+  {name:"Elevação de panturrilha",plain:"Ficar na ponta dos pés",series:3,reps:"15 reps",rest:30,muscles:['panturrilha'],
    obs:"Essencial para absorção de impacto na volta à corrida.",
-   pos:"Em pé, pés na largura do quadril, mãos apoiadas apenas para equilíbrio.",
-   exec:["Suba nas pontas dos pés o máximo que conseguir.","Pausa de 1 segundo no topo.","Desça devagar até o calcanhar quase tocar o chão."],
-   erro:"Usar impulso e quicar. A descida lenta é onde está o estímulo."},
+   oque:"Em pé, você sobe na ponta dos pés e desce devagar.",
+   porque:"A panturrilha é o amortecedor da corrida. Se ela estiver fraca quando você voltar a correr, o impacto vai todo para o joelho.",
+   como:["Fique em pé, pés na largura do quadril. Apoie as mãos de leve só para não perder o equilíbrio.","Suba na ponta dos pés o mais alto que conseguir.","Segure 1 segundo.","Desça devagar até o calcanhar quase tocar o chão.","15 vezes."],
+   cuidado:"Não quique. Descer devagar é a parte que fortalece."},
 ];
 const REAB_COTOVELO=[
-  {name:"Isometria de extensão de punho",series:5,reps:"30 seg",sec:30,rest:30,muscles:['antebraco'],
+  {name:"Isometria de extensão de punho",plain:"Empurrar a mão para cima contra a outra mão, sem mexer",series:5,reps:"30 seg",sec:30,rest:30,muscles:['antebraco'],
    obs:"Punho neutro contra resistência; comece sempre por aqui.",
-   pos:"Sentado, antebraço apoiado na coxa ou na mesa, punho para fora da borda, palma para baixo e punho alinhado com o antebraço.",
-   exec:["Com a mão esquerda, aplique resistência sobre o dorso da mão direita.","Empurre a mão direita para cima contra essa resistência, sem que o punho se mova.","Mantenha 30 segundos com força submáxima e constante."],
-   erro:"Deixar o punho ceder e virar movimento. É isometria: nada se move. Se doer mais que 4/10, reduza a FORÇA — não o tempo."},
-  {name:"Excêntrico de extensão de punho",series:3,reps:"15 reps",cad:"3 s na descida",rest:45,muscles:['antebraco'],fixed:true,
+   oque:"Você tenta levantar a mão direita enquanto a esquerda impede. A mão não se move — só faz força. Isometria: força parada.",
+   porque:"É o exercício mais seguro para começar a tratar o tendão do cotovelo. Ativa o músculo sem esticar o tendão machucado. Por isso vem primeiro.",
+   como:["Sente. Apoie o antebraço direito na coxa ou na mesa, com a mão para fora da borda, palma para baixo.","Deixe a mão reta, alinhada com o braço.","Ponha a mão esquerda em cima das costas da mão direita.","Tente levantar a mão direita. A esquerda segura para ela não subir.","Faça força média e constante por 30 segundos. Solte.","5 vezes."],
+   cuidado:"A mão não pode se mexer. Se está mexendo, está errado. Se doer mais que 4 numa escala de 0 a 10, faça menos força — não menos tempo."},
+  {name:"Excêntrico de extensão de punho",plain:"Baixar a mão devagar com um peso leve",series:3,reps:"15 reps",cad:"3 s na descida",rest:45,muscles:['antebraco'],fixed:true,
    obs:"Halter leve (0,5–1 kg) ou FlexBar. Só a fase de descida — use a mão esquerda para voltar.",
-   pos:"Antebraço apoiado, punho para fora da borda, palma para baixo, segurando um halter de 0,5–1 kg com o punho já estendido para cima.",
-   exec:["Parta com o punho estendido para cima.","Baixe o peso contando 3 segundos, até o punho chegar em flexão completa.","Use a mão esquerda para devolver o punho à posição alta — a subida NÃO é feita pelo lado direito.","Repita 15 vezes."],
-   erro:"Fazer a subida com o lado lesionado. O tratamento é a fase excêntrica isolada; subir ativamente com a direita anula o protocolo e irrita o tendão."},
-  {name:"Supinação/pronação excêntrica",series:3,reps:"12 reps",rest:45,muscles:['antebraco'],
+   oque:"Com um pesinho na mão, você deixa a mão descer lentamente, em 3 segundos, e usa a outra mão para levantar de volta. Só a descida é o exercício. Isso se chama excêntrico: o músculo trabalha enquanto alonga, freando o peso.",
+   porque:"É o tratamento com melhor comprovação científica para esse tendão. A descida controlada estimula o tendão a se reconstruir. Subir com força irritaria — por isso a mão esquerda faz a subida.",
+   como:["Sente. Apoie o antebraço direito, mão para fora da borda, palma para baixo.","Segure um peso leve — 0,5 a 1 kg. Uma garrafinha de água serve.","Comece com a mão levantada, apontando para cima.","Deixe a mão descer devagar, contando 3 segundos, até ficar apontando para o chão.","Agora use a mão esquerda para levantar a mão direita de volta. A direita não faz força para subir.","Repita 15 vezes."],
+   cuidado:"O erro que estraga tudo é levantar a mão com o próprio braço direito. A subida é sempre com a esquerda ajudando. Se subir sozinho, você irrita o tendão em vez de tratar."},
+  {name:"Supinação/pronação excêntrica",plain:"Girar a mão com um martelo, freando",series:3,reps:"12 reps",rest:45,muscles:['antebraco'],
    obs:"Martelo ou halter segurado pela ponta.",
-   pos:"Sentado, cotovelo dobrado a 90° junto ao corpo, segurando um martelo pelo cabo — longe da cabeça — com o punho neutro.",
-   exec:["Gire o antebraço até a palma ficar para cima, ajudando com a mão esquerda.","Deixe o peso girar de volta devagar, resistindo com a mão direita.","Repita no outro sentido, com a palma indo para baixo."],
-   erro:"Segurar o martelo perto da cabeça, o que elimina a alavanca. Quanto mais longe da cabeça, maior o estímulo: comece curto e vá afastando."},
-  {name:"Rotação externa de ombro com elástico",series:3,reps:"15 reps",rest:30,muscles:['ombros'],
+   oque:"Segurando um martelo pela ponta do cabo, você deixa ele girar sua mão devagar, freando. Girar a palma para cima é supinação; para baixo, pronação.",
+   porque:"Os músculos que giram o antebraço puxam o mesmo tendão do cotovelo. Fortalecê-los divide a carga.",
+   como:["Sente. Cotovelo dobrado em 90 graus, encostado no corpo.","Segure um martelo pelo cabo, bem longe da cabeça. Mão reta, polegar para cima.","Gire a mão até a palma ficar para cima. Pode ajudar com a mão esquerda.","Deixe o martelo girar de volta devagar, freando com a mão direita.","Depois gire até a palma ficar para baixo e freie a volta.","12 vezes."],
+   cuidado:"Se segurar perto da cabeça do martelo, fica fácil demais. Quanto mais longe da cabeça, mais forte. Comece perto e vá afastando com o tempo."},
+  {name:"Rotação externa de ombro com elástico",plain:"Abrir o antebraço para fora com elástico",series:3,reps:"15 reps",rest:30,muscles:['ombros'],
    obs:"Déficit escapular e de manguito está associado a epicondilalgia.",
-   pos:"Em pé, cotovelo colado ao tronco a 90°, elástico preso à frente na altura do umbigo, punho neutro.",
-   exec:["Gire o antebraço para fora, afastando a mão da barriga.","Mantenha o cotovelo colado ao corpo o tempo todo.","Retorne devagar."],
-   erro:"Afastar o cotovelo do tronco e transformar em movimento de ombro. Prenda uma toalha enrolada entre o cotovelo e o corpo para não deixar escapar."},
-  {name:"Alongamento dos extensores",series:3,reps:"30 seg",sec:30,rest:15,muscles:['antebraco'],
+   oque:"Cotovelo colado no corpo, você gira o antebraço para fora, afastando a mão da barriga, contra um elástico.",
+   porque:"Ombro fraco faz o cotovelo compensar e sobrecarrega o tendão. Fortalecer o ombro tira peso do cotovelo.",
+   como:["Prenda o elástico num ponto fixo à sua esquerda, na altura do umbigo.","Fique de lado. Cotovelo direito colado no corpo, dobrado em 90 graus, mão na frente da barriga segurando o elástico.","Gire o antebraço para fora, afastando a mão da barriga. O cotovelo não sai do lugar.","Volte devagar.","15 vezes."],
+   cuidado:"O cotovelo não pode descolar do corpo. Truque: prenda uma toalha enrolada entre o cotovelo e a costela. Se ela cair, você errou."},
+  {name:"Alongamento dos extensores",plain:"Alongar a parte de cima do antebraço",series:3,reps:"30 seg",sec:30,rest:15,muscles:['antebraco'],
    obs:"Cotovelo estendido, punho em flexão, dedos apontando para baixo.",
-   pos:"Braço direito estendido à frente, na altura do ombro, palma para baixo.",
-   exec:["Com a mão esquerda, puxe a mão direita para baixo, levando os dedos em direção ao chão.","Mantenha o cotovelo completamente estendido.","Segure 30 segundos, até sentir estiramento na face externa do antebraço."],
-   erro:"Dobrar o cotovelo, o que afrouxa o alongamento. O cotovelo precisa ficar travado em extensão."},
+   oque:"Braço esticado, você puxa a mão para baixo com a outra mão até sentir puxar em cima do antebraço.",
+   porque:"Solta a tensão dos músculos que puxam o tendão machucado.",
+   como:["Estique o braço direito para a frente, na altura do ombro, palma para baixo.","Com a mão esquerda, puxe a mão direita para baixo, dedos apontando para o chão.","Mantenha o cotovelo bem esticado.","Segure 30 segundos. Deve puxar na parte de cima do antebraço, perto do cotovelo.","3 vezes."],
+   cuidado:"Não dobre o cotovelo — se dobrar, o alongamento some. Cotovelo travado."},
 ];
 const REAB_EVITAR="Evitar nesta fase: prancha de Copenhague e adução resistida. O grácil se insere na pata anserina, que já está inflamada.";
+const REAB_EVITAR_PLAIN="Não faça exercícios de apertar as pernas uma contra a outra (adução) nem a prancha lateral com a perna de cima apoiada no banco. Eles puxam um músculo que se prende exatamente no ponto inflamado do seu joelho.";
 const REAB_ERGONOMIA="Teclado na altura do cotovelo ou ligeiramente abaixo, nunca acima. Antebraço e mão na mesma linha. Mouse vertical, se possível, para tirar o antebraço da pronação sustentada. Pausa de um minuto a cada 30–40 min com a mão solta — a interrupção da contração estática importa mais que a duração da pausa.";
+const REAB_ERGONOMIA_PLAIN="No computador: teclado na altura do cotovelo ou um pouco abaixo, nunca acima. Antebraço e mão em linha reta. Se puder, use mouse vertical — ele deixa a mão de lado em vez de virada para baixo. A cada 30–40 minutos, pare 1 minuto e deixe a mão solta. Parar de vez em quando vale mais que parar muito tempo.";
 const TREINO_A_EX=[
-  {name:"Leg press com amplitude limitada",series:4,reps:"10 reps",rest:120,muscles:['quadriceps','gluteos'],
+  {name:"Leg press com amplitude limitada",plain:"Leg press sem descer muito",series:4,reps:"10 reps",rest:120,muscles:['quadriceps','gluteos'],
    obs:"Batente ou marcação; pare em 60°.",
-   pos:"Sentado no leg press, pés na largura do quadril, com batente ou marcação no trilho limitando a descida a 60° de flexão do joelho.",
-   exec:["Desça até o batente, sem passar dele.","Empurre pelos calcanhares até quase estender, sem travar o joelho.","Mantenha a lombar apoiada no encosto o tempo todo."],
-   erro:"Descer além do batente 'só para sentir mais'. O limite de 60° é o que protege a articulação — é a regra central desta fase."},
-  {name:"Agachamento espanhol (isométrico)",series:4,reps:"30 seg",sec:30,rest:60,muscles:['quadriceps'],
+   oque:"Empurrar a plataforma com as pernas, mas descendo só até o joelho dobrar 60 graus — bem menos que o normal.",
+   porque:"Fortalece coxa e bumbum sem dobrar o joelho demais. Dobrar mais que 60 graus com peso aperta a rótula e o cisto atrás do joelho. É a regra número 1 deste treino.",
+   como:["Sente no leg press, pés na largura do quadril.","Ajuste o batente da máquina, ou marque com fita, para a plataforma parar quando o joelho dobrar 60 graus — mais ou menos quando a coxa está a meio caminho da paralela.","Desça até o batente. Não passe.","Empurre com o calcanhar até quase esticar a perna, sem travar o joelho.","Costas coladas no encosto o tempo todo.","4 séries de 10."],
+   cuidado:"Não desça além do batente 'só para sentir mais'. Esse limite é o que protege o joelho."},
+  {name:"Agachamento espanhol (isométrico)",plain:"Sentar no ar com elástico atrás dos joelhos",series:4,reps:"30 seg",sec:30,rest:60,muscles:['quadriceps'],
    obs:"Elástico atrás dos joelhos; excelente relação carga/segurança.",
-   pos:"Em pé, elástico resistente passado atrás dos joelhos e preso a um ponto fixo baixo à frente, pés na largura do quadril.",
-   exec:["Deixe o elástico puxar os joelhos para trás e sente-se levemente, como numa cadeira invisível.","Pare por volta de 60° de flexão — coxa ainda longe da paralela.","Mantenha 30 segundos com o tronco ereto e o peso nos calcanhares."],
-   erro:"Deixar o joelho avançar sobre o pé. O elástico existe justamente para puxar o joelho para trás; se o joelho vai à frente, o elástico está frouxo ou mal posicionado."},
-  {name:"Elevação pélvica com barra (hip thrust)",series:4,reps:"10 reps",rest:120,muscles:['gluteos','posteriores'],
+   oque:"Com um elástico forte puxando seus joelhos para trás, você 'senta' um pouco e segura parado 30 segundos. Isometria: força parada.",
+   porque:"Trabalha a coxa com muita segurança: o elástico impede o joelho de ir para a frente, o que tira pressão da rótula. É o exercício mais seguro para joelho dolorido.",
+   como:["Prenda um elástico forte num ponto fixo baixo à sua frente.","Passe o elástico por trás dos dois joelhos e dê passos para trás até ficar bem esticado.","Pés na largura do quadril.","Deixe o elástico puxar os joelhos para trás e sente devagar, como numa cadeira que não existe.","Pare quando o joelho dobrar 60 graus — coxa ainda bem longe da paralela.","Tronco reto, peso nos calcanhares. Segure 30 segundos.","4 vezes."],
+   cuidado:"O joelho não pode ir para a frente do pé. Se for, o elástico está frouxo. Recue mais."},
+  {name:"Elevação pélvica com barra (hip thrust)",plain:"Levantar o quadril com barra no colo",series:4,reps:"10 reps",rest:120,muscles:['gluteos','posteriores'],
    obs:"Barra apoiada no quadril: zero exigência de preensão.",
-   pos:"Costas apoiadas num banco na altura das escápulas, joelhos dobrados, barra sobre o quadril com almofada.",
-   exec:["Empurre pelos calcanhares e suba o quadril até tronco e coxa formarem linha reta.","Aperte o glúteo 1 segundo no topo, com o queixo levemente para o peito.","Desça controlado sem largar o peso."],
-   erro:"Hiperestender a lombar no topo em vez de parar na linha reta. O movimento termina quando o tronco fica paralelo ao chão, não além disso."},
-  {name:"Extensão de joelho — arco parcial 45°→0°",series:3,reps:"12 reps",rest:90,muscles:['quadriceps'],
+   oque:"Costas apoiadas num banco, barra no colo, você levanta o quadril apertando o bumbum.",
+   porque:"Fortalece bumbum e parte de trás da coxa com peso de verdade, sem dobrar o joelho fundo e sem segurar nada com a mão — a barra fica no colo, o cotovelo descansa.",
+   como:["Sente no chão com as costas encostadas num banco, na altura da parte de cima das costas.","Ponha a barra no colo, com uma almofada.","Joelhos dobrados, pés no chão.","Empurre o chão com os calcanhares e suba o quadril até o corpo ficar reto do joelho ao ombro.","Aperte o bumbum 1 segundo. Queixo um pouco para baixo.","Desça devagar.","4 séries de 10."],
+   cuidado:"Não arqueie a lombar no topo. O movimento termina quando o tronco fica reto — não além disso."},
+  {name:"Extensão de joelho — arco parcial 45°→0°",plain:"Cadeira extensora, só a metade de cima",series:3,reps:"12 reps",rest:90,muscles:['quadriceps'],
    obs:"Carga leve a moderada.",
-   pos:"Sentado na cadeira extensora, com o batente de amplitude ajustado para partir de 45° de flexão, não do fundo.",
-   exec:["Parta de 45° e estenda até travar o joelho.","Segure 1 segundo no topo.","Volte devagar até os 45°, sem descer além disso."],
-   erro:"Partir do fundo da máquina. O arco de 90° a 45° é justamente o que comprime a patela — por isso o exercício começa a meio caminho."},
-  {name:"Flexão de joelho deitado",series:3,reps:"12 reps",rest:90,muscles:['posteriores'],
+   oque:"Esticar o joelho na máquina, mas começando do meio, com o joelho a 45 graus, em vez de lá do fundo.",
+   porque:"A parte de baixo do movimento é a que mais aperta a rótula. Fazendo só a metade de cima, você fortalece a coxa sem essa pressão.",
+   como:["Sente na cadeira extensora.","Ajuste o batente para o movimento começar com o joelho dobrado 45 graus — na metade do caminho, não lá embaixo.","Estique até travar o joelho.","Segure 1 segundo.","Volte devagar até os 45 graus. Não desça mais que isso.","3 séries de 12. Peso leve a médio."],
+   cuidado:"Não comece lá do fundo. É justamente a parte do fundo que machuca."},
+  {name:"Flexão de joelho deitado",plain:"Mesa flexora — dobrar o joelho de bruços",series:3,reps:"12 reps",rest:90,muscles:['posteriores'],
    obs:"Carga leve — o semitendíneo se insere na pata anserina.",
-   pos:"Deitado de bruços na mesa flexora, rolo apoiado logo acima do calcanhar, quadril colado ao apoio.",
-   exec:["Flexione os joelhos trazendo o calcanhar em direção ao glúteo.","Pare antes do fim da amplitude se sentir fisgada na face interna do joelho.","Volte devagar."],
-   erro:"Usar carga alta por hábito. Este é o exercício que mais pode irritar a pata anserina nesta fase — se houver dor na face interna do joelho, reduza carga imediatamente."},
-  {name:"Abdução de quadril na máquina",series:3,reps:"15 reps",rest:60,muscles:['gluteos'],
+   oque:"Deitado de barriga para baixo, você dobra os joelhos puxando o rolo com os calcanhares.",
+   porque:"Fortalece a parte de trás da coxa. Mas atenção: um desses músculos se prende exatamente no ponto inflamado do seu joelho, na parte de dentro. Por isso o peso é leve.",
+   como:["Deite de barriga para baixo na mesa flexora.","O rolo fica logo acima do calcanhar.","Quadril colado no apoio.","Dobre os joelhos puxando o calcanhar para o bumbum.","Se sentir fisgada na parte de dentro do joelho, pare antes do fim.","Volte devagar.","3 séries de 12. Peso leve."],
+   cuidado:"Não use o peso de sempre. Este é o exercício que mais pode irritar a parte de dentro do joelho. Qualquer dor ali: baixe o peso na hora."},
+  {name:"Abdução de quadril na máquina",plain:"Máquina de abrir as pernas",series:3,reps:"15 reps",rest:60,muscles:['gluteos'],
    obs:"",
-   pos:"Sentado na máquina abdutora, costas apoiadas, joelhos contra as almofadas.",
-   exec:["Abra as pernas contra a resistência até o fim confortável da amplitude.","Pausa de 1 segundo na abertura máxima.","Feche devagar, resistindo ao retorno."],
-   erro:"Jogar o tronco para trás para ganhar impulso. As costas ficam coladas no encosto; só o quadril trabalha."},
-  {name:"Panturrilha em pé (máquina de ombro)",series:4,reps:"15 reps",rest:60,muscles:['panturrilha'],
+   oque:"Sentado, você abre as pernas contra a resistência da máquina.",
+   porque:"Fortalece o músculo do lado do quadril, o mesmo que você trabalha deitado de lado na reabilitação — aqui com mais peso. É o que impede o joelho de cair para dentro.",
+   como:["Sente na máquina abdutora, costas no encosto, joelhos contra as almofadas.","Abra as pernas até onde for confortável.","Segure 1 segundo aberto.","Feche devagar, freando.","3 séries de 15."],
+   cuidado:"Não jogue o tronco para trás para ganhar impulso. Costas coladas no encosto."},
+  {name:"Panturrilha em pé (máquina de ombro)",plain:"Ponta dos pés na máquina de ombro",series:4,reps:"15 reps",rest:60,muscles:['panturrilha'],
    obs:"Sem pegada; prepara a volta ao impacto.",
-   pos:"Em pé na máquina de panturrilha com apoio nos ombros — nunca na versão que exige segurar peso com as mãos.",
-   exec:["Suba nas pontas dos pés até a amplitude máxima.","Pausa de 1 segundo no topo.","Desça devagar até sentir alongar a panturrilha."],
-   erro:"Escolher a variação com halteres na mão. A carga vai para os ombros justamente para poupar o cotovelo — segurar peso anula isso."},
+   oque:"Em pé na máquina que apoia o peso nos ombros, você sobe na ponta dos pés.",
+   porque:"Panturrilha forte é o amortecedor da corrida. E nesta máquina o peso fica nos ombros — nada nas mãos, o cotovelo descansa.",
+   como:["Use a máquina de panturrilha com apoio nos ombros. Não a que exige segurar peso na mão.","Suba na ponta dos pés o mais alto possível.","Segure 1 segundo.","Desça devagar até sentir alongar.","4 séries de 15."],
+   cuidado:"Não pegue halteres na mão para fazer isso. O peso vai nos ombros justamente para poupar o cotovelo."},
 ];
 const TREINO_B_EX=[
-  {name:"Supino com halteres",series:4,reps:"10 reps",rest:120,muscles:['peito','triceps','ombros'],
+  {name:"Supino com halteres",plain:"Supino com halteres",series:4,reps:"10 reps",rest:120,muscles:['peito','triceps','ombros'],
    obs:"Punho neutro-alinhado; evite flexão do punho.",
-   pos:"Deitado no banco, halteres na altura do peito, punhos alinhados com o antebraço.",
-   exec:["Empurre os halteres para cima até quase estender os cotovelos.","Desça controlado até a altura do peito.","Mantenha o punho firme e reto durante todo o movimento."],
-   erro:"Deixar o punho cair para trás sob carga. O punho dobrado transfere tensão direta para os extensores do antebraço — que é exatamente o tendão lesionado."},
-  {name:"Remada baixa com triângulo neutro + straps",series:4,reps:"10 reps",rest:120,muscles:['costas','biceps'],
+   oque:"Deitado, você empurra dois halteres para cima.",
+   porque:"Trabalha peito, ombro e tríceps. Com halteres você controla a posição do punho — e punho reto é o que protege o cotovelo.",
+   como:["Deite no banco com um halter em cada mão, na altura do peito.","Punho reto, alinhado com o antebraço — não deixe a mão cair para trás.","Empurre para cima até quase esticar os cotovelos.","Desça devagar até a altura do peito.","4 séries de 10."],
+   cuidado:"Não deixe o punho dobrar para trás com o peso. Punho dobrado puxa direto o tendão machucado do cotovelo."},
+  {name:"Remada baixa com triângulo neutro + straps",plain:"Remada sentado com pegador em V e straps",series:4,reps:"10 reps",rest:120,muscles:['costas','biceps'],
    obs:"",
-   pos:"Sentado na polia baixa, pegador triângulo com as palmas voltadas uma para a outra, straps presos ao pegador.",
-   exec:["Passe as straps e feche a mão só o suficiente para acompanhar.","Puxe até o abdômen, juntando as escápulas.","Volte devagar, sem deixar o tronco ir junto."],
-   erro:"Apertar o pegador com força apesar das straps. As straps só funcionam se você relaxar a preensão — esse é o ponto do exercício."},
-  {name:"Puxada alta pegada neutra + straps",series:3,reps:"10 reps",rest:120,muscles:['costas','biceps'],
+   oque:"Sentado, você puxa um cabo em direção à barriga. Straps são faixas que prendem sua mão ao pegador, para você não precisar apertar.",
+   porque:"Trabalha as costas. As straps fazem o peso ir para o punho, não para a mão — assim os músculos do antebraço, que puxam o tendão machucado, quase não trabalham. O pegador em V deixa as palmas viradas uma para a outra, a posição mais segura para o cotovelo.",
+   como:["Prenda o pegador triângulo — o de duas alças em V — na polia baixa.","Passe as straps nos punhos e enrole no pegador.","Sente, pés apoiados, joelhos um pouco dobrados.","Feche a mão só o suficiente para acompanhar. As straps seguram.","Puxe até a barriga, juntando as costas.","Volte devagar, sem deixar o tronco ir junto.","4 séries de 10."],
+   cuidado:"Não aperte o pegador com força mesmo com straps. Se apertar, elas não servem para nada. Relaxe a mão."},
+  {name:"Puxada alta pegada neutra + straps",plain:"Puxada na frente com pegador neutro e straps",series:3,reps:"10 reps",rest:120,muscles:['costas','biceps'],
    obs:"",
-   pos:"Sentado na puxada, pegador neutro (palmas voltadas uma para a outra), straps presos, coxas travadas sob o apoio.",
-   exec:["Puxe a barra até a altura do queixo, levando os cotovelos para baixo e para trás.","Segure 1 segundo na contração.","Suba devagar até estender os braços."],
-   erro:"Usar pegada pronada por costume. A pegada pronada é a posição que mais tensiona o epicôndilo lateral — nesta fase ela está fora."},
-  {name:"Desenvolvimento com halteres, pegada neutra",series:3,reps:"10 reps",rest:120,muscles:['ombros','triceps'],
+   oque:"Sentado, você puxa uma barra de cima para baixo até o queixo. Pegador neutro é aquele em que as palmas ficam viradas uma para a outra.",
+   porque:"Substitui a barra fixa, que está proibida agora. Pegada neutra e straps poupam o cotovelo.",
+   como:["Use o pegador em que as palmas ficam viradas uma para a outra.","Passe as straps.","Sente e trave as coxas no apoio.","Puxe até a altura do queixo, levando os cotovelos para baixo e para trás.","Segure 1 segundo.","Suba devagar até esticar.","3 séries de 10."],
+   cuidado:"Não use a barra larga com as palmas para a frente. Essa é a posição que mais dói no cotovelo de tenista."},
+  {name:"Desenvolvimento com halteres, pegada neutra",plain:"Empurrar halteres para cima, palmas viradas para dentro",series:3,reps:"10 reps",rest:120,muscles:['ombros','triceps'],
    obs:"",
-   pos:"Sentado com encosto, halteres na altura dos ombros, palmas voltadas uma para a outra.",
-   exec:["Empurre para cima mantendo as palmas voltadas uma para a outra.","Pare pouco antes de travar o cotovelo.","Desça controlado até a altura dos ombros."],
-   erro:"Rodar para pegada pronada na subida. A pegada fica neutra do início ao fim."},
-  {name:"Crucifixo na máquina (peck deck)",series:3,reps:"12 reps",rest:90,muscles:['peito'],
+   oque:"Sentado, você empurra dois halteres acima da cabeça, com as palmas viradas uma para a outra.",
+   porque:"Trabalha os ombros. Palmas para dentro é a posição que menos força o cotovelo.",
+   como:["Sente com encosto. Halteres na altura dos ombros, palmas viradas uma para a outra.","Empurre para cima mantendo as palmas assim.","Pare pouco antes de travar o cotovelo.","Desça devagar.","3 séries de 10."],
+   cuidado:"Não gire as palmas para a frente na subida. Elas ficam para dentro do começo ao fim."},
+  {name:"Crucifixo na máquina (peck deck)",plain:"Voador — máquina de fechar os braços",series:3,reps:"12 reps",rest:90,muscles:['peito'],
    obs:"Apoio no antebraço, não na mão.",
-   pos:"Sentado na máquina, antebraços apoiados nas almofadas verticais, cotovelos na altura do ombro.",
-   exec:["Junte os antebraços à frente do peito, empurrando pelas almofadas.","Segure 1 segundo na contração.","Abra devagar até sentir alongar o peito."],
-   erro:"Usar a versão com pegadores de mão. O apoio precisa ser no antebraço — segurar com a mão coloca carga de preensão no cotovelo lesionado."},
-  {name:"Tríceps na polia com corda",series:3,reps:"12 reps",rest:90,muscles:['triceps'],
+   oque:"Sentado, você junta os braços à frente do peito empurrando almofadas com os antebraços.",
+   porque:"Trabalha o peito sem segurar nada com a mão — o apoio é no antebraço. Zero carga no cotovelo.",
+   como:["Sente na máquina voador. Apoie os antebraços nas almofadas verticais.","Cotovelos na altura do ombro.","Junte os braços à frente do peito.","Segure 1 segundo.","Abra devagar até sentir alongar o peito.","3 séries de 12."],
+   cuidado:"Use a versão de apoiar o antebraço. Se a máquina só tiver pegadores de mão, pule este exercício."},
+  {name:"Tríceps na polia com corda",plain:"Tríceps na polia com corda",series:3,reps:"12 reps",rest:90,muscles:['triceps'],
    obs:"Pegada neutra.",
-   pos:"Em pé de frente para a polia alta, corda presa, cotovelos colados ao tronco, palmas voltadas uma para a outra.",
-   exec:["Estenda os cotovelos empurrando a corda para baixo.","Afaste levemente as pontas da corda no fim do movimento.","Volte devagar até 90° de flexão do cotovelo."],
-   erro:"Usar barra reta no lugar da corda. A barra força pronação; a corda mantém o punho neutro."},
-  {name:"Rosca martelo",series:3,reps:"12 reps",rest:90,muscles:['biceps','antebraco'],
+   oque:"Em pé, você empurra uma corda para baixo esticando os cotovelos.",
+   porque:"Trabalha a parte de trás do braço. A corda deixa o punho reto e as palmas para dentro — mais seguro que a barra.",
+   como:["Prenda a corda na polia alta.","Segure as pontas, palmas viradas uma para a outra.","Cotovelos colados no corpo.","Empurre para baixo esticando os cotovelos. Afaste um pouco as pontas no final.","Volte devagar até o cotovelo dobrar 90 graus.","3 séries de 12."],
+   cuidado:"Não troque a corda pela barra reta. A barra força a mão a virar para baixo, o que dói no cotovelo."},
+  {name:"Rosca martelo",plain:"Rosca com a mão de lado, como segurando um martelo",series:3,reps:"12 reps",rest:90,muscles:['biceps','antebraco'],
    obs:"Neutra. Rosca inversa está proibida.",
-   pos:"Em pé, halteres ao lado do corpo, palmas voltadas uma para a outra.",
-   exec:["Flexione o cotovelo mantendo a palma voltada para dentro o tempo todo.","Segure 1 segundo no topo.","Desça devagar."],
-   erro:"Rodar o punho durante a subida. Qualquer variação com palma para baixo — rosca inversa — está proibida nesta fase."},
-  {name:"Rotação externa com elástico",series:3,reps:"15 reps",rest:60,muscles:['ombros'],
+   oque:"Em pé, você dobra o cotovelo levantando um halter com a palma virada para dentro, como se segurasse um martelo.",
+   porque:"Trabalha o bíceps na posição mais segura para o cotovelo. A rosca com a palma para baixo, chamada rosca inversa, está proibida — ela usa exatamente os músculos do tendão machucado.",
+   como:["Em pé, um halter em cada mão ao lado do corpo, palmas viradas para o corpo.","Dobre o cotovelo levantando o halter, mantendo a palma virada para dentro.","Segure 1 segundo em cima.","Desça devagar.","3 séries de 12."],
+   cuidado:"Não gire o punho durante a subida. Qualquer rosca com a palma para baixo está proibida."},
+  {name:"Rotação externa com elástico",plain:"Abrir o antebraço para fora com elástico",series:3,reps:"15 reps",rest:60,muscles:['ombros'],
    obs:"",
-   pos:"Em pé, cotovelo colado ao tronco a 90°, elástico preso à frente na altura do umbigo.",
-   exec:["Gire o antebraço para fora, afastando a mão da barriga.","Mantenha o cotovelo colado ao corpo.","Retorne devagar."],
-   erro:"Afastar o cotovelo do tronco. Prenda uma toalha enrolada entre o cotovelo e o corpo para não deixar escapar."},
+   oque:"Igual ao da reabilitação: cotovelo colado no corpo, gire o antebraço para fora contra o elástico.",
+   porque:"Fortalece o ombro para o cotovelo não ter que compensar.",
+   como:["Prenda o elástico à sua esquerda, na altura do umbigo.","Cotovelo direito colado no corpo, dobrado em 90 graus.","Gire o antebraço para fora. O cotovelo não sai do lugar.","Volte devagar.","3 séries de 15."],
+   cuidado:"Cotovelo colado. Toalha enrolada entre o cotovelo e a costela ajuda."},
 ];
 const NUCLEO_EX=[
-  {name:"Prancha nos antebraços",series:3,reps:"40 seg",sec:40,rest:45,muscles:['core'],
+  {name:"Prancha nos antebraços",plain:"Prancha apoiado nos antebraços",series:3,reps:"40 seg",sec:40,rest:45,muscles:['core'],
    obs:"Nunca nas mãos.",
-   pos:"Apoiado nos antebraços e nas pontas dos pés, cotovelos sob os ombros.",
-   exec:["Mantenha quadril, tronco e cabeça numa linha reta.","Contraia abdômen e glúteo.","Respire normalmente durante os 40 segundos."],
-   erro:"Apoiar nas mãos. A extensão de punho sob carga é agressiva ao cotovelo lesionado — esta prancha é sempre nos antebraços."},
-  {name:"Dead bug",series:3,reps:"12 reps",rest:45,muscles:['core'],
+   oque:"Corpo reto, apoiado nos antebraços e na ponta dos pés, parado.",
+   porque:"Fortalece o abdômen, o que ajuda a manter o joelho alinhado ao correr. Nos antebraços, nunca nas mãos: apoiar nas mãos força o punho e o cotovelo.",
+   como:["Deite de bruços. Apoie os antebraços no chão, cotovelos embaixo dos ombros.","Suba nas pontas dos pés. Corpo reto da cabeça ao calcanhar.","Aperte abdômen e bumbum.","Respire normal. Segure 40 segundos.","3 vezes."],
+   cuidado:"Nunca apoie nas mãos com o braço esticado. Sempre nos antebraços."},
+  {name:"Dead bug",plain:"Deitado, esticar braço e perna opostos",series:3,reps:"12 reps",rest:45,muscles:['core'],
    obs:"",
-   pos:"Deitado de costas, braços apontando para o teto, quadris e joelhos a 90°.",
-   exec:["Estenda o braço direito para trás e a perna esquerda para a frente, ao mesmo tempo.","Mantenha a lombar colada no chão.","Volte ao centro e alterne."],
-   erro:"Deixar a lombar descolar do chão. Se descolar, reduza a amplitude da perna."},
-  {name:"Bird dog",series:3,reps:"12 reps cada lado",rest:45,muscles:['core','gluteos'],
+   oque:"Deitado de costas, braços para o teto e pernas dobradas no ar, você estica um braço para trás e a perna do outro lado para a frente, devagar.",
+   porque:"Fortalece o abdômen profundo sem forçar as costas nem o cotovelo.",
+   como:["Deite de costas. Braços apontando para o teto. Quadril e joelhos dobrados em 90 graus, canelas paralelas ao chão.","Leve o braço direito para trás, em direção ao chão atrás da cabeça, e estique a perna esquerda para a frente, ao mesmo tempo.","Lombar colada no chão o tempo todo.","Volte e faça o outro lado.","12 vezes — 6 de cada lado."],
+   cuidado:"Se a lombar descolar do chão, estique menos a perna."},
+  {name:"Bird dog",plain:"De quatro, esticar braço e perna opostos",series:3,reps:"12 reps cada lado",rest:45,muscles:['core','gluteos'],
    obs:"",
-   pos:"Apoiado nas mãos e joelhos, mãos sob os ombros e joelhos sob o quadril.",
-   exec:["Estenda o braço direito à frente e a perna esquerda atrás, simultaneamente.","Segure 2 segundos sem rodar o quadril.","Volte e alterne os lados."],
-   erro:"Rodar o quadril ao subir a perna. Imagine um copo d'água apoiado na lombar que não pode entornar."},
-  {name:"Prancha lateral",series:3,reps:"30 seg cada lado",sec:30,rest:45,muscles:['core'],
+   oque:"De quatro, você estica um braço para a frente e a perna do outro lado para trás, e segura.",
+   porque:"Ensina o tronco a ficar firme enquanto braço e perna se mexem — igual ao que acontece na corrida.",
+   como:["Fique de quatro: mãos embaixo dos ombros, joelhos embaixo do quadril.","Estique o braço direito para a frente e a perna esquerda para trás, ao mesmo tempo.","Segure 2 segundos. O quadril não pode girar.","Volte e troque de lado.","12 vezes de cada lado."],
+   cuidado:"Não gire o quadril ao levantar a perna. Imagine um copo de água nas costas que não pode entornar."},
+  {name:"Prancha lateral",plain:"Prancha de lado",series:3,reps:"30 seg cada lado",sec:30,rest:45,muscles:['core'],
    obs:"",
-   pos:"Deitado de lado, apoiado no antebraço, cotovelo sob o ombro, pés empilhados.",
-   exec:["Suba o quadril até formar linha reta dos pés à cabeça.","Mantenha 30 segundos.","Repita do outro lado."],
-   erro:"Deixar o quadril cair ao longo do tempo. Se cair, encerre a série — vale mais parar do que sustentar mal."},
-  {name:"Pallof press",series:3,reps:"12 reps cada lado",rest:45,muscles:['core'],
+   oque:"Deitado de lado, apoiado no antebraço, você levanta o quadril e segura o corpo reto.",
+   porque:"Fortalece o lado do abdômen e o lado do quadril — os que impedem o joelho de cair para dentro.",
+   como:["Deite de lado. Apoie o antebraço no chão, cotovelo embaixo do ombro. Pés um em cima do outro.","Levante o quadril até o corpo ficar reto dos pés à cabeça.","Segure 30 segundos.","Troque de lado."],
+   cuidado:"Se o quadril começar a cair, pare. Melhor parar do que segurar torto."},
+  {name:"Pallof press",plain:"Empurrar o cabo para a frente sem deixar o corpo girar",series:3,reps:"12 reps cada lado",rest:45,muscles:['core'],
    obs:"Pegada leve.",
-   pos:"Em pé de lado para a polia, elástico ou cabo na altura do peito, mãos juntas no centro do peito.",
-   exec:["Empurre as mãos à frente, resistindo à rotação que o cabo impõe.","Segure 2 segundos com os braços estendidos.","Volte ao peito devagar."],
-   erro:"Apertar demais o pegador. A pegada é leve — quem trabalha é o core, não a mão."},
+   oque:"De lado para a polia, segurando o cabo no peito, você estica os braços para a frente enquanto o cabo tenta te girar.",
+   porque:"Ensina o tronco a não girar — firmeza que protege joelho e costas.",
+   como:["Prenda o cabo ou elástico na altura do peito.","Fique de lado para ele, segurando com as duas mãos no meio do peito.","Estique os braços para a frente. O cabo vai tentar te puxar de lado — não deixe.","Segure 2 segundos.","Volte ao peito devagar.","12 vezes de cada lado."],
+   cuidado:"Pegada leve. Não esmague o pegador — quem trabalha é a barriga, não a mão."},
 ];
 const TREINO_B_FORA="Fora nesta fase: barra fixa, terra, remada curvada com barra, rosca direta e flexão de braço no solo. Se fizer flexão, use apoios paralelos ou halteres — a extensão forçada do punho é agressiva.";
+const TREINO_B_FORA_PLAIN="Por enquanto não faça: barra fixa, levantamento terra, remada curvada com barra, rosca com a palma para cima nem flexão de braço no chão. Todos forçam o punho ou exigem apertar a barra com força. Se quiser fazer flexão, use apoios de flexão ou dois halteres no chão, para o punho ficar reto.";
 const TREINO_B_ESQUERDO="O braço esquerdo pode treinar normalmente, inclusive pesado. Vale a pena: o treino unilateral do lado íntegro produz efeito de educação cruzada, que atenua a perda de força do lado lesionado.";
+const TREINO_B_ESQUERDO_PLAIN="O braço esquerdo pode treinar normal, inclusive pesado. E vale a pena: treinar um lado forte faz o outro lado perder menos força, por um efeito do sistema nervoso.";
 const TREINO_A_REGRA="Nada abaixo de 60° de flexão sob carga nesta fase. Sem agachamento profundo, sem leg press com amplitude grande, sem afundo.";
+const TREINO_A_REGRA_PLAIN="Nesta fase, nunca dobre o joelho mais que 60 graus com peso — isso é mais ou menos a coxa a meio caminho da paralela. Nada de agachamento fundo, leg press descendo muito, nem afundo.";
+const GLOSSARIO=[
+  {t:'Isometria / isométrico',d:'Fazer força sem mexer. Você contrai o músculo e segura parado, como empurrar uma parede.'},
+  {t:'Excêntrico',d:'A parte do movimento em que você desce ou solta o peso devagar, freando. O músculo trabalha enquanto alonga. É o tipo de exercício que melhor trata tendão machucado.'},
+  {t:'Pegada neutra',d:'Palmas das mãos viradas uma para a outra.'},
+  {t:'Pegada pronada',d:'Palmas viradas para baixo ou para a frente. É a posição que mais dói no seu cotovelo — está proibida por enquanto.'},
+  {t:'Straps',d:'Faixas de tecido que enrolam no punho e na barra. Prendem sua mão ao peso para você não precisar apertar. Com elas, o esforço de segurar sai da mão e do antebraço.'},
+  {t:'Pata anserina',d:'Ponto na parte de dentro do joelho, logo abaixo da articulação, onde três tendões da coxa se prendem. É onde está sua inflamação. Por isso alguns exercícios de perna pedem peso leve.'},
+  {t:'Cisto poplíteo',d:'Bolsa de líquido atrás do joelho. É o que impede você de dobrar o joelho até o fim.'},
+  {t:'Epicondilalgia / cotovelo de tenista',d:'Dor na parte de fora do cotovelo, no tendão dos músculos que levantam a mão. É a sua lesão do cotovelo.'},
+  {t:'Derrame no joelho',d:'Inchaço com líquido dentro do joelho. Sensação de joelho cheio, duro. É o sinal mais confiável de que você exagerou.'},
+  {t:'Valgo — joelho caindo para dentro',d:'Quando o joelho aponta para dentro ao pisar ou agachar, em vez de ficar alinhado com o pé. Sobrecarrega o joelho. Músculo do lado do quadril fraco é a causa mais comum.'},
+  {t:'Glúteo médio',d:'Músculo do lado do quadril. É ele que segura o joelho alinhado quando você está apoiado numa perna só.'},
+  {t:'Cadência',d:'A velocidade do movimento. "3 s na descida" quer dizer: leve 3 segundos para descer.'},
+  {t:'FC / bpm',d:'Frequência cardíaca — quantas vezes o coração bate por minuto. É o número que o relógio ou a bike mostram.'},
+  {t:'Zonas Z1 a Z5',d:'Faixas de batimento que dizem quão forte você está. Z1 é bem leve, dá para conversar. Z5 é o máximo, não dá para falar. Cada sessão de bike pede uma zona.'},
+  {t:'VO₂máx',d:'Sua capacidade máxima de usar oxigênio — na prática, seu fôlego. É o que a sessão de 4 × 4 minutos preserva enquanto você não pode correr.'},
+  {t:'Limiar',d:'O ritmo mais forte que você consegue manter por bastante tempo sem "estourar". A sessão de limiar treina isso.'},
+  {t:'Z2 / base aeróbica',d:'Ritmo leve e constante, em que você conseguiria conversar. É a base do condicionamento.'},
+  {t:'Núcleo (core)',d:'Os músculos do meio do corpo: abdômen, lombar e lados do tronco. Firmes, eles mantêm o joelho alinhado na corrida.'},
+  {t:'Educação cruzada',d:'Treinar um lado do corpo fortalece um pouco o outro lado também, pelo sistema nervoso. Por isso vale treinar o braço esquerdo pesado.'},
+];
 // Zonas por Karvonen: bpm = FCrep + (FCmáx − FCrep) × %. Padrões: FCmáx 197, FCrep 52 (reserva 145).
 const ZONES=[
-  {z:'Z1',label:'Regenerativo',lo:.50,hi:.60},
-  {z:'Z2',label:'Base aeróbica',lo:.60,hi:.70},
-  {z:'Z3',label:'Limiar inferior',lo:.70,hi:.80},
-  {z:'Z4',label:'Limiar / VO₂',lo:.80,hi:.90},
-  {z:'Z5',label:'VO₂máx',lo:.90,hi:1.00},
+  {z:'Z1',label:'Regenerativo',plain:'Bem leve — dá para conversar à vontade',lo:.50,hi:.60},
+  {z:'Z2',label:'Base aeróbica',plain:'Leve — dá para conversar',lo:.60,hi:.70},
+  {z:'Z3',label:'Limiar inferior',plain:'Médio-forte — só frases curtas',lo:.70,hi:.80},
+  {z:'Z4',label:'Limiar / VO₂',plain:'Forte — poucas palavras',lo:.80,hi:.90},
+  {z:'Z5',label:'VO₂máx',plain:'Máximo — não dá para falar',lo:.90,hi:1.00},
 ];
 const FC_BIKE_NOTA="A FCmáx em ciclismo costuma ficar 5 a 10 bpm abaixo da FCmáx de corrida, porque a massa muscular recrutada é menor. Se os seus valores vieram de corrida, considere teto real cerca de 7 bpm abaixo na bike, ou guie-se por percepção de esforço nos intervalados.";
 const AEROBICAS=[
-  {id:'vo2',nome:'VO₂máx',freq:'1× por semana',resumo:'4 × 4 min em Z4 alta / Z5 baixa',
+  {id:'vo2',nome:'VO₂máx',plain:'Bike forte — 4 tiros de 4 minutos',freq:'1× por semana',resumo:'4 × 4 min em Z4 alta / Z5 baixa',dur:'~45 min',
+   oque:'Depois de aquecer, você pedala forte por 4 minutos, descansa 3 pedalando bem leve, e repete 4 vezes. Forte quer dizer: no fim dos 4 minutos você não consegue conversar.',
+   porque:'É a sessão que mantém o seu fôlego enquanto você não pode correr. O fôlego não cai por treinar menos — cai por nunca treinar forte. Duas sessões fortes por semana bastam para preservá-lo.',
    detalhe:'Protocolo norueguês — é o de melhor evidência para elevar VO₂máx. Aquecimento 10 min, 4 blocos de 4 min com 3 min de recuperação ativa em Z1 entre eles, volta à calma 5 min.',
-   blocos:[{t:600,z:'Z1–Z2',label:'Aquecimento'},
-           {t:240,z:'Z4–Z5',label:'Bloco 1 de 4'},{t:180,z:'Z1',label:'Recuperação'},
-           {t:240,z:'Z4–Z5',label:'Bloco 2 de 4'},{t:180,z:'Z1',label:'Recuperação'},
-           {t:240,z:'Z4–Z5',label:'Bloco 3 de 4'},{t:180,z:'Z1',label:'Recuperação'},
-           {t:240,z:'Z4–Z5',label:'Bloco 4 de 4'},
-           {t:300,z:'Z1',label:'Volta à calma'}]},
-  {id:'limiar',nome:'Limiar',freq:'1× por semana',resumo:'2 × 15 min em Z3 alta',
+   blocos:[{t:600,z:'Z1–Z2',label:'Aquecimento',dica:'Leve. Dá para conversar.'},
+           {t:240,z:'Z4–Z5',label:'Tiro 1 de 4',dica:'Forte. No fim não dá para falar.'},{t:180,z:'Z1',label:'Descanso pedalando',dica:'Bem leve, sem parar.'},
+           {t:240,z:'Z4–Z5',label:'Tiro 2 de 4',dica:'Forte.'},{t:180,z:'Z1',label:'Descanso pedalando',dica:'Bem leve.'},
+           {t:240,z:'Z4–Z5',label:'Tiro 3 de 4',dica:'Forte.'},{t:180,z:'Z1',label:'Descanso pedalando',dica:'Bem leve.'},
+           {t:240,z:'Z4–Z5',label:'Tiro 4 de 4',dica:'Último. Forte.'},
+           {t:300,z:'Z1',label:'Soltar as pernas',dica:'Bem leve, até o coração baixar.'}]},
+  {id:'limiar',nome:'Limiar',plain:'Bike média-forte — 2 blocos de 15 minutos',freq:'1× por semana',resumo:'2 × 15 min em Z3 alta',dur:'~50 min',
+   oque:'Você pedala num ritmo médio-forte por 15 minutos, descansa 5 pedalando leve, e faz mais 15. Médio-forte quer dizer: dá para falar frases curtas, mas não conversar.',
+   porque:'Treina o ritmo mais forte que você aguenta manter por bastante tempo. É o que faz correr mais rápido sem cansar.',
    detalhe:'5 min em Z1 entre os blocos. Ou 25 min contínuos em Z3 quando tolerar.',
-   blocos:[{t:600,z:'Z1–Z2',label:'Aquecimento'},
-           {t:900,z:'Z3',label:'Bloco 1 de 2'},{t:300,z:'Z1',label:'Recuperação'},
-           {t:900,z:'Z3',label:'Bloco 2 de 2'},
-           {t:300,z:'Z1',label:'Volta à calma'}]},
-  {id:'longo',nome:'Longo Z2',freq:'1× por semana',resumo:'45 a 70 min contínuos',
+   blocos:[{t:600,z:'Z1–Z2',label:'Aquecimento',dica:'Leve.'},
+           {t:900,z:'Z3',label:'Bloco 1 de 2',dica:'Médio-forte. Frases curtas.'},{t:300,z:'Z1',label:'Descanso pedalando',dica:'Bem leve.'},
+           {t:900,z:'Z3',label:'Bloco 2 de 2',dica:'Médio-forte.'},
+           {t:300,z:'Z1',label:'Soltar as pernas',dica:'Bem leve.'}]},
+  {id:'longo',nome:'Longo Z2',plain:'Bike leve e longa — 45 a 70 minutos',freq:'1× por semana',resumo:'45 a 70 min contínuos',dur:'45–70 min',
+   oque:'Pedalar leve e constante, sem parar, por 45 a 70 minutos. Leve quer dizer: você conseguiria conversar o tempo todo.',
+   porque:'É a base do condicionamento. Ensina o corpo a usar gordura como energia e a aguentar tempo longo de esforço.',
    detalhe:'É onde se mantém a base aeróbica e a economia de movimento.',
-   blocos:[{t:3600,z:'Z2',label:'Contínuo em Z2 (45–70 min)'}]},
+   blocos:[{t:3600,z:'Z2',label:'Pedalar leve e constante',dica:'Dá para conversar o tempo todo. 45 a 70 min.'}]},
+  {id:'z2curto',nome:'Z2 curto',plain:'Bike leve — 20 minutos',freq:'Segunda, na escala de 3 dias',resumo:'20 min em Z2',dur:'20 min',
+   oque:'Pedalar leve por 20 minutos depois do treino de perna.',
+   porque:'Mantém o condicionamento no dia em que o foco é a musculação. Curto de propósito.',
+   detalhe:'20 min Z2 na bike.',
+   blocos:[{t:1200,z:'Z2',label:'Pedalar leve',dica:'Dá para conversar.'}]},
 ];
 const AEROBICO_ORDEM=[
   {t:'1ª escolha — bicicleta horizontal',d:'Costas apoiadas, nenhuma carga no cotovelo, flexão de joelho controlada pela posição do assento. Recue o banco até que o joelho não ultrapasse ~90° no ponto mais próximo.'},
@@ -1473,9 +1606,15 @@ const AEROBICO_ORDEM=[
 const AEROBICO_FORA="Fora de cogitação: remo (flexão profunda + pegada pronada), escada/stair climber (flexão sob carga), qualquer coisa com pegada de tração.";
 const AEROBICO_VO2_NOTA="O VO₂máx não cai por redução de volume — cai por redução de intensidade. Duas sessões intensas por semana bastam para preservá-lo, e o declínio só começa depois de 10 a 14 dias sem estímulo. Então a corrida pode sair sem prejuízo, desde que o estímulo intenso permaneça.";
 const REGRAS_CARGA=[
-  {id:'dor',type:'warn',title:'Regra da dor',body:'Dor até 4/10 durante o exercício é aceitável. O que não é aceitável é dor que aumenta ao longo da série, ou que permanece elevada 24 h depois. Se na manhã seguinte está pior que na véspera, a carga daquele dia foi alta demais — reduza 20% e repita a sessão antes de progredir.'},
-  {id:'derrame',type:'warn',title:'Regra do derrame (joelho)',body:'Inchaço ou sensação de "joelho cheio" no dia seguinte significa irritação articular. Recue volume e amplitude. O derrame é o termômetro mais confiável que você tem.'},
-  {id:'cotovelo',type:'danger',title:'Regra do cotovelo',body:'A progressão excêntrica do extensor comum é o tratamento com melhor evidência, mas com 50% de ruptura ela precisa ser dosada por fisioterapeuta. O que está aqui é a versão conservadora de início — isométrica e excêntrica leve. Não acelere por conta própria.'},
+  {id:'dor',type:'warn',title:'Regra da dor',
+   body:'Dor até 4/10 durante o exercício é aceitável. O que não é aceitável é dor que aumenta ao longo da série, ou que permanece elevada 24 h depois. Se na manhã seguinte está pior que na véspera, a carga daquele dia foi alta demais — reduza 20% e repita a sessão antes de progredir.',
+   plain:'Dor até 4, numa escala de 0 a 10, durante o exercício é aceitável. Não é aceitável: dor que vai aumentando conforme você repete, ou dor que ainda está alta no dia seguinte. Se amanhã de manhã estiver pior que hoje, o treino de hoje foi forte demais — baixe 20% do peso e repita a mesma sessão antes de aumentar.'},
+  {id:'derrame',type:'warn',title:'Regra do inchaço no joelho',
+   body:'Inchaço ou sensação de "joelho cheio" no dia seguinte significa irritação articular. Recue volume e amplitude. O derrame é o termômetro mais confiável que você tem.',
+   plain:'Se no dia seguinte o joelho estiver inchado ou com sensação de "cheio", você irritou a articulação. Faça menos séries e dobre menos o joelho. O inchaço é o sinal mais confiável que você tem.'},
+  {id:'cotovelo',type:'danger',title:'Regra do cotovelo',
+   body:'A progressão excêntrica do extensor comum é o tratamento com melhor evidência, mas com 50% de ruptura ela precisa ser dosada por fisioterapeuta. O que está aqui é a versão conservadora de início — isométrica e excêntrica leve. Não acelere por conta própria.',
+   plain:'O exercício de baixar a mão devagar com peso é o que melhor trata o seu tendão. Mas o seu tendão tem meia ruptura, então a dose tem que ser acertada por um fisioterapeuta. O que está aqui é o começo, bem conservador. Não aumente por conta própria.'},
 ];
 const RETORNO_CRITERIOS=[
   'Flexão completa do joelho recuperada, simétrica ao lado esquerdo',
@@ -1493,22 +1632,33 @@ const PERGUNTAS_MEDICO=[
   'Se for oferecida infiltração de corticoide no cotovelo: qual o racional, considerando os 50% de ruptura e a evidência de pior desfecho a longo prazo?',
 ];
 // Duas distribuições semanais do documento. dayMap: {diaDaSemana: índice do treino} (0=Dom).
+// Duas distribuições semanais do documento. dias: {diaDaSemana (0=Dom): {treino: índice A/B, nucleo, aer: id da sessão}}.
 const ESCALAS={
   '3':{id:'3',nome:'3 dias',sub:'Segunda · Quarta · Sexta',
-    dayMap:{1:0,3:1,5:0},
-    extras:{1:'+ 20 min Z2 na bike',3:'+ sessão VO₂ (4 × 4 min)',5:'Treino A reduzido (3 séries) + núcleo + longo Z2 45–60 min'},
-    nota:'Nos dias sem academia, faça apenas o bloco de reabilitação em casa. São 15 minutos e é o que move o ponteiro das lesões.'},
-  '5':{id:'5',nome:'5 dias',sub:'Segunda a sexta, com sábado opcional',
-    dayMap:{1:0,3:1,5:0},
-    extras:{2:'Sessão VO₂ (4 × 4 min) + núcleo',4:'Longo Z2 (50–70 min)',5:'Treino A com ênfase unilateral leve + sessão de limiar',6:'Reabilitação isolada, opcional — ou caminhada em terreno plano'},
+    dias:{
+      1:{treino:0,aer:'z2curto'},
+      3:{treino:1,aer:'vo2'},
+      5:{treino:0,reduzido:true,nucleo:true,aer:'longo',aerNota:'45 a 60 min'},
+    },
+    nota:'Nos dias sem academia, faça só a reabilitação em casa. São 15 minutos, e é o que faz as lesões melhorarem.'},
+  '5':{id:'5',nome:'5 dias',sub:'Segunda a sexta, sábado opcional',
+    dias:{
+      1:{treino:0},
+      2:{aer:'vo2',nucleo:true},
+      3:{treino:1},
+      4:{aer:'longo',aerNota:'50 a 70 min'},
+      5:{treino:0,unilateral:true,aer:'limiar'},
+      6:{opcional:true,txt:'Só reabilitação, opcional — ou uma caminhada em chão plano.'},
+    },
     nota:'Reabilitação todos os dias, inclusive nos dias sem academia.'},
 };
+function escalaDayMap(esc){const m={};Object.keys(esc.dias).forEach(d=>{if(esc.dias[d].treino!==undefined)m[d]=esc.dias[d].treino;});return m;}
 const PROGRESSAO_REAB=[
   {t:'Semanas 1 e 2 — instalação',d:'Cargas conservadoras, foco em tolerância. Nenhuma progressão de peso; a meta é não irritar nada.'},
   {t:'Semanas 3 e 4 — progressão',d:'Progressão de carga de 5 a 10% no inferior, desde que sem derrame no dia seguinte. No cotovelo, progressão apenas se a dor matinal estiver diminuindo semana a semana.'},
   {t:'Semanas 5 e 6 — reavaliação',d:'A essa altura você já deve ter consultado o ortopedista, e o plano definitivo substitui este.'},
 ];
-const STATE_VERSION=9;
+const STATE_VERSION=10;
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
 function save(){state.lastModified=Date.now();localStorage.setItem('fpv5',JSON.stringify(state));saveToCloud();}
 function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.series).fill(false));}
@@ -1599,6 +1749,12 @@ const MIGRATIONS=[
     if(!s.profile)s.profile={};
     if(s.profile.fcMax===undefined)s.profile.fcMax=null;
     if(s.profile.fcRep===undefined)s.profile.fcRep=null;
+  },
+  // v9→v10: registro diário de núcleo e de sessões de bike, para a tela "Hoje"
+  function v10(s){
+    if(!s.reab)s.reab={ativo:false,escala:'3',log:{},sintomas:[],retorno:[],planoAnterior:null};
+    if(!s.reab.nucleoLog)s.reab.nucleoLog={};
+    if(!s.reab.aerLog)s.reab.aerLog={};
   }
 ];
 function migrateState(s){
@@ -3127,7 +3283,12 @@ function renderTreino(){
       </div>
       <div class="ex-panel">
         <div class="ex-panel-body">
-          <div class="ex-obs">${ex.obs}</div>
+          ${ex.oque?`<div class="ex-plain">
+            <div class="ex-plain-t">${ex.plain?esc(ex.plain):''}</div>
+            <div class="ex-plain-o">${esc(ex.oque)}</div>
+            <button class="ex-como-btn" onclick="event.stopPropagation();openExDetalhePlan(${ei})">Como fazer, passo a passo</button>
+          </div>`:''}
+          ${ex.obs?`<div class="ex-obs${ex.oque?' ex-obs-rx':''}">${ex.oque?'<span class="ex-obs-lb">Prescrição:</span> ':''}${ex.obs}</div>`:''}
           <div class="ex-reps-edit" onclick="event.stopPropagation()">
             <span class="ex-reps-label">Séries:</span>
             <input class="ex-reps-input" type="number" inputmode="numeric" min="1" max="10" value="${ex.series}" onchange="setSeries(${ei},this.value)">
@@ -6572,7 +6733,7 @@ function setEscala(id){
   if(!ESCALAS[id])return;
   state.reab.escala=id;
   if(reabOn()){
-    state.customDayMap=Object.assign({},ESCALAS[id].dayMap);
+    state.customDayMap=escalaDayMap(ESCALAS[id]);
     state.sessionPlan=null;
     const dm=getActiveDayMap(),dow=new Date().getDay();
     if(dm[dow]!==undefined)state.currentWorkout=dm[dow];
@@ -6602,7 +6763,7 @@ function instalarProgramaReab(){
     {id:'A',name:'Treino A',sub:'Inferior — joelho-seguro',day:'Segunda',dayIdx:1,exercises:JSON.parse(JSON.stringify(TREINO_A_EX))},
     {id:'B',name:'Treino B',sub:'Superior — cotovelo-seguro',day:'Quarta',dayIdx:3,exercises:JSON.parse(JSON.stringify(TREINO_B_EX))},
   ];
-  state.customDayMap=Object.assign({},esc.dayMap);
+  state.customDayMap=escalaDayMap(esc);
   state.customRunDays=[];           // sem corrida nesta fase
   state.customRunPlan=null;
   state.customPlanMeta={origem:'reabilitacao',criadoEm:new Date().toISOString(),prescrito:true};
@@ -6672,72 +6833,171 @@ function toggleReabCard(){
   c.classList.toggle('open');
   try{localStorage.setItem('reabOpen',c.classList.contains('open')?'1':'0');}catch(e){}
 }
-function renderReabBlock(){
-  const el=document.getElementById('reabBlock');if(!el)return;
-  if(!reabOn()){el.innerHTML='';return;}
-  let aberto=false;
-  const atual=document.getElementById('reabCard');
-  if(atual)aberto=atual.classList.contains('open');
-  else{try{aberto=localStorage.getItem('reabOpen')==='1';}catch(e){}}
-  const {done,total}=reabProgresso();
-  const seq=reabDiasSeguidos();
-  const t=reabHoje();
-  const linha=(grupo,lista,i)=>{
-    const d=t[grupo][i],ex=lista[i];
-    return `<div class="reab-it${d?' done':''}">
-      <div class="reab-chk${d?' done':''}" onclick="toggleReabEx('${grupo}',${i})">${d?'✓':''}</div>
-      <div class="reab-it-b" onclick="openExDetalhe('${grupo}',${i})">
-        <div class="reab-nm">${esc(ex.name)}</div>
-        <div class="reab-pr">${prescr(ex)}</div>
-      </div>
-      <div class="reab-info" onclick="openExDetalhe('${grupo}',${i})">i</div>
-    </div>`;
-  };
-  el.innerHTML=`<div class="reab-card${aberto?' open':''}" id="reabCard">
-    <div class="reab-head" onclick="toggleReabCard()">
-      <div class="reab-h-txt">
-        <div class="reab-title">Reabilitação do dia</div>
-        <div class="reab-sub">5–6× por semana · 12–15 min${seq>1?` · <strong style="color:var(--done-border)">${seq} dias seguidos</strong>`:''}</div>
-      </div>
-      <div class="reab-ring">${done}/${total}<small>hoje</small></div>
-      <div class="reab-chev">▼</div>
+
+/* ═══════════ HOJE — sequência do dia ═══════════ */
+function treinoFeitoHoje(wid){const k=dKey();return (state.history||[]).some(x=>x.workoutId===wid&&dKey(new Date(x.startISO))===k);}
+function nucleoHoje(){
+  const k=dKey();
+  if(!state.reab.nucleoLog)state.reab.nucleoLog={};
+  if(!Array.isArray(state.reab.nucleoLog[k])||state.reab.nucleoLog[k].length!==NUCLEO_EX.length)state.reab.nucleoLog[k]=Array(NUCLEO_EX.length).fill(false);
+  return state.reab.nucleoLog[k];
+}
+function nucleoProgresso(){const a=nucleoHoje();return{done:a.filter(Boolean).length,total:a.length};}
+function toggleNucleoEx(i){const a=nucleoHoje();a[i]=!a[i];save();renderHoje();if(a.every(Boolean))showToast('✓ Núcleo do dia completo',true);}
+function aerFeitoHoje(id){const k=dKey();return !!(state.reab.aerLog&&state.reab.aerLog[k]&&state.reab.aerLog[k].includes(id));}
+function marcarAerFeito(id){
+  const k=dKey();
+  if(!state.reab.aerLog)state.reab.aerLog={};
+  if(!Array.isArray(state.reab.aerLog[k]))state.reab.aerLog[k]=[];
+  if(!state.reab.aerLog[k].includes(id))state.reab.aerLog[k].push(id);
+  save();
+}
+function marcarAerManual(id){
+  if(aerFeitoHoje(id)){const k=dKey();state.reab.aerLog[k]=state.reab.aerLog[k].filter(x=>x!==id);save();}
+  else marcarAerFeito(id);
+  renderHoje();
+}
+function partesDoDia(dow){
+  const E=ESCALAS[state.reab.escala||'3']||ESCALAS['3'];
+  const d=E.dias[dow]||{};
+  const wks=getActiveWorkouts();
+  const partes=[];
+  const rp=reabProgresso();
+  partes.push({tipo:'reab',titulo:'Reabilitação',sub:'Joelho e cotovelo · 12 a 15 min · dá para fazer em casa',done:rp.total>0&&rp.done===rp.total,prog:rp});
+  if(d.treino!==undefined&&wks[d.treino]){
+    const w=wks[d.treino];
+    let sub=w.sub||'';
+    if(d.reduzido)sub+=' · hoje faça só 3 séries de cada';
+    if(d.unilateral)sub+=' · hoje com ênfase em uma perna por vez, peso leve';
+    partes.push({tipo:'treino',titulo:w.name,sub,wi:d.treino,done:treinoFeitoHoje(w.id)});
+  }
+  if(d.nucleo){const np=nucleoProgresso();partes.push({tipo:'nucleo',titulo:'Núcleo',sub:'Abdômen e tronco · 10 min',done:np.total>0&&np.done===np.total,prog:np});}
+  if(d.aer){
+    const a=AEROBICAS.find(x=>x.id===d.aer);
+    if(a)partes.push({tipo:'aer',titulo:a.plain,sub:(d.aerNota||a.dur)+' · '+a.oque,aerId:a.id,done:aerFeitoHoje(a.id)});
+  }
+  if(d.opcional)partes.push({tipo:'info',titulo:'Opcional',sub:d.txt});
+  partes.forEach((x,i)=>x.n=i+1);
+  return partes;
+}
+let _hojeAberto=null;
+function abrirParte(tipo){
+  _hojeAberto=(_hojeAberto===tipo)?null:tipo;
+  renderHoje();
+  if(_hojeAberto===tipo)setTimeout(()=>{const el=document.getElementById('hoje-'+tipo);if(el&&el.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'start'});},60);
+}
+function irParaTreino(){
+  const el=document.getElementById('startBtn');
+  const alvo=(el&&!el.classList.contains('hidden'))?el:document.getElementById('exerciseList');
+  if(alvo&&alvo.scrollIntoView)alvo.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function itemChecklist(lista,i,marcado,onToggle,onInfo){
+  const ex=lista[i];
+  return `<div class="hoje-it${marcado?' done':''}">
+    <div class="reab-chk${marcado?' done':''}" onclick="${onToggle}">${marcado?'✓':''}</div>
+    <div class="hoje-it-b" onclick="${onInfo}">
+      <div class="hoje-it-t">${esc(ex.plain||ex.name)}</div>
+      <div class="hoje-it-p">${prescr(ex)}${ex.sec?' · <span class="hoje-tm">tem cronômetro</span>':''}</div>
+      <div class="hoje-it-o">${esc(ex.oque||'')}</div>
     </div>
-    <div class="reab-body">
-      <div class="bar-track" style="margin-bottom:6px"><div class="bar-fill" style="width:${total?Math.round(done/total*100):0}%"></div></div>
-      <div class="reab-grp">Joelho · 7–8 min</div>
-      ${REAB_JOELHO.map((_,i)=>linha('joelho',REAB_JOELHO,i)).join('')}
-      <div class="reab-note">${esc(REAB_EVITAR)}</div>
-      <div class="reab-grp">Cotovelo · 5–7 min</div>
-      ${REAB_COTOVELO.map((_,i)=>linha('cotovelo',REAB_COTOVELO,i)).join('')}
-      <div class="reab-grp">Ergonomia — conta como tratamento</div>
-      <div class="reab-note">${esc(REAB_ERGONOMIA)}</div>
-      <div class="reab-grp">Regras que valem mais que a planilha</div>
-      ${REGRAS_CARGA.map(r=>`<div class="alert ${r.type}" style="margin-bottom:9px"><div class="alert-title">${esc(r.title)}</div><div class="alert-body">${esc(r.body)}</div></div>`).join('')}
-    </div>
+    <button class="hoje-como" onclick="${onInfo}">Como<br>fazer</button>
   </div>`;
 }
+function renderListaReab(){
+  const t=reabHoje();
+  const grp=(titulo,sub,grupo,lista)=>`<div class="hoje-grp"><div class="hoje-grp-t">${titulo}</div><div class="hoje-grp-s">${sub}</div></div>`
+    +lista.map((_,i)=>itemChecklist(lista,i,t[grupo][i],`toggleReabEx('${grupo}',${i})`,`openExDetalhe('${grupo}',${i})`)).join('');
+  return `<div class="hoje-chk">
+    ${grp('Joelho','6 exercícios · 7 a 8 min','joelho',REAB_JOELHO)}
+    <div class="hoje-aviso">${esc(REAB_EVITAR_PLAIN)}</div>
+    ${grp('Cotovelo','5 exercícios · 5 a 7 min · precisa de um pesinho, um martelo e um elástico','cotovelo',REAB_COTOVELO)}
+    <div class="hoje-grp"><div class="hoje-grp-t">No computador também conta</div></div>
+    <div class="hoje-aviso ok">${esc(REAB_ERGONOMIA_PLAIN)}</div>
+    <div class="hoje-grp"><div class="hoje-grp-t">Três regras para não piorar</div></div>
+    ${REGRAS_CARGA.map(r=>`<div class="alert ${r.type}" style="margin-bottom:9px"><div class="alert-title">${esc(r.title)}</div><div class="alert-body">${esc(r.plain||r.body)}</div></div>`).join('')}
+  </div>`;
+}
+function renderListaNucleo(){
+  const a=nucleoHoje();
+  return `<div class="hoje-chk">
+    <div class="hoje-grp"><div class="hoje-grp-t">Núcleo</div><div class="hoje-grp-s">5 exercícios · 10 min · abdômen e tronco firmes protegem o joelho na corrida</div></div>
+    ${NUCLEO_EX.map((_,i)=>itemChecklist(NUCLEO_EX,i,a[i],`toggleNucleoEx(${i})`,`openExDetalhe('nucleo',${i})`)).join('')}
+  </div>`;
+}
+function renderHoje(){
+  const el=document.getElementById('reabBlock');if(!el)return;
+  if(!reabOn()){el.innerHTML='';return;}
+  const dow=new Date().getDay();
+  const dias=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+  const partes=partesDoDia(dow);
+  const reais=partes.filter(x=>x.tipo!=='info');
+  const feitas=reais.filter(x=>x.done).length,total=reais.length;
+  const atual=reais.find(x=>!x.done);
+  const tudo=total>0&&feitas===total;
+  const soReab=total===1;
+  const linha=x=>{
+    if(x.tipo==='info')return `<div class="hoje-p info"><div class="hoje-n">·</div><div class="hoje-b"><div class="hoje-t">${esc(x.titulo)}</div><div class="hoje-s">${esc(x.sub)}</div></div></div>`;
+    const st=x.done?'feito':(atual===x)?'atual':'futuro';
+    const aberto=_hojeAberto===x.tipo&&(x.tipo==='reab'||x.tipo==='nucleo');
+    let acao='';
+    if(x.tipo==='reab'||x.tipo==='nucleo')acao=`<button class="hoje-cta${st==='atual'?' pri':''}" onclick="abrirParte('${x.tipo}')">${aberto?'Fechar a lista':x.done?'Ver a lista':'Abrir a lista'}</button>`;
+    else if(x.tipo==='treino')acao=`<button class="hoje-cta${st==='atual'?' pri':''}" onclick="irParaTreino()">${x.done?'Ver o treino':'Ir para o treino ↓'}</button>`;
+    else if(x.tipo==='aer')acao=`<button class="hoje-cta${st==='atual'?' pri':''}" onclick="abrirGuia('${x.aerId}')">${x.done?'Fazer de novo':'Começar na bike'}</button><button class="hoje-cta sec" onclick="marcarAerManual('${x.aerId}')">${x.done?'Desmarcar':'Já fiz'}</button>`;
+    const prog=x.prog?`<span class="hoje-pr">${x.prog.done}/${x.prog.total}</span>`:'';
+    return `<div class="hoje-p ${st}" id="hoje-${x.tipo}">
+      <div class="hoje-n">${x.done?'✓':x.n}</div>
+      <div class="hoje-b">
+        <div class="hoje-t">${esc(x.titulo)}${prog}</div>
+        <div class="hoje-s">${esc(x.sub)}</div>
+        ${st==='atual'?'<div class="hoje-agora">Você está aqui</div>':''}
+        <div class="hoje-acoes">${acao}</div>
+        ${aberto?(x.tipo==='reab'?renderListaReab():renderListaNucleo()):''}
+      </div>
+    </div>`;
+  };
+  const fim=tudo?`<div class="hoje-done">
+      <div class="hoje-done-t">Tudo feito por hoje</div>
+      <div class="hoje-done-s">Agora registre como ficaram o joelho e o cotovelo. É isso que diz se a carga está certa.</div>
+      <button class="btn btn-primary btn-full" onclick="openSintomas('dia')">Registrar como ficaram as lesões</button>
+    </div>`:'';
+  el.innerHTML=`<div class="hoje">
+    <div class="hoje-hd">
+      <div><div class="hoje-lb">Hoje · ${dias[dow]}</div>
+        <div class="hoje-dia">${tudo?'Dia completo':soReab?'Só reabilitação':'Seu dia tem '+total+' partes'}</div></div>
+      <div class="hoje-cnt">${feitas}<small>/${total}</small></div>
+    </div>
+    <div class="hoje-intro">${soReab
+      ?'Hoje não tem academia. Faça a reabilitação em casa — são 15 minutos, e é o que faz as lesões melhorarem.'
+      :'Faça na ordem. Primeiro a reabilitação, sempre. O passo em destaque é o que você faz agora.'}</div>
+    <div class="hoje-lista">${partes.map(linha).join('')}</div>${fim}</div>`;
+}
+function renderReabBlock(){renderHoje();}
 // ── Detalhe de exercício ──
 let _exdAtual=null;
 function exLista(grupo){
   return grupo==='joelho'?REAB_JOELHO:grupo==='cotovelo'?REAB_COTOVELO:
          grupo==='nucleo'?NUCLEO_EX:grupo==='A'?TREINO_A_EX:grupo==='B'?TREINO_B_EX:null;
 }
-function openExDetalhe(grupo,i){
-  const lista=exLista(grupo);if(!lista||!lista[i])return;
-  const ex=lista[i];
-  _exdAtual={grupo,i,ex};
+
+function openExDetalhe(grupo,i){const lista=exLista(grupo);if(!lista||!lista[i])return;openExDetalheObj(lista[i],grupo);}
+function openExDetalhePlan(ei){const ex=getCurrentExercises(state.currentWorkout)[ei];if(ex)openExDetalheObj(ex,'plan');}
+function openExDetalheObj(ex,grupo){
+  _exdAtual={grupo,ex};
   const box=document.getElementById('exdBox');
-  const temGuia=ex.pos||ex.exec||ex.erro;
+  const temPlain=!!(ex.oque||ex.como||ex.cuidado);
+  const restTxt=ex.rest?(ex.rest>=60?Math.floor(ex.rest/60)+' min'+(ex.rest%60?' '+(ex.rest%60)+' s':''):ex.rest+' s'):'';
   box.innerHTML=`<div class="exd-grab"></div>
-    <div class="exd-nm">${esc(ex.name)}</div>
-    <div class="exd-pr">${prescr(ex)}${ex.rest?` · descanso ${ex.rest>=60?Math.floor(ex.rest/60)+' min':ex.rest+' s'}`:''}</div>
-    ${ex.obs?`<div class="exd-sec"><div class="exd-lb">Prescrição</div><div class="exd-rx">${esc(ex.obs)}</div></div>`:''}
-    ${ex.sec?`<div class="exd-sec"><div class="exd-lb">Cronômetro — ${ex.sec} s por série</div><div id="exdTimer"></div></div>`:''}
-    ${ex.pos?`<div class="exd-sec"><div class="exd-lb">Posição inicial</div><div class="exd-tx">${esc(ex.pos)}</div></div>`:''}
-    ${ex.exec?`<div class="exd-sec"><div class="exd-lb">Execução</div><ol class="exd-ol">${ex.exec.map(p=>`<li>${esc(p)}</li>`).join('')}</ol></div>`:''}
-    ${ex.cad?`<div class="exd-sec"><div class="exd-lb">Cadência</div><div class="exd-rx">${esc(ex.cad)}</div></div>`:''}
-    ${ex.erro?`<div class="exd-sec"><div class="exd-err"><div class="exd-err-t">Erro comum</div><div class="exd-err-b">${esc(ex.erro)}</div></div></div>`:''}
-    ${temGuia?`<div class="exd-src">Séries, repetições, cadência e o campo "Prescrição" vêm do seu programa adaptado. Posição inicial, execução e erro comum são guia geral de técnica, escrito para este app — confira com o fisioterapeuta.</div>`:''}
+    <div class="exd-plain-nm">${esc(ex.plain||ex.name)}</div>
+    ${ex.plain?`<div class="exd-tech">Nome técnico: ${esc(ex.name)}</div>`:''}
+    <div class="exd-pr">${prescr(ex)}${restTxt?` · descanse ${restTxt} entre as séries`:''}</div>
+    ${ex.sec?`<div class="exd-sec"><div class="exd-lb">Cronômetro — ${ex.sec} segundos por vez</div><div id="exdTimer"></div></div>`:''}
+    ${ex.oque?`<div class="exd-sec"><div class="exd-lb">O que é</div><div class="exd-tx">${esc(ex.oque)}</div></div>`:''}
+    ${ex.porque?`<div class="exd-sec"><div class="exd-lb">Por que está no seu programa</div><div class="exd-pq">${esc(ex.porque)}</div></div>`:''}
+    ${ex.como?`<div class="exd-sec"><div class="exd-lb">Como fazer</div><ol class="exd-ol">${ex.como.map(p=>`<li>${esc(p)}</li>`).join('')}</ol></div>`:''}
+    ${ex.cad?`<div class="exd-sec"><div class="exd-lb">Velocidade</div><div class="exd-rx">${esc(ex.cad)} — conte devagar: um, dois, três.</div></div>`:''}
+    ${ex.cuidado?`<div class="exd-sec"><div class="exd-err"><div class="exd-err-t">Cuidado — o erro mais comum</div><div class="exd-err-b">${esc(ex.cuidado)}</div></div></div>`:''}
+    ${ex.obs?`<div class="exd-sec"><div class="exd-lb">Texto original da prescrição</div><div class="exd-rxs">${esc(ex.obs)}</div></div>`:''}
+    ${temPlain?`<div class="exd-src">Séries, repetições, velocidade e o texto da prescrição vêm do seu programa. As explicações em linguagem simples foram escritas para este app. Se algo parecer diferente do que o fisioterapeuta disse, siga o fisioterapeuta.</div>`:''}
     <button class="btn btn-secondary exd-close" onclick="closeExDetalhe()">Fechar</button>`;
   document.getElementById('exdOv').classList.add('open');
   if(ex.sec)renderMiniTimer(ex.sec);
@@ -6873,48 +7133,42 @@ function renderGraficoSintomas(){
   </div>`;
 }
 /* ═══════════ AERÓBICO ═══════════ */
+
 function renderAerobico(){
   const el=document.getElementById('aerobicoContent');if(!el)return;
   const mx=(state.profile&&state.profile.fcMax)||197,rp=(state.profile&&state.profile.fcRep)||52;
   const pad=!(state.profile&&state.profile.fcMax)||!(state.profile&&state.profile.fcRep);
   const zonas=ZONES.map(z=>`<div class="zn-r">
       <div class="zn-t">${z.z}</div>
-      <div class="zn-n">${esc(z.label)}<small>${Math.round(z.lo*100)}–${Math.round(z.hi*100)}% da reserva</small></div>
+      <div class="zn-n">${esc(z.plain)}<span class="zn-pl">${esc(z.label)} · ${Math.round(z.lo*100)}–${Math.round(z.hi*100)}%</span></div>
       <div class="zn-b">${karvonen(z.lo)}–${karvonen(z.hi)}</div>
     </div>`).join('');
-  const sessoes=AEROBICAS.map(s=>`<div class="aer-c">
-      <div class="aer-h"><div class="aer-n">${esc(s.nome)}</div><div class="aer-f">${esc(s.freq)}</div></div>
-      <div class="aer-r">${esc(s.resumo)}</div>
-      <div class="aer-d">${esc(s.detalhe)}</div>
-      <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="abrirGuia('${s.id}')">▶ Sessão guiada</button>
+  const sess=AEROBICAS.map(a=>`<div class="aer-c">
+      <div class="aer-h"><div class="aer-n">${esc(a.plain)}</div><div class="aer-f">${esc(a.freq)}</div></div>
+      <div class="aer-r">${esc(a.resumo)} · ${esc(a.dur)}</div>
+      <div class="aer-d"><strong>O que é:</strong> ${esc(a.oque)}</div>
+      <div class="aer-d"><strong>Por que:</strong> ${esc(a.porque)}</div>
+      <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="abrirGuia('${a.id}')">▶ Começar — o app te guia bloco a bloco</button>
     </div>`).join('');
   el.innerHTML=`
-    <div class="section-title">Zonas de frequência cardíaca</div>
+    <div class="section-title">Bike no lugar da corrida</div>
+    <div class="alert info"><div class="alert-title">Por que bike, e não corrida</div><div class="alert-body">Correr bate no joelho a cada passo. A bike não tem impacto, você controla o quanto o joelho dobra pela altura do banco, e o cotovelo fica descansando. Por enquanto, todo o condicionamento é na bike.</div></div>
+    <div class="section-title">Quão forte pedalar — as zonas</div>
+    <div class="prog-advice" style="margin-bottom:10px">Cada sessão pede uma "zona": quão forte você está pedalando. Use o batimento do coração (bpm) que o relógio ou a bike mostram, ou a regra da conversa ao lado de cada zona.</div>
     <div class="comp-block">${zonas}</div>
-    <div class="prog-advice" style="margin-top:10px">
-      Método de Karvonen — FCmáx <strong>${mx}</strong>, FCrep <strong>${rp}</strong>, reserva <strong>${mx-rp}</strong>.
-      ${pad?'<br><br>Estes são os valores padrão do seu programa. Ajuste em Perfil se os seus forem outros.':''}
-    </div>
-    <div class="alert info" style="margin-top:10px">
-      <div class="alert-title">Ajuste para bicicleta</div>
-      <div class="alert-body">${esc(FC_BIKE_NOTA)} Teto sugerido na bike: <strong>${Math.max(0,mx-7)} bpm</strong>.</div>
-    </div>
-    <div class="section-title">Sessões da semana</div>
-    ${sessoes}
-    <div class="alert success" style="margin-top:4px">
-      <div class="alert-title">Por que isso preserva o VO₂máx</div>
-      <div class="alert-body">${esc(AEROBICO_VO2_NOTA)}</div>
-    </div>
-    <div class="section-title">Equipamento — ordem de preferência</div>
+    <div class="prog-advice" style="margin-top:10px">Calculado pelo método de Karvonen com FC máxima <strong>${mx}</strong> e FC de repouso <strong>${rp}</strong>.${pad?' São os valores padrão do seu programa — se os seus forem outros, ajuste em Perfil.':''}</div>
+    <div class="alert warn" style="margin-top:10px"><div class="alert-title">Na bike, o coração bate um pouco menos</div><div class="alert-body">Pedalando, o coração costuma bater 5 a 10 batimentos abaixo do que bateria correndo no mesmo esforço, porque usa menos músculo. Se os seus números vieram da corrida, considere que o máximo na bike fica perto de <strong>${Math.max(0,mx-7)} bpm</strong>. Ou simplesmente vá pela sensação: forte é quando não dá para falar.</div></div>
+    <div class="section-title">As três sessões da semana</div>
+    ${sess}
+    <div class="alert success"><div class="alert-title">Por que isso mantém o fôlego</div><div class="alert-body">O fôlego não cai por treinar menos tempo — cai por nunca treinar forte. Duas sessões fortes por semana bastam para mantê-lo, e ele só começa a cair depois de 10 a 14 dias sem estímulo. Então dá para tirar a corrida sem perder condicionamento, desde que os tiros fortes continuem.</div></div>
+    <div class="section-title">Qual aparelho usar</div>
     <div class="comp-block" style="padding:4px 16px">
-      ${AEROBICO_ORDEM.map(o=>`<div style="padding:12px 0;border-bottom:1px solid var(--border)">
-        <div style="font-size:13px;font-weight:600;margin-bottom:4px">${esc(o.t)}</div>
-        <div style="font-size:12.5px;color:var(--muted2);line-height:1.6">${esc(o.d)}</div></div>`).join('')}
+      <div style="padding:12px 0;border-bottom:1px solid var(--border)"><div style="font-size:13.5px;font-weight:600;margin-bottom:4px">1º — Bike deitada (horizontal)</div><div style="font-size:12.5px;color:var(--muted2);line-height:1.6">Costas apoiadas, zero peso no cotovelo. Recue o banco até o joelho não dobrar mais que 90 graus quando o pedal está mais perto de você.</div></div>
+      <div style="padding:12px 0;border-bottom:1px solid var(--border)"><div style="font-size:13.5px;font-weight:600;margin-bottom:4px">2º — Bike normal (vertical)</div><div style="font-size:12.5px;color:var(--muted2);line-height:1.6">Melhor para os tiros fortes. Banco mais alto que o de costume: joelho quase esticado quando o pedal está lá embaixo. Pedale rápido, 90 a 100 giros por minuto, com pouca carga. Nunca em pé, nunca arrancada fora do banco.</div></div>
+      <div style="padding:12px 0;border-bottom:1px solid var(--border)"><div style="font-size:13.5px;font-weight:600;margin-bottom:4px">3º — Elíptico</div><div style="font-size:12.5px;color:var(--muted2);line-height:1.6">Sem usar as alavancas dos braços. Passada curta ou média — passada longa força o joelho a esticar demais.</div></div>
+      <div style="padding:12px 0"><div style="font-size:13.5px;font-weight:600;margin-bottom:4px">Se tiver piscina — corrida na água funda</div><div style="font-size:12.5px;color:var(--muted2);line-height:1.6">Com cinto de flutuação. É o que mais parece com correr, sem impacto nenhum e sem usar o cotovelo. Tente dar 160 a 170 passos por minuto.</div></div>
     </div>
-    <div class="alert danger" style="margin-top:10px">
-      <div class="alert-title">Fora de cogitação</div>
-      <div class="alert-body">${esc(AEROBICO_FORA)}</div>
-    </div>`;
+    <div class="alert danger" style="margin-top:10px"><div class="alert-title">Não use</div><div class="alert-body">Remo (dobra o joelho fundo e a mão fica virada para baixo), escada ou stair climber (dobra o joelho com peso), e qualquer aparelho em que você precise puxar segurando com força.</div></div>`;
 }
 // ── Sessão guiada com cronômetro ──
 let _gd=null;
@@ -6953,6 +7207,7 @@ function renderGuia(){
       <div class="gd-lb">${esc(b.label)}</div>
       <div class="gd-zn" style="color:${cor}">${esc(b.z)}</div>
       <div class="gd-bpm">${zonaBpm(b.z)}</div>
+      ${b.dica?`<div class="gd-dica">${esc(b.dica)}</div>`:''}
       <div class="gd-tm">${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}</div>
       <div class="gd-nx">${prox?'A seguir: '+esc(prox.label)+' · '+esc(prox.z):'Último bloco'}</div>
     </div>
@@ -6982,7 +7237,8 @@ function proximoBloco(){
   try{playSfx('runSegments','exerciseEnd');}catch(e){}
   if(_gd.bi>=_gd.s.blocos.length-1){
     clearInterval(_gd.timer);_gd.timer=null;_gd.run=false;
-    showToast('✓ Sessão aeróbica concluída',true);
+    marcarAerFeito(_gd.s.id);
+    showToast('✓ Bike concluída',true);
     fecharGuia();
     if(reabOn())setTimeout(()=>openSintomas(_gd2Tipo()),700);
     return;
@@ -6997,84 +7253,64 @@ function pularBloco(){
   _gd.left=0;proximoBloco();
 }
 /* ═══════════ PLANO — seção da reabilitação ═══════════ */
+
 function renderReabPlano(){
   const el=document.getElementById('reabPlano');if(!el)return;
   const mi=document.getElementById('menuAerobico');
   if(mi)mi.style.display=reabOn()?'':'none';
   if(!reabOn()){
-    el.innerHTML=`<div class="section-title">Programa adaptado a lesões</div>
+    el.innerHTML=`<div class="section-title">Programa adaptado às lesões</div>
       <div class="alert info">
         <div class="alert-title">Joelho direito + cotovelo direito</div>
-        <div class="alert-body">Programa provisório, até a consulta com o Dr. Lazaroni. Sem impacto, sem flexão acima de 60° sob carga, sem pegada pronada. Inclui bloco de reabilitação diário, treinos A e B adaptados, sessões aeróbicas na bike e registro de sintomas.</div>
+        <div class="alert-body">Programa provisório, até a consulta com o Dr. Lazaroni. Sem corrida, sem dobrar o joelho fundo com peso, sem pegar barra com a mão virada para baixo. Traz: reabilitação diária de 15 minutos, treinos A e B adaptados, bike no lugar da corrida e registro de como ficaram as lesões depois de cada dia.</div>
       </div>
       <button class="btn btn-primary btn-full" onclick="instalarProgramaReab()">Instalar programa de reabilitação</button>
-      <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:9px">Seu plano atual fica guardado e pode ser restaurado a qualquer momento. O histórico de treinos é preservado.</div>`;
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:9px">Seu plano atual fica guardado e pode ser restaurado quando quiser. O histórico de treinos não é apagado.</div>`;
     return;
   }
   const esc0=state.reab.escala||'3',E=ESCALAS[esc0];
   const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-  const wks=getActiveWorkouts(),dm=getActiveDayMap();
+  const wks=getActiveWorkouts();
   const semana=[1,2,3,4,5,6,0].map(d=>{
-    const wi=dm[d],w=wi!==undefined?wks[wi]:null;
-    const ex=E.extras[d];
-    if(!w&&!ex)return `<div class="qm-i"><span class="qm-n">${dias[d]}</span><span style="color:var(--muted)">Só reabilitação</span></div>`;
-    const partes=[];
-    if(w)partes.push(`<strong style="color:var(--text)">${esc(w.name)}</strong> — ${esc(w.sub)}`);
-    if(ex)partes.push(esc(ex));
-    return `<div class="qm-i"><span class="qm-n">${dias[d]}</span><span>Reabilitação + ${partes.join(' · ')}</span></div>`;
+    const x=E.dias[d];
+    if(!x)return `<div class="qm-i"><span class="qm-n">${dias[d]}</span><span style="color:var(--muted)">Só reabilitação (em casa)</span></div>`;
+    if(x.opcional)return `<div class="qm-i"><span class="qm-n">${dias[d]}</span><span>${esc(x.txt)}</span></div>`;
+    const partes=['<strong style="color:var(--text)">Reabilitação</strong>'];
+    if(x.treino!==undefined&&wks[x.treino]){const w=wks[x.treino];partes.push(`<strong style="color:var(--text)">${esc(w.name)}</strong>${x.reduzido?' (3 séries)':''}${x.unilateral?' (uma perna por vez, leve)':''}`);}
+    if(x.nucleo)partes.push('Núcleo 10 min');
+    if(x.aer){const a=AEROBICAS.find(y=>y.id===x.aer);if(a)partes.push(`Bike: ${esc(a.plain)}${x.aerNota?' — '+esc(x.aerNota):''}`);}
+    return `<div class="qm-i"><span class="qm-n">${dias[d]}</span><span>${partes.join(' → ')}</span></div>`;
   }).join('');
   const done=RETORNO_CRITERIOS.filter((_,i)=>state.reab.retorno&&state.reab.retorno[i]).length;
   const todos=done===RETORNO_CRITERIOS.length;
-  const crits=RETORNO_CRITERIOS.map((c,i)=>{
-    const d=state.reab.retorno&&state.reab.retorno[i];
-    return `<div class="crit-i${d?' done':''}">
-      <div class="reab-chk${d?' done':''}" onclick="toggleRetorno(${i})">${d?'✓':''}</div>
-      <div class="crit-t">${esc(c)}</div></div>`;
-  }).join('');
-  el.innerHTML=`<div class="section-title">Programa adaptado a lesões</div>
-    <div class="alert info">
-      <div class="alert-title">Provisório — joelho D + cotovelo D</div>
-      <div class="alert-body">Até a consulta com o Dr. Lazaroni. Sem impacto, sem flexão acima de 60° sob carga, sem pegada pronada.</div>
-    </div>
-    <div class="section-title">Distribuição semanal</div>
-    <div class="esc-sw">
-      ${Object.values(ESCALAS).map(s=>`<button class="esc-b${esc0===s.id?' active':''}" onclick="setEscala('${s.id}')">${esc(s.nome)}<small>${esc(s.sub)}</small></button>`).join('')}
-    </div>
+  const crits=RETORNO_CRITERIOS.map((c,i)=>{const d=state.reab.retorno&&state.reab.retorno[i];
+    return `<div class="crit-i${d?' done':''}"><div class="reab-chk${d?' done':''}" onclick="toggleRetorno(${i})">${d?'✓':''}</div><div class="crit-t">${esc(c)}</div></div>`;}).join('');
+  el.innerHTML=`<div class="section-title">Programa adaptado às lesões</div>
+    <div class="alert info"><div class="alert-title">Provisório — joelho direito + cotovelo direito</div><div class="alert-body">Até a consulta com o Dr. Lazaroni. Nada de corrida, nada de dobrar o joelho fundo com peso, nada de barra com a mão virada para baixo. Na tela Treino, a caixa "Hoje" mostra o que fazer, na ordem.</div></div>
+    <div class="section-title">Quantos dias por semana</div>
+    <div class="esc-sw">${Object.values(ESCALAS).map(x=>`<button class="esc-b${esc0===x.id?' active':''}" onclick="setEscala('${x.id}')">${esc(x.nome)}<small>${esc(x.sub)}</small></button>`).join('')}</div>
     <div class="comp-block" style="padding:4px 16px;margin-top:10px">${semana}</div>
     <div class="prog-advice" style="margin-top:10px">${esc(E.nota)}</div>
-    <div class="section-title">Regras de carga</div>
-    ${REGRAS_CARGA.map(r=>`<div class="alert ${r.type}"><div class="alert-title">${esc(r.title)}</div><div class="alert-body">${esc(r.body)}</div></div>`).join('')}
-    <div class="section-title">Evolução dos sintomas</div>
+    <div class="section-title">Três regras para não piorar</div>
+    ${REGRAS_CARGA.map(r=>`<div class="alert ${r.type}"><div class="alert-title">${esc(r.title)}</div><div class="alert-body">${esc(r.plain||r.body)}</div></div>`).join('')}
+    <div class="section-title">Como ficaram as lesões — evolução</div>
     ${renderGraficoSintomas()}
-    <div class="section-title">Progressão</div>
-    <div class="comp-block" style="padding:4px 16px">
-      ${PROGRESSAO_REAB.map(p=>`<div style="padding:12px 0;border-bottom:1px solid var(--border)">
-        <div style="font-size:13px;font-weight:600;margin-bottom:4px">${esc(p.t)}</div>
-        <div style="font-size:12.5px;color:var(--muted2);line-height:1.6">${esc(p.d)}</div></div>`).join('')}
-    </div>
-    <div class="section-title">Critérios para voltar a correr</div>
+    <div class="section-title">O que muda nas próximas semanas</div>
+    <div class="comp-block" style="padding:4px 16px">${PROGRESSAO_REAB.map(p=>`<div style="padding:12px 0;border-bottom:1px solid var(--border)"><div style="font-size:13.5px;font-weight:600;margin-bottom:4px">${esc(p.t)}</div><div style="font-size:12.5px;color:var(--muted2);line-height:1.6">${esc(p.d)}</div></div>`).join('')}</div>
+    <div class="section-title">Quando posso voltar a correr</div>
+    <div class="prog-advice" style="margin-bottom:10px">Marque cada item quando conseguir fazer. A corrida só volta quando <strong>todos os cinco</strong> estiverem marcados — e com o aval do médico.</div>
     <div class="comp-block" style="padding:4px 16px">${crits}</div>
-    <div class="alert ${todos?'success':'warn'}" style="margin-top:10px">
-      <div class="alert-title">${todos?'Critérios cumpridos — '+done+'/'+RETORNO_CRITERIOS.length:'Progresso: '+done+' de '+RETORNO_CRITERIOS.length}</div>
-      <div class="alert-body">${todos?esc(RETORNO_PROTOCOLO)+' Confirme com o Dr. Lazaroni antes de começar.':'A corrida só volta quando <strong>todos</strong> os cinco critérios estiverem cumpridos. Não antecipe.'}</div>
-    </div>
-    <div class="section-title">Levar ao Dr. Lazaroni</div>
-    <div class="comp-block" style="padding:4px 16px">
-      ${PERGUNTAS_MEDICO.map((q,i)=>`<div class="qm-i"><span class="qm-n">${i+1}.</span><span>${esc(q)}</span></div>`).join('')}
-    </div>
-    <div class="section-title">Núcleo — 10 min, 2 a 3× por semana</div>
-    <div class="comp-block" style="padding:4px 16px">
-      ${NUCLEO_EX.map((e,i)=>`<div class="reab-it">
-        <div class="reab-it-b" onclick="openExDetalhe('nucleo',${i})">
-          <div class="reab-nm">${esc(e.name)}</div><div class="reab-pr">${prescr(e)}</div>
-        </div><div class="reab-info" onclick="openExDetalhe('nucleo',${i})">i</div></div>`).join('')}
-    </div>
-    <div class="section-title">Restrições dos treinos</div>
-    <div class="alert danger"><div class="alert-title">Treino A — inferior</div><div class="alert-body">${esc(TREINO_A_REGRA)}</div></div>
-    <div class="alert danger"><div class="alert-title">Treino B — superior</div><div class="alert-body">${esc(TREINO_B_FORA)}</div></div>
-    <div class="alert success"><div class="alert-title">Braço esquerdo</div><div class="alert-body">${esc(TREINO_B_ESQUERDO)}</div></div>
-    <button class="btn btn-secondary btn-full" style="margin-top:14px" onclick="switchPage('aerobico')">Ver sessões aeróbicas e zonas de FC</button>
-    <button class="btn btn-danger btn-full" style="margin-top:9px" onclick="restaurarPlanoAnterior()">Restaurar plano anterior</button>`;
+    <div class="alert ${todos?'success':'warn'}" style="margin-top:10px"><div class="alert-title">${todos?'Os cinco critérios estão cumpridos':'Progresso: '+done+' de '+RETORNO_CRITERIOS.length}</div><div class="alert-body">${todos?esc(RETORNO_PROTOCOLO)+' Confirme com o Dr. Lazaroni antes de começar.':'Ainda não é hora. Continue a reabilitação e a bike.'}</div></div>
+    <div class="section-title">O que não fazer nos treinos</div>
+    <div class="alert danger"><div class="alert-title">Treino A — pernas</div><div class="alert-body">${esc(TREINO_A_REGRA_PLAIN)}</div></div>
+    <div class="alert danger"><div class="alert-title">Treino B — braços e costas</div><div class="alert-body">${esc(TREINO_B_FORA_PLAIN)}</div></div>
+    <div class="alert success"><div class="alert-title">Braço esquerdo</div><div class="alert-body">${esc(TREINO_B_ESQUERDO_PLAIN)}</div></div>
+    <div class="section-title">Para levar ao Dr. Lazaroni</div>
+    <div class="comp-block" style="padding:4px 16px">${PERGUNTAS_MEDICO.map((q,i)=>`<div class="qm-i"><span class="qm-n">${i+1}.</span><span>${esc(q)}</span></div>`).join('')}</div>
+    <div class="section-title">Entenda os termos</div>
+    <div class="comp-block" style="padding:4px 16px">${GLOSSARIO.map(g=>`<div class="glos-i"><div class="glos-t">${esc(g.t)}</div><div class="glos-d">${esc(g.d)}</div></div>`).join('')}</div>
+    <button class="btn btn-secondary btn-full" style="margin-top:14px" onclick="switchPage('aerobico')">Ver a bike e as zonas de batimento</button>
+    <button class="btn btn-danger btn-full" style="margin-top:9px" onclick="restaurarPlanoAnterior()">Voltar ao plano anterior</button>`;
 }
 function getActiveWorkouts(){
   if(state.useCustomPlan&&state.customWorkouts&&state.customWorkouts.length>0){
