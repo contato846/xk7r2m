@@ -738,6 +738,128 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 .cfg-switch input:checked~.cfg-knob{left:22px;}
 .cfg-sound-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
 .cfg-sound-btns button{font-size:11px;padding:6px 10px;}
+/* ═══ PROGRAMA DE REABILITAÇÃO ═══ */
+.reab-card{background:linear-gradient(160deg,#122031,#0f1a26);border:1px solid var(--accent3);border-radius:16px;padding:15px 16px;margin-bottom:14px;}
+.reab-head{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;}
+.reab-h-txt{flex:1;min-width:0;}
+.reab-title{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:1.2px;color:var(--accent3);line-height:1.1;}
+.reab-sub{font-size:11px;color:var(--muted2);margin-top:3px;line-height:1.35;}
+.reab-ring{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);flex-shrink:0;line-height:1;text-align:right;}
+.reab-ring small{display:block;font-size:9px;font-family:'DM Sans',sans-serif;color:var(--muted);letter-spacing:.5px;}
+.reab-chev{color:var(--muted2);font-size:14px;transition:transform .25s;flex-shrink:0;}
+.reab-card.open .reab-chev{transform:rotate(180deg);}
+.reab-body{display:none;margin-top:13px;}
+.reab-card.open .reab-body{display:block;}
+.reab-grp{font-size:10px;text-transform:uppercase;letter-spacing:1.6px;color:var(--accent3);margin:15px 0 8px;padding-top:11px;border-top:1px solid rgba(71,184,255,.2);}
+.reab-grp:first-child{margin-top:4px;padding-top:0;border-top:none;}
+.reab-it{display:flex;align-items:flex-start;gap:11px;padding:9px 0;}
+.reab-chk{width:26px;height:26px;border-radius:8px;border:2px solid #35506b;background:transparent;color:#000;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s;}
+.reab-chk.done{background:var(--done-border);border-color:var(--done-border);}
+.reab-chk:active{transform:scale(.9);}
+.reab-it-b{flex:1;min-width:0;cursor:pointer;}
+.reab-nm{font-size:13.5px;font-weight:500;line-height:1.35;}
+.reab-it.done .reab-nm{color:var(--muted2);text-decoration:line-through;}
+.reab-pr{font-size:11.5px;color:var(--accent);margin-top:3px;font-weight:600;}
+.reab-cad{color:var(--accent2);}
+.reab-info{width:26px;height:26px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--muted2);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;}
+.reab-note{font-size:11.5px;color:var(--muted2);line-height:1.6;background:rgba(0,0,0,.25);border-radius:9px;padding:11px 12px;margin-top:10px;}
+.reab-cta{width:100%;margin-top:12px;}
+
+/* detalhe de exercício */
+.exd-ov{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:700;display:none;align-items:flex-end;}
+.exd-ov.open{display:flex;}
+.exd{background:var(--surface);border-top:1px solid var(--border);border-radius:18px 18px 0 0;width:100%;max-width:520px;margin:0 auto;max-height:88vh;overflow-y:auto;padding:18px 18px calc(28px + env(safe-area-inset-bottom));}
+.exd-grab{width:38px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 14px;}
+.exd-nm{font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:1px;line-height:1.1;}
+.exd-pr{font-size:13px;color:var(--accent);font-weight:600;margin-top:5px;}
+.exd-sec{margin-top:17px;}
+.exd-lb{font-size:10px;text-transform:uppercase;letter-spacing:1.6px;color:var(--muted);margin-bottom:7px;}
+.exd-tx{font-size:13.5px;line-height:1.65;color:var(--text);}
+.exd-ol{margin:0;padding-left:20px;font-size:13.5px;line-height:1.7;}
+.exd-ol li{margin-bottom:7px;}
+.exd-rx{background:rgba(var(--accent-rgb),.09);border-left:3px solid var(--accent);border-radius:0 9px 9px 0;padding:11px 13px;font-size:13px;line-height:1.6;}
+.exd-err{background:#2b1205;border-left:3px solid var(--accent2);border-radius:0 9px 9px 0;padding:11px 13px;}
+.exd-err-t{font-size:11px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:1.1px;margin-bottom:5px;}
+.exd-err-b{font-size:13px;line-height:1.6;color:#f0d9c8;}
+.exd-src{font-size:10.5px;color:var(--muted);line-height:1.55;margin-top:18px;padding-top:12px;border-top:1px solid var(--border);font-style:italic;}
+.exd-close{width:100%;margin-top:16px;}
+
+/* timer embutido */
+.mini-tm{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:13px;display:flex;align-items:center;gap:12px;}
+.mini-tm-d{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--accent);line-height:1;min-width:74px;font-variant-numeric:tabular-nums;}
+.mini-tm-d.run{color:var(--accent2);}
+.mini-tm-d.end{color:var(--done-border);}
+.mini-tm-b{flex:1;display:flex;gap:7px;}
+.mini-tm-b button{flex:1;padding:11px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;}
+.mini-tm-b button.pri{background:var(--accent);color:#000;border-color:var(--accent);}
+
+/* sintomas */
+.sym-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:720;display:none;align-items:center;justify-content:center;padding:18px;}
+.sym-ov.open{display:flex;}
+.sym{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;padding:20px;}
+.sym-t{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1px;margin-bottom:5px;}
+.sym-s{font-size:12px;color:var(--muted2);line-height:1.5;margin-bottom:18px;}
+.sym-f{margin-bottom:18px;}
+.sym-lb{font-size:12px;color:var(--muted2);margin-bottom:9px;display:flex;justify-content:space-between;align-items:baseline;}
+.sym-v{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);}
+.sym-sl{width:100%;-webkit-appearance:none;appearance:none;height:34px;background:transparent;}
+.sym-sl::-webkit-slider-runnable-track{height:7px;border-radius:4px;background:linear-gradient(90deg,var(--done-border),var(--warn),var(--danger));}
+.sym-sl::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--accent);margin-top:-11px;cursor:pointer;}
+.sym-sl::-moz-range-track{height:7px;border-radius:4px;background:linear-gradient(90deg,var(--done-border),var(--warn),var(--danger));}
+.sym-sl::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--accent);cursor:pointer;}
+.sym-tog{display:flex;gap:9px;}
+.sym-tog button{flex:1;padding:15px;border-radius:11px;border:1px solid var(--border);background:var(--card);color:var(--muted2);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;}
+.sym-tog button.on{background:var(--danger);border-color:var(--danger);color:#fff;}
+.sym-tog button.on.no{background:var(--done-border);border-color:var(--done-border);color:#000;}
+.sym-ch{display:flex;align-items:flex-end;gap:4px;height:104px;padding:11px 0;}
+.sym-bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;min-width:0;}
+.sym-bar i{display:block;border-radius:2px 2px 0 0;}
+.sym-lg{display:flex;gap:15px;font-size:11px;color:var(--muted2);margin-top:9px;flex-wrap:wrap;}
+.sym-lg span{display:flex;align-items:center;gap:6px;}
+.sym-lg i{width:10px;height:10px;border-radius:3px;}
+
+/* escala 3/5 e aeróbico */
+.esc-sw{display:flex;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:4px;}
+.esc-b{flex:1;padding:12px 6px;background:transparent;border:0;border-radius:8px;color:var(--muted2);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;line-height:1.3;}
+.esc-b.active{background:var(--accent);color:#000;}
+.esc-b small{display:block;font-size:9.5px;font-weight:400;opacity:.75;margin-top:2px;}
+.zn-r{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--border);}
+.zn-r:last-child{border-bottom:none;}
+.zn-t{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;width:30px;flex-shrink:0;}
+.zn-n{flex:1;font-size:12.5px;color:var(--muted2);min-width:0;}
+.zn-n small{display:block;font-size:10.5px;color:var(--muted);}
+.zn-b{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--accent);font-variant-numeric:tabular-nums;}
+.aer-c{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px 16px;margin-bottom:11px;}
+.aer-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.aer-n{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:1px;}
+.aer-f{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0;}
+.aer-r{font-size:13.5px;color:var(--accent);font-weight:600;margin-top:6px;}
+.aer-d{font-size:12.5px;color:var(--muted2);line-height:1.6;margin-top:7px;}
+/* guia do 4x4 */
+.gd-ov{position:fixed;inset:0;background:var(--bg);z-index:740;display:none;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));}
+.gd-ov.open{display:flex;}
+.gd-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.gd-x{background:transparent;border:0;color:var(--muted2);font-size:28px;cursor:pointer;line-height:1;padding:4px 8px;}
+.gd-mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.gd-lb{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);}
+.gd-zn{font-family:'Bebas Neue',sans-serif;font-size:58px;letter-spacing:2px;line-height:1;margin:9px 0;}
+.gd-bpm{font-size:15px;color:var(--accent);font-weight:600;}
+.gd-tm{font-family:'Bebas Neue',sans-serif;font-size:82px;letter-spacing:4px;line-height:1;margin:22px 0 8px;font-variant-numeric:tabular-nums;}
+.gd-nx{font-size:12.5px;color:var(--muted2);}
+.gd-pg{display:flex;gap:3px;margin:20px 0 14px;width:100%;}
+.gd-pg i{flex:1;height:5px;border-radius:3px;background:var(--border);}
+.gd-pg i.done{background:var(--done-border);}
+.gd-pg i.cur{background:var(--accent);}
+.gd-bt{display:flex;gap:10px;}
+.gd-bt button{flex:1;padding:17px;border-radius:13px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;}
+.gd-bt button.pri{background:var(--accent);color:#000;border-color:var(--accent);}
+.crit-i{display:flex;align-items:flex-start;gap:11px;padding:12px 0;border-bottom:1px solid var(--border);}
+.crit-i:last-child{border-bottom:none;}
+.crit-t{flex:1;font-size:13.5px;line-height:1.5;}
+.crit-i.done .crit-t{color:var(--muted2);}
+.qm-i{padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6;color:var(--muted2);display:flex;gap:10px;}
+.qm-i:last-child{border-bottom:none;}
+.qm-n{color:var(--accent);font-weight:700;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -784,13 +906,19 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   <div class="menu-list">
     <button class="menu-item" data-page="perfil" onclick="switchPage('perfil',this)"><span><i class="fa-solid fa-user mi-icon"></i>Perfil</span></button>
     <button class="menu-item" data-page="config" onclick="switchPage('config',this)"><span><i class="fa-solid fa-gear mi-icon"></i>Configurações</span></button>
+    <button class="menu-item" data-page="aerobico" id="menuAerobico" style="display:none" onclick="switchPage('aerobico',this)"><span><i class="fa-solid fa-heart-pulse mi-icon"></i>Aeróbico</span></button>
     <button class="menu-item" data-page="sobre" onclick="switchPage('sobre',this)"><span><i class="fa-solid fa-circle-info mi-icon"></i>Sobre</span></button>
     <button class="menu-item" id="menuAuthBtn" onclick="menuAuthAction()"><span><i class="fa-solid fa-right-to-bracket mi-icon" id="menuAuthIcon"></i><span id="menuAuthText">Login</span></span></button>
   </div>
 </div>
 
+<div class="exd-ov" id="exdOv" onclick="if(event.target===this)closeExDetalhe()"><div class="exd" id="exdBox"></div></div>
+<div class="sym-ov" id="symOv"><div class="sym" id="symBox"></div></div>
+<div class="gd-ov" id="gdOv"></div>
+
 <div class="page active" id="page-treino">
   <div id="cloudBanner"></div>
+  <div id="reabBlock"></div>
   <div id="switchNotice"></div>
   <div id="heroCard"></div>
   <div class="quick-mode-bar" id="quickModeBar"></div>
@@ -866,6 +994,7 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
 </div>
 
 <div class="page" id="page-plano">
+  <div id="reabPlano"></div>
   <div id="planDates"></div>
   <div style="display:flex;gap:8px;margin-bottom:14px">
     <button class="btn btn-primary btn-full" onclick="openPlanChat()" style="font-size:14px">💬 Criar novo plano</button>
@@ -904,6 +1033,10 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
   <div id="configContent"></div>
 </div>
 
+<div class="page" id="page-aerobico">
+  <div id="aerobicoContent"></div>
+</div>
+
 <div class="page" id="page-sobre">
   <div id="sobreContent"></div>
 </div>
@@ -920,6 +1053,8 @@ body.theme-mae .profile-cta-card.stale-data{border-color:var(--accent);backgroun
     <div class="pf-row"><label>Peso atual (kg)</label><input type="number" id="pf-weight" step="0.1" min="20" max="300" placeholder="80"></div>
     <div class="pf-row"><label>Altura (cm)</label><input type="number" id="pf-height" min="100" max="250" placeholder="175"></div>
     <div class="pf-row"><label>Meta de peso (kg)</label><input type="number" id="pf-goal" step="0.1" min="20" max="300" placeholder="75"></div>
+    <div class="pf-row"><label>FC máxima (bpm)</label><input type="number" id="pf-fcmax" min="100" max="230" placeholder="197"></div>
+    <div class="pf-row"><label>FC de repouso (bpm)</label><input type="number" id="pf-fcrep" min="30" max="120" placeholder="52"></div>
     <div style="display:flex;gap:8px;margin-top:6px">
       <button class="btn btn-secondary btn-full" onclick="closeProfileEdit()">Cancelar</button>
       <button class="btn btn-primary btn-full" onclick="saveProfile()">✓ Salvar</button>
@@ -1120,7 +1255,260 @@ const CHANGELOG=[
 ];
 
 // STATE
-const STATE_VERSION=8;
+/* ═══════════════════════════════════════════════════════════════
+   PROGRAMA ADAPTADO — joelho D (cisto poplíteo / pata anserina)
+   + cotovelo D (epicondilalgia, ~50% de ruptura)
+   Provisório, até a consulta com o Dr. Lazaroni.
+
+   PROVENIÊNCIA DO TEXTO (importante):
+   - `obs`, `cad`, `series`, `reps`: copiados da prescrição. NÃO alterar.
+   - `pos`, `exec`, `erro`: guia de execução redigido para o app,
+     NÃO faz parte da prescrição. Marcado como tal na interface
+     para conferência com o fisioterapeuta.
+   ═══════════════════════════════════════════════════════════════ */
+const REAB_JOELHO=[
+  {name:"Isometria de quadríceps (quad set)",series:5,reps:"10 seg",sec:10,rest:20,muscles:['quadriceps'],
+   obs:"Joelho estendido, toalha sob o joelho. Contração máxima.",
+   pos:"Deitado de costas ou sentado com a perna estendida, uma toalha enrolada sob o joelho.",
+   exec:["Pressione o joelho contra a toalha, contraindo a coxa com força máxima.","Mantenha 10 segundos respirando normalmente.","Solte por completo e descanse antes da próxima."],
+   erro:"Prender a respiração, ou contrair o glúteo no lugar do quadríceps. Você deve ver o vasto medial — a parte interna logo acima do joelho — endurecer."},
+  {name:"Elevação de perna reta",series:3,reps:"12 reps",rest:30,muscles:['quadriceps','core'],
+   obs:"Sem flexão; pé em leve rotação externa.",
+   pos:"Deitado de costas, perna a trabalhar estendida, a outra dobrada com o pé apoiado no chão.",
+   exec:["Contraia o quadríceps primeiro e trave o joelho.","Suba a perna até cerca de 30 cm do chão, mantendo o joelho reto.","Desça devagar, sem encostar totalmente entre as repetições."],
+   erro:"Deixar o joelho dobrar durante a subida — isso tira a carga do quadríceps. Trave o joelho ANTES de iniciar o movimento."},
+  {name:"Extensão terminal com elástico (TKE)",series:3,reps:"15 reps",rest:30,muscles:['quadriceps'],
+   obs:"Trabalha os últimos 30° — protege a patela.",
+   pos:"Em pé, elástico preso atrás do joelho a um ponto fixo à frente, joelho levemente flexionado.",
+   exec:["Estenda o joelho até travar, vencendo a resistência do elástico.","Segure 1 segundo no fim do movimento.","Retorne devagar até a flexão leve inicial."],
+   erro:"Recuar o quadril em vez de estender o joelho. O quadril fica parado: só o joelho trabalha."},
+  {name:"Abdução de quadril em decúbito lateral",series:3,reps:"15 reps cada lado",rest:30,muscles:['gluteos'],
+   obs:"Glúteo médio: é o que corrige valgo dinâmico.",
+   pos:"Deitado de lado, quadris empilhados, pernas estendidas e alinhadas com o tronco.",
+   exec:["Suba a perna de cima até cerca de 45°, sem rodar o quadril.","Pausa de 1 segundo no topo.","Desça controlado, sem encostar na perna de baixo."],
+   erro:"Rolar o quadril para trás na subida — isso troca o glúteo médio pelo tensor da fáscia lata. Mantenha o tronco perpendicular ao chão."},
+  {name:"Ponte de glúteo",series:3,reps:"15 reps",rest:30,muscles:['gluteos','posteriores','core'],
+   obs:"Bilateral; unilateral só quando indolor.",
+   pos:"Deitado de costas, joelhos dobrados, pés apoiados na largura do quadril.",
+   exec:["Empurre pelos calcanhares e suba o quadril até tronco e coxa formarem uma linha reta.","Aperte o glúteo por 1 segundo no topo.","Desça devagar, sem largar o peso de uma vez."],
+   erro:"Subir arqueando a lombar em vez de contrair o glúteo. Se sentir na lombar, suba menos e aperte mais o glúteo."},
+  {name:"Elevação de panturrilha",series:3,reps:"15 reps",rest:30,muscles:['panturrilha'],
+   obs:"Essencial para absorção de impacto na volta à corrida.",
+   pos:"Em pé, pés na largura do quadril, mãos apoiadas apenas para equilíbrio.",
+   exec:["Suba nas pontas dos pés o máximo que conseguir.","Pausa de 1 segundo no topo.","Desça devagar até o calcanhar quase tocar o chão."],
+   erro:"Usar impulso e quicar. A descida lenta é onde está o estímulo."},
+];
+const REAB_COTOVELO=[
+  {name:"Isometria de extensão de punho",series:5,reps:"30 seg",sec:30,rest:30,muscles:['antebraco'],
+   obs:"Punho neutro contra resistência; comece sempre por aqui.",
+   pos:"Sentado, antebraço apoiado na coxa ou na mesa, punho para fora da borda, palma para baixo e punho alinhado com o antebraço.",
+   exec:["Com a mão esquerda, aplique resistência sobre o dorso da mão direita.","Empurre a mão direita para cima contra essa resistência, sem que o punho se mova.","Mantenha 30 segundos com força submáxima e constante."],
+   erro:"Deixar o punho ceder e virar movimento. É isometria: nada se move. Se doer mais que 4/10, reduza a FORÇA — não o tempo."},
+  {name:"Excêntrico de extensão de punho",series:3,reps:"15 reps",cad:"3 s na descida",rest:45,muscles:['antebraco'],fixed:true,
+   obs:"Halter leve (0,5–1 kg) ou FlexBar. Só a fase de descida — use a mão esquerda para voltar.",
+   pos:"Antebraço apoiado, punho para fora da borda, palma para baixo, segurando um halter de 0,5–1 kg com o punho já estendido para cima.",
+   exec:["Parta com o punho estendido para cima.","Baixe o peso contando 3 segundos, até o punho chegar em flexão completa.","Use a mão esquerda para devolver o punho à posição alta — a subida NÃO é feita pelo lado direito.","Repita 15 vezes."],
+   erro:"Fazer a subida com o lado lesionado. O tratamento é a fase excêntrica isolada; subir ativamente com a direita anula o protocolo e irrita o tendão."},
+  {name:"Supinação/pronação excêntrica",series:3,reps:"12 reps",rest:45,muscles:['antebraco'],
+   obs:"Martelo ou halter segurado pela ponta.",
+   pos:"Sentado, cotovelo dobrado a 90° junto ao corpo, segurando um martelo pelo cabo — longe da cabeça — com o punho neutro.",
+   exec:["Gire o antebraço até a palma ficar para cima, ajudando com a mão esquerda.","Deixe o peso girar de volta devagar, resistindo com a mão direita.","Repita no outro sentido, com a palma indo para baixo."],
+   erro:"Segurar o martelo perto da cabeça, o que elimina a alavanca. Quanto mais longe da cabeça, maior o estímulo: comece curto e vá afastando."},
+  {name:"Rotação externa de ombro com elástico",series:3,reps:"15 reps",rest:30,muscles:['ombros'],
+   obs:"Déficit escapular e de manguito está associado a epicondilalgia.",
+   pos:"Em pé, cotovelo colado ao tronco a 90°, elástico preso à frente na altura do umbigo, punho neutro.",
+   exec:["Gire o antebraço para fora, afastando a mão da barriga.","Mantenha o cotovelo colado ao corpo o tempo todo.","Retorne devagar."],
+   erro:"Afastar o cotovelo do tronco e transformar em movimento de ombro. Prenda uma toalha enrolada entre o cotovelo e o corpo para não deixar escapar."},
+  {name:"Alongamento dos extensores",series:3,reps:"30 seg",sec:30,rest:15,muscles:['antebraco'],
+   obs:"Cotovelo estendido, punho em flexão, dedos apontando para baixo.",
+   pos:"Braço direito estendido à frente, na altura do ombro, palma para baixo.",
+   exec:["Com a mão esquerda, puxe a mão direita para baixo, levando os dedos em direção ao chão.","Mantenha o cotovelo completamente estendido.","Segure 30 segundos, até sentir estiramento na face externa do antebraço."],
+   erro:"Dobrar o cotovelo, o que afrouxa o alongamento. O cotovelo precisa ficar travado em extensão."},
+];
+const REAB_EVITAR="Evitar nesta fase: prancha de Copenhague e adução resistida. O grácil se insere na pata anserina, que já está inflamada.";
+const REAB_ERGONOMIA="Teclado na altura do cotovelo ou ligeiramente abaixo, nunca acima. Antebraço e mão na mesma linha. Mouse vertical, se possível, para tirar o antebraço da pronação sustentada. Pausa de um minuto a cada 30–40 min com a mão solta — a interrupção da contração estática importa mais que a duração da pausa.";
+const TREINO_A_EX=[
+  {name:"Leg press com amplitude limitada",series:4,reps:"10 reps",rest:120,muscles:['quadriceps','gluteos'],
+   obs:"Batente ou marcação; pare em 60°.",
+   pos:"Sentado no leg press, pés na largura do quadril, com batente ou marcação no trilho limitando a descida a 60° de flexão do joelho.",
+   exec:["Desça até o batente, sem passar dele.","Empurre pelos calcanhares até quase estender, sem travar o joelho.","Mantenha a lombar apoiada no encosto o tempo todo."],
+   erro:"Descer além do batente 'só para sentir mais'. O limite de 60° é o que protege a articulação — é a regra central desta fase."},
+  {name:"Agachamento espanhol (isométrico)",series:4,reps:"30 seg",sec:30,rest:60,muscles:['quadriceps'],
+   obs:"Elástico atrás dos joelhos; excelente relação carga/segurança.",
+   pos:"Em pé, elástico resistente passado atrás dos joelhos e preso a um ponto fixo baixo à frente, pés na largura do quadril.",
+   exec:["Deixe o elástico puxar os joelhos para trás e sente-se levemente, como numa cadeira invisível.","Pare por volta de 60° de flexão — coxa ainda longe da paralela.","Mantenha 30 segundos com o tronco ereto e o peso nos calcanhares."],
+   erro:"Deixar o joelho avançar sobre o pé. O elástico existe justamente para puxar o joelho para trás; se o joelho vai à frente, o elástico está frouxo ou mal posicionado."},
+  {name:"Elevação pélvica com barra (hip thrust)",series:4,reps:"10 reps",rest:120,muscles:['gluteos','posteriores'],
+   obs:"Barra apoiada no quadril: zero exigência de preensão.",
+   pos:"Costas apoiadas num banco na altura das escápulas, joelhos dobrados, barra sobre o quadril com almofada.",
+   exec:["Empurre pelos calcanhares e suba o quadril até tronco e coxa formarem linha reta.","Aperte o glúteo 1 segundo no topo, com o queixo levemente para o peito.","Desça controlado sem largar o peso."],
+   erro:"Hiperestender a lombar no topo em vez de parar na linha reta. O movimento termina quando o tronco fica paralelo ao chão, não além disso."},
+  {name:"Extensão de joelho — arco parcial 45°→0°",series:3,reps:"12 reps",rest:90,muscles:['quadriceps'],
+   obs:"Carga leve a moderada.",
+   pos:"Sentado na cadeira extensora, com o batente de amplitude ajustado para partir de 45° de flexão, não do fundo.",
+   exec:["Parta de 45° e estenda até travar o joelho.","Segure 1 segundo no topo.","Volte devagar até os 45°, sem descer além disso."],
+   erro:"Partir do fundo da máquina. O arco de 90° a 45° é justamente o que comprime a patela — por isso o exercício começa a meio caminho."},
+  {name:"Flexão de joelho deitado",series:3,reps:"12 reps",rest:90,muscles:['posteriores'],
+   obs:"Carga leve — o semitendíneo se insere na pata anserina.",
+   pos:"Deitado de bruços na mesa flexora, rolo apoiado logo acima do calcanhar, quadril colado ao apoio.",
+   exec:["Flexione os joelhos trazendo o calcanhar em direção ao glúteo.","Pare antes do fim da amplitude se sentir fisgada na face interna do joelho.","Volte devagar."],
+   erro:"Usar carga alta por hábito. Este é o exercício que mais pode irritar a pata anserina nesta fase — se houver dor na face interna do joelho, reduza carga imediatamente."},
+  {name:"Abdução de quadril na máquina",series:3,reps:"15 reps",rest:60,muscles:['gluteos'],
+   obs:"",
+   pos:"Sentado na máquina abdutora, costas apoiadas, joelhos contra as almofadas.",
+   exec:["Abra as pernas contra a resistência até o fim confortável da amplitude.","Pausa de 1 segundo na abertura máxima.","Feche devagar, resistindo ao retorno."],
+   erro:"Jogar o tronco para trás para ganhar impulso. As costas ficam coladas no encosto; só o quadril trabalha."},
+  {name:"Panturrilha em pé (máquina de ombro)",series:4,reps:"15 reps",rest:60,muscles:['panturrilha'],
+   obs:"Sem pegada; prepara a volta ao impacto.",
+   pos:"Em pé na máquina de panturrilha com apoio nos ombros — nunca na versão que exige segurar peso com as mãos.",
+   exec:["Suba nas pontas dos pés até a amplitude máxima.","Pausa de 1 segundo no topo.","Desça devagar até sentir alongar a panturrilha."],
+   erro:"Escolher a variação com halteres na mão. A carga vai para os ombros justamente para poupar o cotovelo — segurar peso anula isso."},
+];
+const TREINO_B_EX=[
+  {name:"Supino com halteres",series:4,reps:"10 reps",rest:120,muscles:['peito','triceps','ombros'],
+   obs:"Punho neutro-alinhado; evite flexão do punho.",
+   pos:"Deitado no banco, halteres na altura do peito, punhos alinhados com o antebraço.",
+   exec:["Empurre os halteres para cima até quase estender os cotovelos.","Desça controlado até a altura do peito.","Mantenha o punho firme e reto durante todo o movimento."],
+   erro:"Deixar o punho cair para trás sob carga. O punho dobrado transfere tensão direta para os extensores do antebraço — que é exatamente o tendão lesionado."},
+  {name:"Remada baixa com triângulo neutro + straps",series:4,reps:"10 reps",rest:120,muscles:['costas','biceps'],
+   obs:"",
+   pos:"Sentado na polia baixa, pegador triângulo com as palmas voltadas uma para a outra, straps presos ao pegador.",
+   exec:["Passe as straps e feche a mão só o suficiente para acompanhar.","Puxe até o abdômen, juntando as escápulas.","Volte devagar, sem deixar o tronco ir junto."],
+   erro:"Apertar o pegador com força apesar das straps. As straps só funcionam se você relaxar a preensão — esse é o ponto do exercício."},
+  {name:"Puxada alta pegada neutra + straps",series:3,reps:"10 reps",rest:120,muscles:['costas','biceps'],
+   obs:"",
+   pos:"Sentado na puxada, pegador neutro (palmas voltadas uma para a outra), straps presos, coxas travadas sob o apoio.",
+   exec:["Puxe a barra até a altura do queixo, levando os cotovelos para baixo e para trás.","Segure 1 segundo na contração.","Suba devagar até estender os braços."],
+   erro:"Usar pegada pronada por costume. A pegada pronada é a posição que mais tensiona o epicôndilo lateral — nesta fase ela está fora."},
+  {name:"Desenvolvimento com halteres, pegada neutra",series:3,reps:"10 reps",rest:120,muscles:['ombros','triceps'],
+   obs:"",
+   pos:"Sentado com encosto, halteres na altura dos ombros, palmas voltadas uma para a outra.",
+   exec:["Empurre para cima mantendo as palmas voltadas uma para a outra.","Pare pouco antes de travar o cotovelo.","Desça controlado até a altura dos ombros."],
+   erro:"Rodar para pegada pronada na subida. A pegada fica neutra do início ao fim."},
+  {name:"Crucifixo na máquina (peck deck)",series:3,reps:"12 reps",rest:90,muscles:['peito'],
+   obs:"Apoio no antebraço, não na mão.",
+   pos:"Sentado na máquina, antebraços apoiados nas almofadas verticais, cotovelos na altura do ombro.",
+   exec:["Junte os antebraços à frente do peito, empurrando pelas almofadas.","Segure 1 segundo na contração.","Abra devagar até sentir alongar o peito."],
+   erro:"Usar a versão com pegadores de mão. O apoio precisa ser no antebraço — segurar com a mão coloca carga de preensão no cotovelo lesionado."},
+  {name:"Tríceps na polia com corda",series:3,reps:"12 reps",rest:90,muscles:['triceps'],
+   obs:"Pegada neutra.",
+   pos:"Em pé de frente para a polia alta, corda presa, cotovelos colados ao tronco, palmas voltadas uma para a outra.",
+   exec:["Estenda os cotovelos empurrando a corda para baixo.","Afaste levemente as pontas da corda no fim do movimento.","Volte devagar até 90° de flexão do cotovelo."],
+   erro:"Usar barra reta no lugar da corda. A barra força pronação; a corda mantém o punho neutro."},
+  {name:"Rosca martelo",series:3,reps:"12 reps",rest:90,muscles:['biceps','antebraco'],
+   obs:"Neutra. Rosca inversa está proibida.",
+   pos:"Em pé, halteres ao lado do corpo, palmas voltadas uma para a outra.",
+   exec:["Flexione o cotovelo mantendo a palma voltada para dentro o tempo todo.","Segure 1 segundo no topo.","Desça devagar."],
+   erro:"Rodar o punho durante a subida. Qualquer variação com palma para baixo — rosca inversa — está proibida nesta fase."},
+  {name:"Rotação externa com elástico",series:3,reps:"15 reps",rest:60,muscles:['ombros'],
+   obs:"",
+   pos:"Em pé, cotovelo colado ao tronco a 90°, elástico preso à frente na altura do umbigo.",
+   exec:["Gire o antebraço para fora, afastando a mão da barriga.","Mantenha o cotovelo colado ao corpo.","Retorne devagar."],
+   erro:"Afastar o cotovelo do tronco. Prenda uma toalha enrolada entre o cotovelo e o corpo para não deixar escapar."},
+];
+const NUCLEO_EX=[
+  {name:"Prancha nos antebraços",series:3,reps:"40 seg",sec:40,rest:45,muscles:['core'],
+   obs:"Nunca nas mãos.",
+   pos:"Apoiado nos antebraços e nas pontas dos pés, cotovelos sob os ombros.",
+   exec:["Mantenha quadril, tronco e cabeça numa linha reta.","Contraia abdômen e glúteo.","Respire normalmente durante os 40 segundos."],
+   erro:"Apoiar nas mãos. A extensão de punho sob carga é agressiva ao cotovelo lesionado — esta prancha é sempre nos antebraços."},
+  {name:"Dead bug",series:3,reps:"12 reps",rest:45,muscles:['core'],
+   obs:"",
+   pos:"Deitado de costas, braços apontando para o teto, quadris e joelhos a 90°.",
+   exec:["Estenda o braço direito para trás e a perna esquerda para a frente, ao mesmo tempo.","Mantenha a lombar colada no chão.","Volte ao centro e alterne."],
+   erro:"Deixar a lombar descolar do chão. Se descolar, reduza a amplitude da perna."},
+  {name:"Bird dog",series:3,reps:"12 reps cada lado",rest:45,muscles:['core','gluteos'],
+   obs:"",
+   pos:"Apoiado nas mãos e joelhos, mãos sob os ombros e joelhos sob o quadril.",
+   exec:["Estenda o braço direito à frente e a perna esquerda atrás, simultaneamente.","Segure 2 segundos sem rodar o quadril.","Volte e alterne os lados."],
+   erro:"Rodar o quadril ao subir a perna. Imagine um copo d'água apoiado na lombar que não pode entornar."},
+  {name:"Prancha lateral",series:3,reps:"30 seg cada lado",sec:30,rest:45,muscles:['core'],
+   obs:"",
+   pos:"Deitado de lado, apoiado no antebraço, cotovelo sob o ombro, pés empilhados.",
+   exec:["Suba o quadril até formar linha reta dos pés à cabeça.","Mantenha 30 segundos.","Repita do outro lado."],
+   erro:"Deixar o quadril cair ao longo do tempo. Se cair, encerre a série — vale mais parar do que sustentar mal."},
+  {name:"Pallof press",series:3,reps:"12 reps cada lado",rest:45,muscles:['core'],
+   obs:"Pegada leve.",
+   pos:"Em pé de lado para a polia, elástico ou cabo na altura do peito, mãos juntas no centro do peito.",
+   exec:["Empurre as mãos à frente, resistindo à rotação que o cabo impõe.","Segure 2 segundos com os braços estendidos.","Volte ao peito devagar."],
+   erro:"Apertar demais o pegador. A pegada é leve — quem trabalha é o core, não a mão."},
+];
+const TREINO_B_FORA="Fora nesta fase: barra fixa, terra, remada curvada com barra, rosca direta e flexão de braço no solo. Se fizer flexão, use apoios paralelos ou halteres — a extensão forçada do punho é agressiva.";
+const TREINO_B_ESQUERDO="O braço esquerdo pode treinar normalmente, inclusive pesado. Vale a pena: o treino unilateral do lado íntegro produz efeito de educação cruzada, que atenua a perda de força do lado lesionado.";
+const TREINO_A_REGRA="Nada abaixo de 60° de flexão sob carga nesta fase. Sem agachamento profundo, sem leg press com amplitude grande, sem afundo.";
+// Zonas por Karvonen: bpm = FCrep + (FCmáx − FCrep) × %. Padrões: FCmáx 197, FCrep 52 (reserva 145).
+const ZONES=[
+  {z:'Z1',label:'Regenerativo',lo:.50,hi:.60},
+  {z:'Z2',label:'Base aeróbica',lo:.60,hi:.70},
+  {z:'Z3',label:'Limiar inferior',lo:.70,hi:.80},
+  {z:'Z4',label:'Limiar / VO₂',lo:.80,hi:.90},
+  {z:'Z5',label:'VO₂máx',lo:.90,hi:1.00},
+];
+const FC_BIKE_NOTA="A FCmáx em ciclismo costuma ficar 5 a 10 bpm abaixo da FCmáx de corrida, porque a massa muscular recrutada é menor. Se os seus valores vieram de corrida, considere teto real cerca de 7 bpm abaixo na bike, ou guie-se por percepção de esforço nos intervalados.";
+const AEROBICAS=[
+  {id:'vo2',nome:'VO₂máx',freq:'1× por semana',resumo:'4 × 4 min em Z4 alta / Z5 baixa',
+   detalhe:'Protocolo norueguês — é o de melhor evidência para elevar VO₂máx. Aquecimento 10 min, 4 blocos de 4 min com 3 min de recuperação ativa em Z1 entre eles, volta à calma 5 min.',
+   blocos:[{t:600,z:'Z1–Z2',label:'Aquecimento'},
+           {t:240,z:'Z4–Z5',label:'Bloco 1 de 4'},{t:180,z:'Z1',label:'Recuperação'},
+           {t:240,z:'Z4–Z5',label:'Bloco 2 de 4'},{t:180,z:'Z1',label:'Recuperação'},
+           {t:240,z:'Z4–Z5',label:'Bloco 3 de 4'},{t:180,z:'Z1',label:'Recuperação'},
+           {t:240,z:'Z4–Z5',label:'Bloco 4 de 4'},
+           {t:300,z:'Z1',label:'Volta à calma'}]},
+  {id:'limiar',nome:'Limiar',freq:'1× por semana',resumo:'2 × 15 min em Z3 alta',
+   detalhe:'5 min em Z1 entre os blocos. Ou 25 min contínuos em Z3 quando tolerar.',
+   blocos:[{t:600,z:'Z1–Z2',label:'Aquecimento'},
+           {t:900,z:'Z3',label:'Bloco 1 de 2'},{t:300,z:'Z1',label:'Recuperação'},
+           {t:900,z:'Z3',label:'Bloco 2 de 2'},
+           {t:300,z:'Z1',label:'Volta à calma'}]},
+  {id:'longo',nome:'Longo Z2',freq:'1× por semana',resumo:'45 a 70 min contínuos',
+   detalhe:'É onde se mantém a base aeróbica e a economia de movimento.',
+   blocos:[{t:3600,z:'Z2',label:'Contínuo em Z2 (45–70 min)'}]},
+];
+const AEROBICO_ORDEM=[
+  {t:'1ª escolha — bicicleta horizontal',d:'Costas apoiadas, nenhuma carga no cotovelo, flexão de joelho controlada pela posição do assento. Recue o banco até que o joelho não ultrapasse ~90° no ponto mais próximo.'},
+  {t:'2ª — bicicleta vertical',d:'Melhor teto para trabalho de alta intensidade. Selim mais alto que o habitual — joelho quase estendido no ponto baixo do pedal, com leve flexão residual. Cadência 90–100 rpm, resistência moderada. Nunca em pé, nunca sprint fora do selim.'},
+  {t:'3ª — elíptico',d:'Sem usar as alavancas dos braços. Passada curta a média; passada longa força extensão terminal.'},
+  {t:'Se houver piscina — corrida em água profunda',d:'Com cinto de flutuação. É o método com melhor transferência para a corrida, impacto zero e nenhuma exigência do cotovelo. Cadência alvo 160–170 passos/min para manter o padrão neuromuscular.'},
+];
+const AEROBICO_FORA="Fora de cogitação: remo (flexão profunda + pegada pronada), escada/stair climber (flexão sob carga), qualquer coisa com pegada de tração.";
+const AEROBICO_VO2_NOTA="O VO₂máx não cai por redução de volume — cai por redução de intensidade. Duas sessões intensas por semana bastam para preservá-lo, e o declínio só começa depois de 10 a 14 dias sem estímulo. Então a corrida pode sair sem prejuízo, desde que o estímulo intenso permaneça.";
+const REGRAS_CARGA=[
+  {id:'dor',type:'warn',title:'Regra da dor',body:'Dor até 4/10 durante o exercício é aceitável. O que não é aceitável é dor que aumenta ao longo da série, ou que permanece elevada 24 h depois. Se na manhã seguinte está pior que na véspera, a carga daquele dia foi alta demais — reduza 20% e repita a sessão antes de progredir.'},
+  {id:'derrame',type:'warn',title:'Regra do derrame (joelho)',body:'Inchaço ou sensação de "joelho cheio" no dia seguinte significa irritação articular. Recue volume e amplitude. O derrame é o termômetro mais confiável que você tem.'},
+  {id:'cotovelo',type:'danger',title:'Regra do cotovelo',body:'A progressão excêntrica do extensor comum é o tratamento com melhor evidência, mas com 50% de ruptura ela precisa ser dosada por fisioterapeuta. O que está aqui é a versão conservadora de início — isométrica e excêntrica leve. Não acelere por conta própria.'},
+];
+const RETORNO_CRITERIOS=[
+  'Flexão completa do joelho recuperada, simétrica ao lado esquerdo',
+  'Ausência de derrame articular',
+  'Caminhada de 40 min sem dor e sem repercussão no dia seguinte',
+  'Descida unilateral de degrau de 20 cm, 10 repetições, sem dor',
+  'Agachamento unilateral até 45° com controle, sem valgo',
+];
+const RETORNO_PROTOCOLO="Cumpridos os critérios, a volta é por protocolo de caminhada-corrida: comece com 6 × (1 min corrida / 2 min caminhada) e progrida a fração de corrida a cada duas sessões, com no máximo 10% de aumento semanal de volume. Nada de retomar de onde parou — foi assim que a lesão se instalou.";
+const PERGUNTAS_MEDICO=[
+  'A limitação de flexão final é do cisto poplíteo ou do menisco? Há indicação de punção do cisto?',
+  'Posso manter o programa de força com amplitude limitada a 60°, ou devo restringir mais?',
+  'Em quanto tempo posso reintroduzir corrida, e com quais critérios?',
+  'Encaminhamento para fisioterapia com progressão excêntrica dosada para o cotovelo — em quantas sessões semanais?',
+  'Se for oferecida infiltração de corticoide no cotovelo: qual o racional, considerando os 50% de ruptura e a evidência de pior desfecho a longo prazo?',
+];
+// Duas distribuições semanais do documento. dayMap: {diaDaSemana: índice do treino} (0=Dom).
+const ESCALAS={
+  '3':{id:'3',nome:'3 dias',sub:'Segunda · Quarta · Sexta',
+    dayMap:{1:0,3:1,5:0},
+    extras:{1:'+ 20 min Z2 na bike',3:'+ sessão VO₂ (4 × 4 min)',5:'Treino A reduzido (3 séries) + núcleo + longo Z2 45–60 min'},
+    nota:'Nos dias sem academia, faça apenas o bloco de reabilitação em casa. São 15 minutos e é o que move o ponteiro das lesões.'},
+  '5':{id:'5',nome:'5 dias',sub:'Segunda a sexta, com sábado opcional',
+    dayMap:{1:0,3:1,5:0},
+    extras:{2:'Sessão VO₂ (4 × 4 min) + núcleo',4:'Longo Z2 (50–70 min)',5:'Treino A com ênfase unilateral leve + sessão de limiar',6:'Reabilitação isolada, opcional — ou caminhada em terreno plano'},
+    nota:'Reabilitação todos os dias, inclusive nos dias sem academia.'},
+};
+const PROGRESSAO_REAB=[
+  {t:'Semanas 1 e 2 — instalação',d:'Cargas conservadoras, foco em tolerância. Nenhuma progressão de peso; a meta é não irritar nada.'},
+  {t:'Semanas 3 e 4 — progressão',d:'Progressão de carga de 5 a 10% no inferior, desde que sem derrame no dia seguinte. No cotovelo, progressão apenas se a dor matinal estiver diminuindo semana a semana.'},
+  {t:'Semanas 5 e 6 — reavaliação',d:'A essa altura você já deve ter consultado o ortopedista, e o plano definitivo substitui este.'},
+];
+const STATE_VERSION=9;
 function load(){try{return JSON.parse(localStorage.getItem('fpv5')||'null');}catch{return null;}}
 function save(){state.lastModified=Date.now();localStorage.setItem('fpv5',JSON.stringify(state));saveToCloud();}
 function initSets(wi){return getActiveWorkouts()[wi].exercises.map(e=>Array(e.series).fill(false));}
@@ -1196,6 +1584,21 @@ const MIGRATIONS=[
   // v7→v8: exercícios customizados do usuário
   function v8(s){
     if(!s.userExercises)s.userExercises=[];
+  },
+  // v8→v9: programa adaptado a lesões (reabilitação diária, sintomas, retorno à corrida, FC)
+  // Aditiva: nada do histórico ou do plano existente é descartado.
+  function v9(s){
+    if(!s.reab)s.reab={
+      ativo:false,        // programa de reabilitação instalado?
+      escala:'3',         // '3' ou '5' dias
+      log:{},             // {'YYYY-MM-DD': {joelho:[bool], cotovelo:[bool]}}
+      sintomas:[],        // [{data, joelho:0-10, cotovelo:0-10, inchaco:bool, sessao:'A'|'B'|...}]
+      retorno:[],         // checklist de critérios
+      planoAnterior:null  // snapshot de customWorkouts/dayMap antes da substituição
+    };
+    if(!s.profile)s.profile={};
+    if(s.profile.fcMax===undefined)s.profile.fcMax=null;
+    if(s.profile.fcRep===undefined)s.profile.fcRep=null;
   }
 ];
 function migrateState(s){
@@ -1415,8 +1818,11 @@ fbAuth.onAuthStateChanged(async(user)=>{
         const localTime=(localState&&localState.lastModified)||0;
         const cloudTime=(cloudState.lastModified)||0;
         // Check if local has real user data (plan or history)
-        const localHasData=localState&&((localState.history&&localState.history.length>0)||(localState.customWorkouts&&localState.customWorkouts.length>0)||localState.customRunPlan);
-        const cloudHasData=(cloudState.history&&cloudState.history.length>0)||(cloudState.customWorkouts&&cloudState.customWorkouts.length>0)||cloudState.customRunPlan;
+        // Reabilitação conta como dado real: um aparelho com só registro de reabilitação
+        // ou sintomas não pode ser tratado como vazio, senão perde dados para a nuvem.
+        const temReab=s=>!!(s&&s.reab&&(s.reab.ativo||Object.keys(s.reab.log||{}).length>0||(s.reab.sintomas||[]).length>0));
+        const localHasData=localState&&((localState.history&&localState.history.length>0)||(localState.customWorkouts&&localState.customWorkouts.length>0)||localState.customRunPlan||temReab(localState));
+        const cloudHasData=(cloudState.history&&cloudState.history.length>0)||(cloudState.customWorkouts&&cloudState.customWorkouts.length>0)||cloudState.customRunPlan||temReab(cloudState);
         if(!localHasData&&cloudHasData){
           // Local is empty, cloud has data — always pull cloud
           state=migrateState(cloudState);
@@ -1856,6 +2262,9 @@ function openProfileEdit(){
   document.getElementById('pf-weight').value=p.weightKg||'';
   document.getElementById('pf-height').value=p.heightCm||'';
   document.getElementById('pf-goal').value=p.goalKg||'';
+  const _fx=document.getElementById('pf-fcmax'),_fr=document.getElementById('pf-fcrep');
+  if(_fx)_fx.value=p.fcMax||'';
+  if(_fr)_fr.value=p.fcRep||'';
 }
 function closeProfileEdit(){switchPage('perfil');}
 function renderSobre(){
@@ -2111,7 +2520,9 @@ function saveProfile(){
     sex:document.getElementById('pf-sex').value,
     weightKg:num('pf-weight',true),
     heightCm:num('pf-height',false),
-    goalKg:num('pf-goal',true)
+    goalKg:num('pf-goal',true),
+    fcMax:num('pf-fcmax',false),
+    fcRep:num('pf-fcrep',false)
   };
   // Registra snapshot no histórico (máx 1 por dia, substitui o do dia corrente)
   if(state.profile.weightKg){
@@ -2337,6 +2748,8 @@ function finishSession(){
     showToast(rnd(HUMOR.sessionFinish[isFem()?'F':'M'])+` (${fmtMin(durMin)})`,true);
     setTimeout(()=>{renderTreino();renderHistory();renderDesempenho();renderPlano();},300);
   }
+  // Programa de reabilitação: registrar sintomas logo após a sessão
+  if(reabOn())setTimeout(()=>openSintomas(origW.id||'—'),900);
 }
 let _pendingCombinedRun=null;
 function showCombinedRunPrompt(runSess){
@@ -2472,6 +2885,7 @@ function todayCount(type){
 function isRestDay(dow){return !isRunDayActive(dow)&&getActiveDayMap()[dow]===undefined;}
 function renderTreino(){
   renderCloudBanner();
+  renderReabBlock();
   const wi=state.currentWorkout,w=getActiveWorkouts()[wi];
   const exercises=getCurrentExercises(wi);
   const todayDow=new Date().getDay();
@@ -3419,6 +3833,7 @@ function renderPlanDates(){
   </div>`;
 }
 function renderPlano(){
+  renderReabPlano();
   renderPlanDates();
   const today=new Date(),dow=today.getDay();
   const weekStart=new Date(today);weekStart.setDate(today.getDate()-((dow===0?7:dow)-1));
@@ -4008,6 +4423,7 @@ function switchPage(page,tab){
   if(page==='perfil')renderPerfil();
   if(page==='config')renderConfig();
   if(page==='sobre')renderSobre();
+  if(page==='aerobico')renderAerobico();
 }
 function showToast(msg,accent){
   const t=document.getElementById('toast');t.textContent=msg;
@@ -4593,6 +5009,14 @@ function _planOnlyStrength(){
 function _planBoth(){return _planWantsStrength()&&_planWantsRun()&&!_planOnlyRun()&&!_planOnlyStrength();}
 
 function openPlanChat(editing){
+  // Aviso (não bloqueio): o wizard regenera o plano e apagaria a prescrição de reabilitação.
+  if(reabOn()){
+    const ok=confirm('O programa de reabilitação está ativo.\n\n'
+      +'Criar ou alterar o plano pelo assistente vai substituir os treinos A e B adaptados às suas lesões.\n\n'
+      +'O bloco de reabilitação diário, os sintomas e os critérios de retorno são preservados.\n\n'
+      +'Continuar mesmo assim?');
+    if(!ok)return;
+  }
   chatState={step:0,answers:{},messages:[],editing:!!editing};
   // Pre-fill from profile if available
   if(state.profile){
@@ -6107,6 +6531,551 @@ function confirmPlan(){
 // ═══════════════════════════════════════════════
 // CUSTOM PLAN INTEGRATION — override WORKOUTS when custom plan is active
 // ═══════════════════════════════════════════════
+/* ═══════════ PROGRAMA DE REABILITAÇÃO — lógica ═══════════ */
+function reabOn(){return !!(state.reab&&state.reab.ativo);}
+function dKey(d){const x=d||new Date();const p=n=>String(n).padStart(2,'0');return `${x.getFullYear()}-${p(x.getMonth()+1)}-${p(x.getDate())}`;}
+function karvonen(pct){
+  const mx=(state.profile&&state.profile.fcMax)||197,rp=(state.profile&&state.profile.fcRep)||52;
+  return Math.round(rp+(mx-rp)*pct);
+}
+function reabHoje(){
+  const k=dKey();
+  if(!state.reab.log[k])state.reab.log[k]={joelho:[],cotovelo:[]};
+  const t=state.reab.log[k];
+  if(!Array.isArray(t.joelho)||t.joelho.length!==REAB_JOELHO.length)t.joelho=Array(REAB_JOELHO.length).fill(false);
+  if(!Array.isArray(t.cotovelo)||t.cotovelo.length!==REAB_COTOVELO.length)t.cotovelo=Array(REAB_COTOVELO.length).fill(false);
+  return t;
+}
+function reabProgresso(){
+  const t=reabHoje(),all=[...t.joelho,...t.cotovelo];
+  return {done:all.filter(Boolean).length,total:all.length};
+}
+function toggleReabEx(grupo,i){
+  const t=reabHoje();
+  t[grupo][i]=!t[grupo][i];
+  save();renderReabBlock();
+  const p=reabProgresso();
+  if(p.done===p.total)showToast('✓ Reabilitação do dia completa',true);
+}
+function reabDiasSeguidos(){
+  let n=0;const d=new Date();
+  for(;;){
+    const t=state.reab.log[dKey(d)];
+    if(!t)break;
+    const all=[...(t.joelho||[]),...(t.cotovelo||[])];
+    if(!all.length||!all.every(Boolean))break;
+    n++;d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+function setEscala(id){
+  if(!ESCALAS[id])return;
+  state.reab.escala=id;
+  if(reabOn()){
+    state.customDayMap=Object.assign({},ESCALAS[id].dayMap);
+    state.sessionPlan=null;
+    const dm=getActiveDayMap(),dow=new Date().getDay();
+    if(dm[dow]!==undefined)state.currentWorkout=dm[dow];
+  }
+  save();
+  renderTreino();renderPlano();
+  showToast(`✓ Escala de ${ESCALAS[id].nome}`,true);
+}
+function instalarProgramaReab(){
+  if(state.sessionStart){showToast('⚠ Finalize a sessão antes de trocar o plano',false);return;}
+  const msg='Instalar o programa adaptado às lesões?\n\n'
+    +'• Os treinos A e B substituem o plano atual.\n'
+    +'• Seu plano atual fica guardado e pode ser restaurado.\n'
+    +'• Todo o histórico de treinos é preservado.';
+  if(!confirm(msg))return;
+  // Snapshot do plano atual para poder desfazer
+  state.reab.planoAnterior={
+    customWorkouts:state.customWorkouts?JSON.parse(JSON.stringify(state.customWorkouts)):null,
+    customDayMap:state.customDayMap?Object.assign({},state.customDayMap):null,
+    customRunDays:state.customRunDays?state.customRunDays.slice():null,
+    customRunPlan:state.customRunPlan?JSON.parse(JSON.stringify(state.customRunPlan)):null,
+    customPlanMeta:state.customPlanMeta?JSON.parse(JSON.stringify(state.customPlanMeta)):null,
+    useCustomPlan:state.useCustomPlan
+  };
+  const esc=ESCALAS[state.reab.escala]||ESCALAS['3'];
+  state.customWorkouts=[
+    {id:'A',name:'Treino A',sub:'Inferior — joelho-seguro',day:'Segunda',dayIdx:1,exercises:JSON.parse(JSON.stringify(TREINO_A_EX))},
+    {id:'B',name:'Treino B',sub:'Superior — cotovelo-seguro',day:'Quarta',dayIdx:3,exercises:JSON.parse(JSON.stringify(TREINO_B_EX))},
+  ];
+  state.customDayMap=Object.assign({},esc.dayMap);
+  state.customRunDays=[];           // sem corrida nesta fase
+  state.customRunPlan=null;
+  state.customPlanMeta={origem:'reabilitacao',criadoEm:new Date().toISOString(),prescrito:true};
+  state.useCustomPlan=true;
+  state.reab.ativo=true;
+  state.sessionPlan=null;
+  const dm=getActiveDayMap(),dow=new Date().getDay();
+  state.currentWorkout=dm[dow]!==undefined?dm[dow]:0;
+  state.sessionSets=null;
+  _POOL_CACHE=null;
+  save();
+  renderTreino();renderPlano();
+  showToast('✓ Programa de reabilitação instalado',true);
+}
+function restaurarPlanoAnterior(){
+  const p=state.reab&&state.reab.planoAnterior;
+  if(!p){showToast('Nenhum plano anterior guardado',false);return;}
+  if(state.sessionStart){showToast('⚠ Finalize a sessão antes de trocar o plano',false);return;}
+  if(!confirm('Restaurar o plano que existia antes da reabilitação?\n\nO registro de reabilitação e os sintomas são preservados.'))return;
+  state.customWorkouts=p.customWorkouts;
+  state.customDayMap=p.customDayMap;
+  state.customRunDays=p.customRunDays;
+  state.customRunPlan=p.customRunPlan;
+  state.customPlanMeta=p.customPlanMeta;
+  state.useCustomPlan=p.useCustomPlan;
+  state.reab.ativo=false;
+  state.sessionPlan=null;state.sessionSets=null;
+  _POOL_CACHE=null;
+  save();
+  renderTreino();renderPlano();
+  showToast('✓ Plano anterior restaurado',true);
+}
+function toggleRetorno(i){
+  if(!Array.isArray(state.reab.retorno))state.reab.retorno=[];
+  state.reab.retorno[i]=!state.reab.retorno[i];
+  save();renderPlano();
+  if(RETORNO_CRITERIOS.every((_,j)=>state.reab.retorno[j]))showToast('🏃 Todos os critérios cumpridos',true);
+}
+// Sintomas — último registro do mesmo tipo de sessão, para comparar
+function ultimoSintoma(tipo){
+  const l=state.reab.sintomas||[];
+  for(let i=l.length-1;i>=0;i--)if(l[i].sessao===tipo)return l[i];
+  return null;
+}
+function registrarSintomas(joelho,cotovelo,inchaco,tipo){
+  if(!Array.isArray(state.reab.sintomas))state.reab.sintomas=[];
+  const ant=ultimoSintoma(tipo);
+  state.reab.sintomas.push({data:new Date().toISOString(),joelho,cotovelo,inchaco:!!inchaco,sessao:tipo||'—'});
+  save();
+  const avisos=[];
+  if(ant){
+    if(joelho>ant.joelho)avisos.push({parte:'joelho',de:ant.joelho,para:joelho});
+    if(cotovelo>ant.cotovelo)avisos.push({parte:'cotovelo',de:ant.cotovelo,para:cotovelo});
+  }
+  return {avisos,inchaco:!!inchaco};
+}
+/* ═══════════ REABILITAÇÃO — interface ═══════════ */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function prescr(ex){
+  let p=`${ex.series} × ${ex.reps}`;
+  if(ex.cad)p+=` · <span class="reab-cad">${esc(ex.cad)}</span>`;
+  return p;
+}
+function toggleReabCard(){
+  const c=document.getElementById('reabCard');
+  if(!c)return;
+  c.classList.toggle('open');
+  try{localStorage.setItem('reabOpen',c.classList.contains('open')?'1':'0');}catch(e){}
+}
+function renderReabBlock(){
+  const el=document.getElementById('reabBlock');if(!el)return;
+  if(!reabOn()){el.innerHTML='';return;}
+  let aberto=false;
+  const atual=document.getElementById('reabCard');
+  if(atual)aberto=atual.classList.contains('open');
+  else{try{aberto=localStorage.getItem('reabOpen')==='1';}catch(e){}}
+  const {done,total}=reabProgresso();
+  const seq=reabDiasSeguidos();
+  const t=reabHoje();
+  const linha=(grupo,lista,i)=>{
+    const d=t[grupo][i],ex=lista[i];
+    return `<div class="reab-it${d?' done':''}">
+      <div class="reab-chk${d?' done':''}" onclick="toggleReabEx('${grupo}',${i})">${d?'✓':''}</div>
+      <div class="reab-it-b" onclick="openExDetalhe('${grupo}',${i})">
+        <div class="reab-nm">${esc(ex.name)}</div>
+        <div class="reab-pr">${prescr(ex)}</div>
+      </div>
+      <div class="reab-info" onclick="openExDetalhe('${grupo}',${i})">i</div>
+    </div>`;
+  };
+  el.innerHTML=`<div class="reab-card${aberto?' open':''}" id="reabCard">
+    <div class="reab-head" onclick="toggleReabCard()">
+      <div class="reab-h-txt">
+        <div class="reab-title">Reabilitação do dia</div>
+        <div class="reab-sub">5–6× por semana · 12–15 min${seq>1?` · <strong style="color:var(--done-border)">${seq} dias seguidos</strong>`:''}</div>
+      </div>
+      <div class="reab-ring">${done}/${total}<small>hoje</small></div>
+      <div class="reab-chev">▼</div>
+    </div>
+    <div class="reab-body">
+      <div class="bar-track" style="margin-bottom:6px"><div class="bar-fill" style="width:${total?Math.round(done/total*100):0}%"></div></div>
+      <div class="reab-grp">Joelho · 7–8 min</div>
+      ${REAB_JOELHO.map((_,i)=>linha('joelho',REAB_JOELHO,i)).join('')}
+      <div class="reab-note">${esc(REAB_EVITAR)}</div>
+      <div class="reab-grp">Cotovelo · 5–7 min</div>
+      ${REAB_COTOVELO.map((_,i)=>linha('cotovelo',REAB_COTOVELO,i)).join('')}
+      <div class="reab-grp">Ergonomia — conta como tratamento</div>
+      <div class="reab-note">${esc(REAB_ERGONOMIA)}</div>
+      <div class="reab-grp">Regras que valem mais que a planilha</div>
+      ${REGRAS_CARGA.map(r=>`<div class="alert ${r.type}" style="margin-bottom:9px"><div class="alert-title">${esc(r.title)}</div><div class="alert-body">${esc(r.body)}</div></div>`).join('')}
+    </div>
+  </div>`;
+}
+// ── Detalhe de exercício ──
+let _exdAtual=null;
+function exLista(grupo){
+  return grupo==='joelho'?REAB_JOELHO:grupo==='cotovelo'?REAB_COTOVELO:
+         grupo==='nucleo'?NUCLEO_EX:grupo==='A'?TREINO_A_EX:grupo==='B'?TREINO_B_EX:null;
+}
+function openExDetalhe(grupo,i){
+  const lista=exLista(grupo);if(!lista||!lista[i])return;
+  const ex=lista[i];
+  _exdAtual={grupo,i,ex};
+  const box=document.getElementById('exdBox');
+  const temGuia=ex.pos||ex.exec||ex.erro;
+  box.innerHTML=`<div class="exd-grab"></div>
+    <div class="exd-nm">${esc(ex.name)}</div>
+    <div class="exd-pr">${prescr(ex)}${ex.rest?` · descanso ${ex.rest>=60?Math.floor(ex.rest/60)+' min':ex.rest+' s'}`:''}</div>
+    ${ex.obs?`<div class="exd-sec"><div class="exd-lb">Prescrição</div><div class="exd-rx">${esc(ex.obs)}</div></div>`:''}
+    ${ex.sec?`<div class="exd-sec"><div class="exd-lb">Cronômetro — ${ex.sec} s por série</div><div id="exdTimer"></div></div>`:''}
+    ${ex.pos?`<div class="exd-sec"><div class="exd-lb">Posição inicial</div><div class="exd-tx">${esc(ex.pos)}</div></div>`:''}
+    ${ex.exec?`<div class="exd-sec"><div class="exd-lb">Execução</div><ol class="exd-ol">${ex.exec.map(p=>`<li>${esc(p)}</li>`).join('')}</ol></div>`:''}
+    ${ex.cad?`<div class="exd-sec"><div class="exd-lb">Cadência</div><div class="exd-rx">${esc(ex.cad)}</div></div>`:''}
+    ${ex.erro?`<div class="exd-sec"><div class="exd-err"><div class="exd-err-t">Erro comum</div><div class="exd-err-b">${esc(ex.erro)}</div></div></div>`:''}
+    ${temGuia?`<div class="exd-src">Séries, repetições, cadência e o campo "Prescrição" vêm do seu programa adaptado. Posição inicial, execução e erro comum são guia geral de técnica, escrito para este app — confira com o fisioterapeuta.</div>`:''}
+    <button class="btn btn-secondary exd-close" onclick="closeExDetalhe()">Fechar</button>`;
+  document.getElementById('exdOv').classList.add('open');
+  if(ex.sec)renderMiniTimer(ex.sec);
+}
+function closeExDetalhe(){
+  pararMiniTimer();
+  document.getElementById('exdOv').classList.remove('open');
+  _exdAtual=null;
+}
+// ── Timer isométrico embutido ──
+let _mt={id:null,left:0,total:0,run:false};
+function renderMiniTimer(sec){
+  const el=document.getElementById('exdTimer');if(!el)return;
+  if(!_mt.run)_mt.left=sec;
+  _mt.total=sec;
+  const m=Math.floor(_mt.left/60),s=_mt.left%60;
+  const disp=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const cls=_mt.left===0?'end':_mt.run?'run':'';
+  el.innerHTML=`<div class="mini-tm">
+    <div class="mini-tm-d ${cls}">${disp}</div>
+    <div class="mini-tm-b">
+      <button class="pri" onclick="toggleMiniTimer(${sec})">${_mt.run?'Pausar':_mt.left===0?'Repetir':'Iniciar'}</button>
+      <button onclick="resetMiniTimer(${sec})">Zerar</button>
+    </div>
+  </div>`;
+}
+function toggleMiniTimer(sec){
+  if(_mt.run){pararMiniTimer();renderMiniTimer(sec);return;}
+  if(_mt.left<=0)_mt.left=sec;
+  _mt.run=true;
+  try{playSfx('timedStart','exerciseStart');}catch(e){}
+  _mt.id=setInterval(()=>{
+    _mt.left--;
+    if(_mt.left>=1&&_mt.left<=3){try{playSfx('timedTick','tick');}catch(e){}}
+    if(_mt.left<=0){
+      _mt.left=0;pararMiniTimer();
+      if(navigator.vibrate)navigator.vibrate([200,100,200]);
+      try{playSfx('timedEnd','exerciseEnd');}catch(e){}
+      showToast('⏱ Tempo concluído',true);
+    }
+    renderMiniTimer(sec);
+  },1000);
+  renderMiniTimer(sec);
+}
+function pararMiniTimer(){if(_mt.id){clearInterval(_mt.id);_mt.id=null;}_mt.run=false;}
+function resetMiniTimer(sec){pararMiniTimer();_mt.left=sec;renderMiniTimer(sec);}
+/* ═══════════ SINTOMAS ═══════════ */
+let _sym={joelho:0,cotovelo:0,inchaco:null,tipo:'—'};
+function openSintomas(tipo){
+  _sym={joelho:0,cotovelo:0,inchaco:null,tipo:tipo||'—'};
+  renderSintomas();
+  document.getElementById('symOv').classList.add('open');
+}
+function setSym(k,v){_sym[k]=(k==='inchaco')?v:parseInt(v,10);renderSintomas();}
+function renderSintomas(){
+  const box=document.getElementById('symBox');if(!box)return;
+  const ant=ultimoSintoma(_sym.tipo);
+  const cmp=(v,a)=>{
+    if(!ant)return '';
+    if(v>a)return `<span style="color:var(--danger)"> ▲ era ${a}</span>`;
+    if(v<a)return `<span style="color:var(--done-border)"> ▼ era ${a}</span>`;
+    return `<span style="color:var(--muted)"> = ${a}</span>`;
+  };
+  box.innerHTML=`<div class="sym-t">Como ficaram as lesões?</div>
+    <div class="sym-s">Registre agora, logo após a sessão. É o que permite saber se a carga está certa.${ant?` Comparando com a última sessão ${esc(_sym.tipo)}.`:''}</div>
+    <div class="sym-f">
+      <div class="sym-lb"><span>Dor no joelho direito</span><span class="sym-v">${_sym.joelho}/10${cmp(_sym.joelho,ant&&ant.joelho)}</span></div>
+      <input class="sym-sl" type="range" min="0" max="10" step="1" value="${_sym.joelho}" oninput="setSym('joelho',this.value)">
+    </div>
+    <div class="sym-f">
+      <div class="sym-lb"><span>Dor no cotovelo direito</span><span class="sym-v">${_sym.cotovelo}/10${cmp(_sym.cotovelo,ant&&ant.cotovelo)}</span></div>
+      <input class="sym-sl" type="range" min="0" max="10" step="1" value="${_sym.cotovelo}" oninput="setSym('cotovelo',this.value)">
+    </div>
+    <div class="sym-f">
+      <div class="sym-lb"><span>Inchaço no joelho?</span></div>
+      <div class="sym-tog">
+        <button class="${_sym.inchaco===false?'on no':''}" onclick="setSym('inchaco',false)">Não</button>
+        <button class="${_sym.inchaco===true?'on':''}" onclick="setSym('inchaco',true)">Sim</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="salvarSintomas()" ${_sym.inchaco===null?'disabled style="opacity:.45"':''}>Salvar registro</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:9px" onclick="fecharSintomas()">Agora não</button>`;
+}
+function fecharSintomas(){document.getElementById('symOv').classList.remove('open');}
+function salvarSintomas(){
+  if(_sym.inchaco===null){showToast('Responda sobre o inchaço',false);return;}
+  const r=registrarSintomas(_sym.joelho,_sym.cotovelo,_sym.inchaco,_sym.tipo);
+  fecharSintomas();
+  const alertas=[];
+  if(r.avisos.length){
+    const regra=REGRAS_CARGA.find(x=>x.id==='dor');
+    alertas.push({type:'warn',title:regra.title,
+      body:r.avisos.map(a=>`Dor no ${a.parte} subiu de ${a.de} para ${a.para}.`).join(' ')+' '+regra.body});
+  }
+  if(r.inchaco){
+    const regra=REGRAS_CARGA.find(x=>x.id==='derrame');
+    alertas.push({type:'warn',title:regra.title,body:regra.body});
+  }
+  if(alertas.length){
+    const box=document.getElementById('symBox');
+    box.innerHTML=`<div class="sym-t">Atenção à carga</div>
+      <div class="sym-s">O registro de hoje disparou ${alertas.length>1?'estas regras':'esta regra'} do seu programa.</div>
+      ${alertas.map(a=>`<div class="alert ${a.type}" style="margin-bottom:11px"><div class="alert-title">${esc(a.title)}</div><div class="alert-body">${esc(a.body)}</div></div>`).join('')}
+      <button class="btn btn-primary btn-full" onclick="fecharSintomas()">Entendi</button>`;
+    document.getElementById('symOv').classList.add('open');
+  }else{
+    showToast('✓ Sintomas registrados',true);
+  }
+  renderPlano();
+}
+function renderGraficoSintomas(){
+  const l=(state.reab&&state.reab.sintomas)||[];
+  if(l.length<2)return `<div class="prog-advice">Registre os sintomas ao fim de pelo menos duas sessões para ver a evolução aqui.</div>`;
+  const ult=l.slice(-14);
+  const barras=ult.map(s=>{
+    const hj=Math.round(s.joelho/10*68),hc=Math.round(s.cotovelo/10*68);
+    const d=new Date(s.data);
+    const tt=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} — joelho ${s.joelho}, cotovelo ${s.cotovelo}${s.inchaco?', com inchaço':''}`;
+    return `<div class="sym-bar" title="${esc(tt)}">
+      <i style="height:${hc}px;background:var(--accent3)"></i>
+      <i style="height:${hj}px;background:var(--accent2)"></i>
+    </div>`;
+  }).join('');
+  const inch=ult.filter(s=>s.inchaco).length;
+  return `<div class="comp-block" style="padding:14px 16px">
+    <div class="sym-ch">${barras}</div>
+    <div class="sym-lg">
+      <span><i style="background:var(--accent2)"></i>Joelho</span>
+      <span><i style="background:var(--accent3)"></i>Cotovelo</span>
+      <span style="color:var(--muted)">Últimas ${ult.length} sessões · escala 0–10</span>
+    </div>
+    ${inch?`<div class="alert warn" style="margin:12px 0 0"><div class="alert-title">Inchaço registrado</div><div class="alert-body">${inch} das últimas ${ult.length} sessões tiveram inchaço no joelho. O derrame é o termômetro mais confiável — se persistir, recue volume e amplitude.</div></div>`:''}
+  </div>`;
+}
+/* ═══════════ AERÓBICO ═══════════ */
+function renderAerobico(){
+  const el=document.getElementById('aerobicoContent');if(!el)return;
+  const mx=(state.profile&&state.profile.fcMax)||197,rp=(state.profile&&state.profile.fcRep)||52;
+  const pad=!(state.profile&&state.profile.fcMax)||!(state.profile&&state.profile.fcRep);
+  const zonas=ZONES.map(z=>`<div class="zn-r">
+      <div class="zn-t">${z.z}</div>
+      <div class="zn-n">${esc(z.label)}<small>${Math.round(z.lo*100)}–${Math.round(z.hi*100)}% da reserva</small></div>
+      <div class="zn-b">${karvonen(z.lo)}–${karvonen(z.hi)}</div>
+    </div>`).join('');
+  const sessoes=AEROBICAS.map(s=>`<div class="aer-c">
+      <div class="aer-h"><div class="aer-n">${esc(s.nome)}</div><div class="aer-f">${esc(s.freq)}</div></div>
+      <div class="aer-r">${esc(s.resumo)}</div>
+      <div class="aer-d">${esc(s.detalhe)}</div>
+      <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="abrirGuia('${s.id}')">▶ Sessão guiada</button>
+    </div>`).join('');
+  el.innerHTML=`
+    <div class="section-title">Zonas de frequência cardíaca</div>
+    <div class="comp-block">${zonas}</div>
+    <div class="prog-advice" style="margin-top:10px">
+      Método de Karvonen — FCmáx <strong>${mx}</strong>, FCrep <strong>${rp}</strong>, reserva <strong>${mx-rp}</strong>.
+      ${pad?'<br><br>Estes são os valores padrão do seu programa. Ajuste em Perfil se os seus forem outros.':''}
+    </div>
+    <div class="alert info" style="margin-top:10px">
+      <div class="alert-title">Ajuste para bicicleta</div>
+      <div class="alert-body">${esc(FC_BIKE_NOTA)} Teto sugerido na bike: <strong>${Math.max(0,mx-7)} bpm</strong>.</div>
+    </div>
+    <div class="section-title">Sessões da semana</div>
+    ${sessoes}
+    <div class="alert success" style="margin-top:4px">
+      <div class="alert-title">Por que isso preserva o VO₂máx</div>
+      <div class="alert-body">${esc(AEROBICO_VO2_NOTA)}</div>
+    </div>
+    <div class="section-title">Equipamento — ordem de preferência</div>
+    <div class="comp-block" style="padding:4px 16px">
+      ${AEROBICO_ORDEM.map(o=>`<div style="padding:12px 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">${esc(o.t)}</div>
+        <div style="font-size:12.5px;color:var(--muted2);line-height:1.6">${esc(o.d)}</div></div>`).join('')}
+    </div>
+    <div class="alert danger" style="margin-top:10px">
+      <div class="alert-title">Fora de cogitação</div>
+      <div class="alert-body">${esc(AEROBICO_FORA)}</div>
+    </div>`;
+}
+// ── Sessão guiada com cronômetro ──
+let _gd=null;
+function abrirGuia(id){
+  const s=AEROBICAS.find(x=>x.id===id);if(!s)return;
+  _gd={s,bi:0,left:s.blocos[0].t,run:false,timer:null};
+  _gdUltimo=s.nome;
+  document.getElementById('gdOv').classList.add('open');
+  renderGuia();
+}
+function fecharGuia(){
+  if(_gd&&_gd.timer)clearInterval(_gd.timer);
+  _gd=null;
+  document.getElementById('gdOv').classList.remove('open');
+  if(typeof releaseWakeLock==='function'){try{releaseWakeLock();}catch(e){}}
+}
+function zonaBpm(z){
+  const m={'Z1':[.50,.60],'Z2':[.60,.70],'Z3':[.70,.80],'Z4':[.80,.90],'Z5':[.90,1],
+           'Z1–Z2':[.50,.70],'Z4–Z5':[.85,.95]};
+  const r=m[z];if(!r)return '';
+  return `${karvonen(r[0])}–${karvonen(r[1])} bpm`;
+}
+function renderGuia(){
+  const el=document.getElementById('gdOv');if(!el||!_gd)return;
+  const {s,bi,left}=_gd;
+  const b=s.blocos[bi];
+  const m=Math.floor(left/60),sec=left%60;
+  const prox=s.blocos[bi+1];
+  const cor=b.z.includes('Z4')||b.z.includes('Z5')?'var(--danger)':b.z.includes('Z3')?'var(--warn)':'var(--accent3)';
+  el.innerHTML=`
+    <div class="gd-top">
+      <div><div class="gd-lb">${esc(s.nome)}</div></div>
+      <button class="gd-x" onclick="fecharGuia()">×</button>
+    </div>
+    <div class="gd-mid">
+      <div class="gd-lb">${esc(b.label)}</div>
+      <div class="gd-zn" style="color:${cor}">${esc(b.z)}</div>
+      <div class="gd-bpm">${zonaBpm(b.z)}</div>
+      <div class="gd-tm">${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}</div>
+      <div class="gd-nx">${prox?'A seguir: '+esc(prox.label)+' · '+esc(prox.z):'Último bloco'}</div>
+    </div>
+    <div class="gd-pg">${s.blocos.map((_,i)=>`<i class="${i<bi?'done':i===bi?'cur':''}"></i>`).join('')}</div>
+    <div class="gd-bt">
+      <button onclick="pularBloco()">Pular</button>
+      <button class="pri" onclick="toggleGuia()">${_gd.run?'Pausar':'Iniciar'}</button>
+    </div>`;
+}
+function toggleGuia(){
+  if(!_gd)return;
+  if(_gd.run){clearInterval(_gd.timer);_gd.timer=null;_gd.run=false;renderGuia();return;}
+  _gd.run=true;
+  if(typeof requestWakeLock==='function'){try{requestWakeLock();}catch(e){}}
+  try{playSfx('runSegments','exerciseStart');}catch(e){}
+  _gd.timer=setInterval(()=>{
+    _gd.left--;
+    if(_gd.left>=1&&_gd.left<=3){try{playSfx('runTick','tick');}catch(e){}}
+    if(_gd.left<=0)proximoBloco();
+    else renderGuia();
+  },1000);
+  renderGuia();
+}
+function proximoBloco(){
+  if(!_gd)return;
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  try{playSfx('runSegments','exerciseEnd');}catch(e){}
+  if(_gd.bi>=_gd.s.blocos.length-1){
+    clearInterval(_gd.timer);_gd.timer=null;_gd.run=false;
+    showToast('✓ Sessão aeróbica concluída',true);
+    fecharGuia();
+    if(reabOn())setTimeout(()=>openSintomas(_gd2Tipo()),700);
+    return;
+  }
+  _gd.bi++;_gd.left=_gd.s.blocos[_gd.bi].t;
+  renderGuia();
+}
+let _gdUltimo='';
+function _gd2Tipo(){return _gdUltimo||'aeróbico';}
+function pularBloco(){
+  if(!_gd)return;
+  _gd.left=0;proximoBloco();
+}
+/* ═══════════ PLANO — seção da reabilitação ═══════════ */
+function renderReabPlano(){
+  const el=document.getElementById('reabPlano');if(!el)return;
+  const mi=document.getElementById('menuAerobico');
+  if(mi)mi.style.display=reabOn()?'':'none';
+  if(!reabOn()){
+    el.innerHTML=`<div class="section-title">Programa adaptado a lesões</div>
+      <div class="alert info">
+        <div class="alert-title">Joelho direito + cotovelo direito</div>
+        <div class="alert-body">Programa provisório, até a consulta com o Dr. Lazaroni. Sem impacto, sem flexão acima de 60° sob carga, sem pegada pronada. Inclui bloco de reabilitação diário, treinos A e B adaptados, sessões aeróbicas na bike e registro de sintomas.</div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="instalarProgramaReab()">Instalar programa de reabilitação</button>
+      <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:9px">Seu plano atual fica guardado e pode ser restaurado a qualquer momento. O histórico de treinos é preservado.</div>`;
+    return;
+  }
+  const esc0=state.reab.escala||'3',E=ESCALAS[esc0];
+  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const wks=getActiveWorkouts(),dm=getActiveDayMap();
+  const semana=[1,2,3,4,5,6,0].map(d=>{
+    const wi=dm[d],w=wi!==undefined?wks[wi]:null;
+    const ex=E.extras[d];
+    if(!w&&!ex)return `<div class="qm-i"><span class="qm-n">${dias[d]}</span><span style="color:var(--muted)">Só reabilitação</span></div>`;
+    const partes=[];
+    if(w)partes.push(`<strong style="color:var(--text)">${esc(w.name)}</strong> — ${esc(w.sub)}`);
+    if(ex)partes.push(esc(ex));
+    return `<div class="qm-i"><span class="qm-n">${dias[d]}</span><span>Reabilitação + ${partes.join(' · ')}</span></div>`;
+  }).join('');
+  const done=RETORNO_CRITERIOS.filter((_,i)=>state.reab.retorno&&state.reab.retorno[i]).length;
+  const todos=done===RETORNO_CRITERIOS.length;
+  const crits=RETORNO_CRITERIOS.map((c,i)=>{
+    const d=state.reab.retorno&&state.reab.retorno[i];
+    return `<div class="crit-i${d?' done':''}">
+      <div class="reab-chk${d?' done':''}" onclick="toggleRetorno(${i})">${d?'✓':''}</div>
+      <div class="crit-t">${esc(c)}</div></div>`;
+  }).join('');
+  el.innerHTML=`<div class="section-title">Programa adaptado a lesões</div>
+    <div class="alert info">
+      <div class="alert-title">Provisório — joelho D + cotovelo D</div>
+      <div class="alert-body">Até a consulta com o Dr. Lazaroni. Sem impacto, sem flexão acima de 60° sob carga, sem pegada pronada.</div>
+    </div>
+    <div class="section-title">Distribuição semanal</div>
+    <div class="esc-sw">
+      ${Object.values(ESCALAS).map(s=>`<button class="esc-b${esc0===s.id?' active':''}" onclick="setEscala('${s.id}')">${esc(s.nome)}<small>${esc(s.sub)}</small></button>`).join('')}
+    </div>
+    <div class="comp-block" style="padding:4px 16px;margin-top:10px">${semana}</div>
+    <div class="prog-advice" style="margin-top:10px">${esc(E.nota)}</div>
+    <div class="section-title">Regras de carga</div>
+    ${REGRAS_CARGA.map(r=>`<div class="alert ${r.type}"><div class="alert-title">${esc(r.title)}</div><div class="alert-body">${esc(r.body)}</div></div>`).join('')}
+    <div class="section-title">Evolução dos sintomas</div>
+    ${renderGraficoSintomas()}
+    <div class="section-title">Progressão</div>
+    <div class="comp-block" style="padding:4px 16px">
+      ${PROGRESSAO_REAB.map(p=>`<div style="padding:12px 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">${esc(p.t)}</div>
+        <div style="font-size:12.5px;color:var(--muted2);line-height:1.6">${esc(p.d)}</div></div>`).join('')}
+    </div>
+    <div class="section-title">Critérios para voltar a correr</div>
+    <div class="comp-block" style="padding:4px 16px">${crits}</div>
+    <div class="alert ${todos?'success':'warn'}" style="margin-top:10px">
+      <div class="alert-title">${todos?'Critérios cumpridos — '+done+'/'+RETORNO_CRITERIOS.length:'Progresso: '+done+' de '+RETORNO_CRITERIOS.length}</div>
+      <div class="alert-body">${todos?esc(RETORNO_PROTOCOLO)+' Confirme com o Dr. Lazaroni antes de começar.':'A corrida só volta quando <strong>todos</strong> os cinco critérios estiverem cumpridos. Não antecipe.'}</div>
+    </div>
+    <div class="section-title">Levar ao Dr. Lazaroni</div>
+    <div class="comp-block" style="padding:4px 16px">
+      ${PERGUNTAS_MEDICO.map((q,i)=>`<div class="qm-i"><span class="qm-n">${i+1}.</span><span>${esc(q)}</span></div>`).join('')}
+    </div>
+    <div class="section-title">Núcleo — 10 min, 2 a 3× por semana</div>
+    <div class="comp-block" style="padding:4px 16px">
+      ${NUCLEO_EX.map((e,i)=>`<div class="reab-it">
+        <div class="reab-it-b" onclick="openExDetalhe('nucleo',${i})">
+          <div class="reab-nm">${esc(e.name)}</div><div class="reab-pr">${prescr(e)}</div>
+        </div><div class="reab-info" onclick="openExDetalhe('nucleo',${i})">i</div></div>`).join('')}
+    </div>
+    <div class="section-title">Restrições dos treinos</div>
+    <div class="alert danger"><div class="alert-title">Treino A — inferior</div><div class="alert-body">${esc(TREINO_A_REGRA)}</div></div>
+    <div class="alert danger"><div class="alert-title">Treino B — superior</div><div class="alert-body">${esc(TREINO_B_FORA)}</div></div>
+    <div class="alert success"><div class="alert-title">Braço esquerdo</div><div class="alert-body">${esc(TREINO_B_ESQUERDO)}</div></div>
+    <button class="btn btn-secondary btn-full" style="margin-top:14px" onclick="switchPage('aerobico')">Ver sessões aeróbicas e zonas de FC</button>
+    <button class="btn btn-danger btn-full" style="margin-top:9px" onclick="restaurarPlanoAnterior()">Restaurar plano anterior</button>`;
+}
 function getActiveWorkouts(){
   if(state.useCustomPlan&&state.customWorkouts&&state.customWorkouts.length>0){
     return state.customWorkouts;
